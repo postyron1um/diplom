@@ -1,0 +1,29 @@
+    // Проверка на валидность title
+    if (!title.trim()) {
+      dispatch({ type: 'SET_ERROR', field: 'title', message: 'Пожалуйста, введите название турнира' });
+    }
+    // Проверка на валидность sportType
+    if (sportType === 'Другое') {
+      dispatch({ type: 'SET_ERROR', field: 'sportType', message: 'Пожалуйста, выберите вид спорта' });
+    }
+    // Проверка на валидность tournamentDesc
+    if (!tournamentDesc.trim()) {
+      dispatch({ type: 'SET_ERROR', field: 'tournamentDesc', message: 'Пожалуйста, дайте описание турниру' });
+    }
+    if (!startDate.trim()) {
+      dispatch({ type: 'SET_ERROR', field: 'startDate', message: 'Пожалуйста, введите начальную дату' });
+    }
+    // Проверка на валидность endDate
+    if (!endDate.trim()) {
+      dispatch({ type: 'SET_ERROR', field: 'endDate', message: 'Пожалуйста, введите конечную дату' });
+    }
+    if (
+      !title.trim() ||
+      sportType === 'Другое' ||
+      !typeTournament ||
+      !tournamentDesc.trim() ||
+      !startDate.trim() ||
+      !endDate.trim()
+    ) {
+      return;
+    }

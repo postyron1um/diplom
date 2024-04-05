@@ -1,0 +1,17 @@
+.card-button {
+  color: #fff;
+  padding: 20px 20px 0px;
+  /* background-image: linear-gradient(to right top, #75a4eb, #519cec, #329bf7, #2197ec, #28a1ee); */
+  -webkit-box-shadow: 0px 0px 13px 0px rgba(27, 36, 194, 1);
+  -moz-box-shadow: 0px 0px 13px 0px rgba(27, 36, 194, 1);
+  box-shadow: 0px 0px 13px 0px rgba(27, 36, 194, 1);
+  border: 1px solid #6cb3f7;
+  border-radius: 20px;
+  -webkit-border-radius: 20px;
+  -moz-border-radius: 20px;
+  -ms-border-radius: 20px;
+  -o-border-radius: 20px;
+}
+.card-button:hover {
+  background: #2b2c2c;
+}

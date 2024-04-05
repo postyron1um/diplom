@@ -1,0 +1,135 @@
+@charset "UTF-8";
+.createTournament {
+  max-width: 600px;
+  margin: 0 auto;
+  margin-top: 40px;
+  padding: 20px 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  box-shadow: 0px 0px 13px 0px rgb(27, 36, 194);
+  border: 1px solid #6cb3f7;
+  border-radius: 20px;
+  -webkit-border-radius: 20px;
+  -moz-border-radius: 20px;
+  -ms-border-radius: 20px;
+  -o-border-radius: 20px;
+}
+@media (max-width: 750px) {
+  .createTournament {
+    margin-top: 10px;
+  }
+}
+@media (max-width: 650px) {
+  .createTournament {
+    padding: 20px 20px;
+  }
+}
+.createTournament__container {
+  padding-bottom: 20px;
+}
+.createTournament .form-label {
+  font-weight: 600;
+  display: inline-block;
+  margin-bottom: 7px;
+}
+.createTournament .form-check__typeTournament {
+  margin-bottom: 10px;
+  display: flex;
+  gap: 10px;
+}
+.createTournament__title {
+  font-size: 40px;
+  padding-right: 5px;
+  margin-bottom: 20px;
+  font-weight: 400;
+}
+@media (max-width: 700px) {
+  .createTournament__title {
+    font-size: 33px;
+  }
+}
+@media (max-width: 550px) {
+  .createTournament__title {
+    font-size: 30px;
+  }
+}
+@media (max-width: 429px) {
+  .createTournament__title {
+    font-size: 27px;
+  }
+}
+@media (max-width: 429px) {
+  .createTournament__title {
+    font-size: 23px;
+  }
+}
+@media (max-width: 429px) {
+  .createTournament__title {
+    font-size: 23px;
+  }
+}
+.createTournament__desc {
+  border: 1px solid var(--accent-color);
+  width: 100%;
+  height: 100px;
+  padding: 10px;
+  font-size: 1rem;
+  resize: vertical; /* Разрешить изменение высоты */
+  border-radius: 5px;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  -ms-border-radius: 5px;
+  -o-border-radius: 5px;
+}
+@media (max-width: 400px) {
+  .createTournament__desc {
+    height: 150px;
+  }
+}
+.createTournament .tournamentName, .createTournament__select {
+  border-radius: 5px;
+  border: 1px solid var(--accent-color);
+  width: 100%;
+  padding: 10px;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  -ms-border-radius: 5px;
+  -o-border-radius: 5px;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  box-shadow: 0 0 3pt 1pt var(--accent-color);
+  outline-width: 0px;
+}
+
+.invalid {
+  border: 1px solid red !important;
+}
+
+.error-message {
+  font-size: 13px;
+  font-weight: 500;
+  max-width: 300px;
+  color: #fff;
+  padding: 5px 5px 5px;
+  background-color: rgb(199, 39, 39);
+  text-align: center;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  -ms-border-radius: 5px;
+  -o-border-radius: 5px;
+}
+
+.error-message__date-input {
+  margin-top: -20px;
+  margin-bottom: 20px;
+}
+
+.hidden {
+  display: none;
+}/*# sourceMappingURL=CreateTournament.css.map */

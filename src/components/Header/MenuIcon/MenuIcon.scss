@@ -1,0 +1,16 @@
+.menu-icon {
+  @media screen and (max-width: 880px) {
+    display: block;
+    width: 22px;
+    position: absolute;
+    right: 0;
+    top: 0;
+    justify-content: center;
+    cursor: pointer;
+  }
+}
+.nav.active {
+  @media screen and (max-width: 880px) {
+    row-gap: 50px;
+  }
+}

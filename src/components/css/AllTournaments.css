@@ -1,0 +1,45 @@
+.tournament {
+  box-shadow: 0px 0px 13px 0px rgb(27, 36, 194);
+  border: 1px solid #6cb3f7;
+  margin-bottom: 40px;
+  margin-top: 40px;
+  border-radius: 20px;
+  padding-bottom: 20px;
+}
+.tournament h1 {
+  font-size: 36px;
+  font-weight: 400;
+  margin-top: 40px;
+  padding: 0px 10px;
+  margin-bottom: 30px;
+}
+@media (max-width: 700px) {
+  .tournament h1 {
+    font-size: 29px;
+  }
+}
+@media (max-width: 530px) {
+  .tournament h1 {
+    font-size: 25px;
+  }
+}
+.tournament__box {
+  color: #fff;
+  padding: 20px 20px 0px;
+  background-image: linear-gradient(to right top, #75a4eb, #519cec, #329bf7, #2197ec, #28a1ee);
+  box-shadow: 0px 0px 13px 0px rgb(27, 36, 194);
+  border: 1px solid #6cb3f7;
+  border-radius: 20px;
+  -webkit-border-radius: 20px;
+  -moz-border-radius: 20px;
+  -ms-border-radius: 20px;
+  -o-border-radius: 20px;
+}
+.tournament__box:hover {
+  transition: background-color 0.3s ease;
+  background-color: #2d7bf1;
+  -webkit-transition: background-color 0.3s ease;
+  -moz-transition: background-color 0.3s ease;
+  -ms-transition: background-color 0.3s ease;
+  -o-transition: background-color 0.3s ease;
+}/*# sourceMappingURL=AllTournaments.css.map */

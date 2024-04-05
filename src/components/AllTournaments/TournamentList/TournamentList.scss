@@ -1,0 +1,19 @@
+.tournament {
+  &__container {
+    display: grid;
+    // max-width: 800px;
+    // margin: 0 auto;
+    gap: 20px;
+    margin-bottom: 20px;
+  }
+  &__container > &__box:last-child {
+    margin-bottom: 20px;
+  }
+  .no-tournaments {
+    font-size: 20px;
+    padding: 10px;
+    width: fit-content;
+    // text-align: center;
+    background-color: #14291d;
+  }
+}
