@@ -6,7 +6,6 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  // background-image: linear-gradient(to right top, #75a4eb, #519cec, #329bf7, #2197ec, #28a1ee);
   -webkit-box-shadow: 0px 0px 13px 0px rgba(27, 36, 194, 1);
   -moz-box-shadow: 0px 0px 13px 0px rgba(27, 36, 194, 1);
   box-shadow: 0px 0px 13px 0px rgba(27, 36, 194, 1);
@@ -26,11 +25,11 @@
     padding: 10px 10px;
   }
   h1 {
-    font-size: 36px;
+    font-size: 28px;
     font-weight: 400;
-    text-align: center;
-    padding: 0px 10px;
-    margin-bottom: 20px;
+
+    // padding: 0px 10px;
+    // margin-bottom: 20px;
     @media (max-width: 700px) {
       font-size: 29px;
     }
@@ -38,76 +37,43 @@
       font-size: 25px;
     }
   }
-  &__span {
-    display: inline-block;
-    width: 150px;
-    color: #fff;
-    box-shadow: 0px 0px 13px 0px rgba(27, 36, 194, 1);
-    border: 1px solid #6cb3f7;
-    margin-right: 15px;
-    // background-color: #2cce75;
-    padding: 5px 10px;
+
+  .current-tournament__h3 {
+    display: flex;
+    font-size: 17px;
+    margin-bottom: 5px;
   }
-  .ds {
-    // background-color: #3f58e4;
-    box-shadow: 0px 0px 13px 0px rgba(27, 36, 194, 1);
-    border: 1px solid #6cb3f7;
-    padding: 5px 10px;
+
+  .current-tournament__h3-desc {
+    display: grid;
+    grid-template-columns: 1fr 8fr;
+    .current-tournament__span {
+      align-self: start;
+    }
   }
   .sd {
-    width: 100%;
+    width: fit-content;
   }
-  &__sportType {
-    font-size: 18px;
-    margin-bottom: 5px;
 
-    @media (max-width: 530px) {
-      font-size: 16px;
-    }
+  &__span {
+    display: inline-block;
+    min-width: 150px;
+    color: #fff;
+    border: 1px solid #f8fbfd;
+    margin-right: 15px;
+    padding: 5px 10px;
+    /* Ограничение текста по ширине и разрешение переноса слов */
+    max-width: 100%;
+    word-wrap: break-word; /* Разрешает перенос слов */
+    white-space: pre-wrap; /* Разрешает перенос строк */
   }
-  &__typeTournament {
-    font-size: 18px;
-    margin-bottom: 5px;
-    @media (max-width: 530px) {
-      font-size: 16px;
-    }
-  }
-  &__desc {
-    display: grid;
-    font-size: 18px;
-    margin-bottom: 5px;
-    @media (max-width: 530px) {
-      font-size: 16px;
-    }
-    span {
-      display: block;
-      color: #fff;
-      margin-bottom: 5px;
-      width: 150px;
-      box-shadow: 0px 0px 13px 0px rgba(27, 36, 194, 1);
-      border: 1px solid #6cb3f7;
-      // background-color: #2cce75;
-      padding: 5px 10px;
-    }
-  }
-  &__startDate,
-  &__startEnd {
-    font-size: 18px;
-    margin-bottom: 5px;
-    @media (max-width: 530px) {
-      font-size: 16px;
-    }
-  }
-  &__menu-list {
-    display: flex;
-    // margin-left: 15px;
-    margin-bottom: 7px;
-    gap: 20px;
-    font-size: 18px;
-    li {
-      // padding: 5px;
-    }
-  }
+}
+.current-tournament__h1 {
+  background: #090924;
+  width: fit-content;
+	padding: 10px;
+	border:1px solid #3325f3;
+	
 }
 
 .table {
@@ -144,4 +110,27 @@
 .tournament-container {
   display: grid;
   grid-template-columns: 1fr;
+}
+
+.currentTournamentTable {
+  // margin-top: 40px;
+}
+.current-tournament__menu-list {
+  display: flex;
+  border-top: 1px solid #a5abb6;
+  padding-top: 10px;
+  gap: 30px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.current-tournament__nav {
+  cursor: pointer;
+  padding: 15px;
+}
+
+.current-tournament__menu_active {
+  background-color: rgb(23, 9, 75);
+  padding: 15px;
+  border-radius: 5px;
 }

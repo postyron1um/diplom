@@ -1,27 +1,48 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import CardButton from '../../CardButton/CardButton';
 import TournamentItem from '../TournamentItem/TournamentItem';
 import './TournamentList.scss';
+import { Link } from 'react-router-dom';
 
-function TournamentList({ tournaments }) {
-  // Добавление даты создания к турнирам
-  const tournamentsWithDate = tournaments.map((tournament) => ({
+function TournamentList({ searchInput, sportType, tournamentType, currentPage, tournamentsPerPage }) {
+  const [tournaments, setTournaments] = useState([]);
+
+  useEffect(() => {
+    const storedTournaments = JSON.parse(localStorage.getItem('tournaments')) || [];
+    const sortedTournaments = storedTournaments
+      .map((tournament) => ({ ...tournament, createdAt: new Date(tournament.createdAt) }))
+      .sort((a, b) => b.createdAt - a.createdAt);
+    setTournaments(sortedTournaments);
+  }, []);
+
+  const tournamentsWithDate = tournaments?.map((tournament) => ({
     ...tournament,
-    createdAt: new Date(tournament.createdAt), // Преобразуем строку обратно в объект Date
+    createdAt: new Date(tournament.createdAt),
   }));
 
-  if (tournaments.length === 0) {
-    return <h3 className='no-tournaments'>Пока турниров нет, вы можете добавить первый.</h3>;
+  const filteredTournaments = tournamentsWithDate.filter(
+    (tournament) =>
+      tournament.title.toLowerCase().includes(searchInput.toLowerCase()) &&
+      (sportType ? tournament.sportType === sportType : true) &&
+      (tournamentType ? tournament.typeTournament === tournamentType : true),
+  );
+
+  if (filteredTournaments.length === 0) {
+    return <h3 className="no-tournaments">Пока турниров нет, вы можете добавить первый.</h3>;
   }
-  // Сортировка турниров по дате создания (от самого нового к самому старому)
-  const sortedTournaments = [...tournamentsWithDate].sort((a, b) => b.createdAt - a.createdAt);
+
+  const indexOfLastTournament = currentPage * tournamentsPerPage;
+  const indexOfFirstTournament = indexOfLastTournament - tournamentsPerPage;
+  const currentTournaments = filteredTournaments.slice(indexOfFirstTournament, indexOfLastTournament);
 
   return (
     <div className="tournament__container">
-      {sortedTournaments.map((tournament) => (
-        <CardButton key={tournament.id} className="tournament-item">
-          <TournamentItem tournament={tournament} />
-        </CardButton>
+      {currentTournaments.map((tournament) => (
+        <Link key={tournament.id} to={`${tournament.id}`}>
+          <CardButton className="tournament-item">
+            <TournamentItem tournament={tournament} />
+          </CardButton>
+        </Link>
       ))}
     </div>
   );

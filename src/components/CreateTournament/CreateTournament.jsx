@@ -9,12 +9,21 @@ import './CreateTournament.scss';
 import cn from 'classnames';
 import { useEffect, useReducer, useState } from 'react';
 import { initialState, reducer, sportTypeOptions } from './CreateTournament.state';
+import { useNavigate } from 'react-router-dom';
 
-function CreateTournament({ onAddTournament }) {
+let nextId = 0;
+
+function CreateTournament() {
   const [state, dispatch] = useReducer(reducer, initialState);
   const { title, sportType, errors, typeTournament, tournamentDesc, startDate, endDate } = state;
   const [createdAt, setCreatedAt] = useState(null);
+  const navigate = useNavigate();
 
+  const tournaments = JSON.parse(localStorage.getItem('tournaments'));
+
+  if (tournaments) {
+    nextId = tournaments[tournaments.length - 1].id + 1;
+  }
 
   const handleFieldChange = (field, value) => {
     dispatch({ type: 'SET_FIELD', field, value });
@@ -71,14 +80,14 @@ function CreateTournament({ onAddTournament }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    let formIsValid = true; 
+    let formIsValid = true;
     if (!title.trim()) {
       dispatch({ type: 'SET_ERROR', field: 'title', message: 'Пожалуйста, введите название турнира' });
       formIsValid = false;
     }
     if (sportType === 'Другое') {
       dispatch({ type: 'SET_ERROR', field: 'sportType', message: 'Пожалуйста, выберите вид спорта' });
-      formIsValid = false; 
+      formIsValid = false;
     }
     if (!tournamentDesc.trim()) {
       dispatch({ type: 'SET_ERROR', field: 'tournamentDesc', message: 'Пожалуйста, дайте описание турнира' });
@@ -99,7 +108,7 @@ function CreateTournament({ onAddTournament }) {
       formIsValid = false;
     }
     if (!formIsValid) {
-      return; 
+      return;
     }
 
     const currentDate = new Date(); // Текущая дата и время
@@ -112,14 +121,31 @@ function CreateTournament({ onAddTournament }) {
       startDate,
       endDate,
       createdAt, // Добавляем поле createdAt
+      id: nextId++,
     };
     setCreatedAt(createdAt);
     // Вызываем функцию для добавления турнира
-    onAddTournament(newTournament);
+
+    handleAddTournament(newTournament);
+
     if (!formIsValid) {
       return;
     }
     dispatch({ type: 'RESET_FORM' }); // Сброс формы после отправки
+
+    navigate('/alltournaments');
+  };
+
+  const handleAddTournament = (newTournament) => {
+    //setTournaments([...tournaments, { ...newTournament, id: tournaments.length + 1, createdAt: new Date() }]);
+    let tournaments = JSON.parse(localStorage.getItem('tournaments'));
+
+    if (!tournaments) {
+      localStorage.setItem('tournaments', JSON.stringify([newTournament]));
+    } else {
+      tournaments.push(newTournament);
+      localStorage.setItem('tournaments', JSON.stringify(tournaments));
+    }
   };
 
   return (
@@ -165,12 +191,16 @@ function CreateTournament({ onAddTournament }) {
             <DateInput
               className={cn('datepicker', { invalid: errors.startDate })}
               id="startDate"
+              value={startDate}
               onChange={(value) => handleFieldChange('startDate', value)}>
               Дата начала
             </DateInput>
             <DateInput
+              appearance="endDate"
+              minDate={startDate}
               className={cn('datepicker', { invalid: errors.endDate })}
               id="endDate"
+              value={endDate}
               onChange={(value) => handleFieldChange('endDate', value)}>
               Дата окончания
             </DateInput>

@@ -29,15 +29,12 @@ export function reducer(state, action) {
     case 'RESET_FORM':
       return {
         ...initialState,
-        sportType: 'Другое',
-        startDate: '',
-        endDate: '',
       };
     default:
       return state;
   }
 }
-
+export const typeTournamentMap = ['Круговой', 'На вылет'];
 export const sportTypeOptions = [
   'Футбол',
   'Другое',
@@ -60,4 +57,4 @@ export const sportTypeOptions = [
   'Скалолазание',
   'Серфинг',
   'Боулинг',
-];
+].sort();
