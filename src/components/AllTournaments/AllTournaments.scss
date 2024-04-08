@@ -8,7 +8,7 @@
   margin-bottom: 40px;
   margin-top: 40px;
   border-radius: 20px;
-	padding-bottom: 20px;
+  padding-bottom: 20px;
   h1 {
     font-size: 36px;
     font-weight: 400;
@@ -48,4 +48,75 @@
     -ms-transition: background-color 0.3s ease;
     -o-transition: background-color 0.3s ease;
   }
+}
+.searchInput-wrapper {
+  display: flex;
+  gap: 10px;
+  // justify-content: space-between;
+}
+
+.searchInput {
+  border: 1px solid #3325f3;
+  width: 300px;
+  padding: 10px;
+  margin-bottom: 20px;
+}
+.sportType-select {
+  border: 1px solid #3325f3;
+  width: 300px;
+  padding: 10px;
+  margin-bottom: 20px;
+}
+
+.tournamentType-select {
+  border: 1px solid #3325f3;
+  width: 300px;
+  padding: 10px;
+  margin-bottom: 20px;
+}
+
+.reset-button {
+  border: 1px solid #3325f3;
+  width: 200px;
+  padding: 5px;
+  margin-bottom: 20px;
+}
+
+.reset-button:hover {
+  background-color: #3325f3;
+  transition: background-color 0.4s ease;
+  -webkit-transition: background-color 0.4s ease;
+  -moz-transition: background-color 0.4s ease;
+  -ms-transition: background-color 0.4s ease;
+  -o-transition: background-color 0.4s ease;
+}
+.reset-button:active {
+  background-color: #18145e;
+}
+.pagination {
+	margin-top: 20px;
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  justify-content: center;
+}
+.pagination-span {
+  margin: 0;
+}
+.pagination-btn {
+  border: 1px solid;
+  padding: 10px;
+}
+.pagination-btn:hover {
+  background-color: #22517e;
+  border: 1px solid #1ed436;
+  transition: background-color 0.4s ease;
+  -webkit-transition: background-color 0.4s ease;
+  -moz-transition: background-color 0.4s ease;
+  -ms-transition: background-color 0.4s ease;
+  -o-transition: background-color 0.4s ease;
+}
+
+.button_active {
+	color:#1ed436;
 }

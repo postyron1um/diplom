@@ -10,11 +10,9 @@ function SelectInput({ label, options, value, onChange, name, className }) {
   return (
     <div className="form-group">
       <label className="form-label">{label}</label>
-      <select
-        className={className}
-        defaultValue={value} // Используем defaultValue вместо value
-        name={name}
-        onChange={handleChange}>
+      {/* <input list="sports" // Используем defaultValue вместо value
+               name={name}/> */}
+      <select value={value} name={name} className={className} id="sports" onChange={handleChange}>
         {options.map((option, index) => (
           <option key={index} value={option}>
             {option}

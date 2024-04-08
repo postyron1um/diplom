@@ -1,7 +1,7 @@
 import { forwardRef } from 'react';
 import './DateInput.scss';
 
-const DateInput = forwardRef(function DateInput({ className, id, children, value, onChange }) {
+const DateInput = forwardRef(function DateInput({ className, id, children, value, onChange, minDate,appearance }) {
   const handleChange = (e) => {
     onChange(e.target.value);
   };

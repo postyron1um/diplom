@@ -1,4 +1,5 @@
 // import React from 'react';
+import { Link, NavLink } from 'react-router-dom';
 import './Navigation.scss';
 
 function Navigation() {
@@ -7,19 +8,29 @@ function Navigation() {
       <div className="fl-direction">
         <ul className="nav-list">
           <li className="nav-item">
-            <a className="nav-item__link" href="#!">
+            <NavLink
+              className={({ isActive, isPending }) => (isActive ? 'nav_active' : isPending ? 'pending' : '')}
+              // className="nav-item__link"
+              to="/main">
               Главная
-            </a>
+            </NavLink>
           </li>
           <li className="nav-item">
-            <a className="nav-item__link" href="./allTournaments.html">
+            <NavLink
+              className={({ isActive, isPending }) => (isActive ? 'nav_active' : isPending ? 'pending' : '')}
+              to="./alltournaments">
               Турниры и чемпионаты
-            </a>
+            </NavLink>
           </li>
-          <li className="nav-item">
+          {/* <li className="nav-item">
             <a className="nav-item__link" href="#!">
               Новости
             </a>
+          </li> */}
+          <li className="nav-item">
+            <NavLink className={({ isActive, isPending }) => (isActive ? 'nav_active' : isPending ? 'pending' : '')} to="/create">
+              Создать турнир
+            </NavLink>
           </li>
         </ul>
       </div>
