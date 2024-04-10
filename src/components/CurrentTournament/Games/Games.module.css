@@ -31,12 +31,9 @@
 .round {
 	background: #2473eb;
 	padding: 5px;
-	margin-bottom: 15px;
-	border-radius: 5px;
-	-webkit-border-radius: 5px;
-	-moz-border-radius: 5px;
-	-ms-border-radius: 5px;
-	-o-border-radius: 5px;
+	margin-top: 15px;
+	border:1px solid;
+
 }
 
 .table-responsive {

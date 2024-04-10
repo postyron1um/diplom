@@ -10,7 +10,6 @@ function AllTournaments() {
 	const [typeTournament, setTournamentType] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [tournamentsPerPage] = useState(10); // Количество турниров на странице
-  const [filteredTournaments, setFilteredTournaments] = useState([]);
   const [totalPages, setTotalPages] = useState(1); // Общее количество страниц
 
 useEffect(() => {
@@ -27,7 +26,7 @@ useEffect(() => {
   // Устанавливаем общее количество страниц
   setTotalPages(Math.ceil(filtered.length / tournamentsPerPage));
 
-  setFilteredTournaments(filtered);
+
   setCurrentPage(1); // Сбрасываем текущую страницу при изменении фильтров
 }, [searchInput, sportType, typeTournament, tournamentsPerPage]);
 
@@ -57,9 +56,11 @@ useEffect(() => {
   };
 
   return (
+		
     <div className="tournament">
       <div className="container">
         <h1>Все турниры и чемпионаты</h1>
+				
         <div className="searchInput-wrapper">
           <input
             className="searchInput"
@@ -94,7 +95,6 @@ useEffect(() => {
           tournamentType={typeTournament}
           currentPage={currentPage}
           tournamentsPerPage={tournamentsPerPage}
-          filteredTournaments={filteredTournaments}
         />
         <div className="pagination">
           <button onClick={handlePreviousPage} disabled={currentPage === 1} className="pagination-btn">
