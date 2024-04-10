@@ -3,3 +3,16 @@
   margin: 0 auto;
 	padding-top: 100px;
 }
+
+.NotFoundPage-span {
+	display: inline;
+	/* background-color: aquamarine; */
+	/* text-decoration: underline; */
+}
+.NotFoundPage-span a:hover {
+	color: rgb(84, 107, 161);
+
+}
+.NotFoundPage-span a{
+	color: rgb(152, 178, 238);
+}

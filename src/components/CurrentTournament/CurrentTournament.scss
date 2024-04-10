@@ -3,6 +3,7 @@
   margin: 0 auto;
   margin-top: 40px;
   padding: 10px 40px;
+  padding-bottom: 40px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -71,9 +72,12 @@
 .current-tournament__h1 {
   background: #090924;
   width: fit-content;
-	padding: 10px;
-	border:1px solid #3325f3;
-	
+  padding: 10px;
+  border: 1px solid #3325f3;
+  /* Ограничение текста по ширине и разрешение переноса слов */
+  max-width: 100%;
+  word-wrap: break-word; /* Разрешает перенос слов */
+  white-space: pre-wrap; /* Разрешает перенос строк */
 }
 
 .table {
@@ -117,7 +121,7 @@
 }
 .current-tournament__menu-list {
   display: flex;
-  border-top: 1px solid #a5abb6;
+  // border-top: 1px solid #a5abb6;
   padding-top: 10px;
   gap: 30px;
   margin-top: 10px;
@@ -134,3 +138,62 @@
   padding: 15px;
   border-radius: 5px;
 }
+
+.tournament-register {
+  margin-top: 30px;
+  display: flex;
+  justify-content: space-evenly;
+	align-items: center;
+  gap: 50px;
+  // margin: 0 auto;
+  box-shadow: 0px 0px 13px 0px rgb(32, 243, 225);
+  border: 1px solid #6cb3f7;
+  border-radius: 20px;
+  padding: 40px;
+}
+.participant,
+.teamName {
+  // width: 100%;
+}
+.participant-row,
+.teamName-row {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.participant-row input,
+.teamName-row input {
+  // max-width: 300px;
+	min-width: 320px;
+  border: 1px solid;
+  padding: 10px;
+  margin-bottom: 15px;
+}
+
+.participant-row button,
+.teamName-row button {
+  border: 1px solid rgb(0, 1, 2) !important;
+  padding: 10px 5px;
+  border-radius: 5px;
+  background-color: #172e96;
+  min-width: 320px;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  -ms-border-radius: 5px;
+  -o-border-radius: 5px;
+}
+
+.participant-row button:hover,
+.teamName-row button:hover {
+  background-color: #273366;
+  transition: background-color 0.4s ease;
+  -webkit-transition: background-color 0.4s ease;
+  -moz-transition: background-color 0.4s ease;
+  -ms-transition: background-color 0.4s ease;
+  -o-transition: background-color 0.4s ease;
+}
+
+
+// .register_or {
+
+// }
