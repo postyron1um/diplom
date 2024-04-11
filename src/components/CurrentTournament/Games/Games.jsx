@@ -38,20 +38,15 @@ function generateTournamentData(participantNames) {
 function Games() {
   const [tournamentData, setTournamentData] = useState([]);
 
-  useEffect(() => {
-    const participants = JSON.parse(localStorage.getItem('tournamentAcceptedParticipants'));
-    if (participants) {
-      const participantNames = participants.map((participant) => participant.name);
-      const storedTournamentData = JSON.parse(localStorage.getItem('tournamentData'));
-      if (storedTournamentData) {
-        setTournamentData(storedTournamentData);
-      } else {
-        const newTournamentData = generateTournamentData(participantNames);
-        setTournamentData(newTournamentData);
-        localStorage.setItem('tournamentData', JSON.stringify(newTournamentData));
-      }
-    }
-  }, []);
+useEffect(() => {
+  const participants = JSON.parse(localStorage.getItem('tournamentAcceptedParticipants'));
+  if (participants) {
+    const participantNames = participants.map((participant) => participant.name);
+    const newTournamentData = generateTournamentData(participantNames);
+    setTournamentData(newTournamentData);
+    localStorage.setItem('tournamentData', JSON.stringify(newTournamentData));
+  }
+}, []);
 
   const handleEditSave = (tournamentIndex, matchIndex) => {
     const updatedTournamentData = [...tournamentData];
