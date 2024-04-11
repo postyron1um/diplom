@@ -72,3 +72,14 @@
 .tournamentRegistrations-div-end {
   align-self: flex-end;
 }
+
+.form-matches {
+  display: flex;
+  justify-content: end;
+	margin-top: 20px;
+}
+
+.form-matches-btn {
+  background-color: rgb(15, 214, 240);
+  padding: 10px 20px;
+}

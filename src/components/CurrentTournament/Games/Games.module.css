@@ -35,14 +35,13 @@
 	border:1px solid;
 
 }
-
-.table-responsive {
+.edit {
+	display: inline-flex;
+	gap:10px;
+	text-align: center;
 }
-
-.mb-2 {
-  margin-bottom: 8px;
-}
-
-.no-wrap {
-  white-space: nowrap;
+.edit-input {
+	text-align: center;
+	max-width: 30px;
+	border:1px solid;
 }

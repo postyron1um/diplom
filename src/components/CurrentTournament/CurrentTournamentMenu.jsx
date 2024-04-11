@@ -30,7 +30,7 @@ function CurrentTournamentMenu() {
       id: Date.now(),
       name: participantName,
     };
-    setRegistrations(prevRegistrations => [...prevRegistrations, participant]);
+    setRegistrations((prevRegistrations) => [...prevRegistrations, participant]);
     localStorage.setItem('tournamentParticipants', JSON.stringify([...registrations, participant]));
     setParticipantName('');
   };
@@ -126,7 +126,7 @@ function CurrentTournamentMenu() {
         </div>
       )}
       {selectedMenu === 'table' && <CurrentTournamentTable data={tournamentParticipants} />}
-      {selectedMenu === 'games' && <Games  />}
+      {selectedMenu === 'games' && <Games />}
       {selectedMenu === 'admin' && (
         <AdminPanel
           registrations={registrations}
