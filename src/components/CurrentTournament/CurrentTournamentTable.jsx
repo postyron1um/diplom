@@ -1,6 +1,16 @@
-// import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
-function CurrentTournamentTable({ data }) {
+function CurrentTournamentTable() {
+  const [tableData, setTableData] = useState([]);
+
+  useEffect(() => {
+    // Загрузка данных из localStorage при монтировании компонента
+    const storedTableData = JSON.parse(localStorage.getItem('tableData'));
+    if (storedTableData) {
+      setTableData(storedTableData);
+    }
+  }, []);
+
   return (
     <div className="currentTournamentTable">
       <table className="table">
@@ -16,7 +26,7 @@ function CurrentTournamentTable({ data }) {
           </tr>
         </thead>
         <tbody>
-          {data.map((player, id) => (
+          {tableData.map((player, id) => (
             <tr key={id}>
               <td>{player.name}</td>
               <td>{player.goals}</td>

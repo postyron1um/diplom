@@ -52,6 +52,10 @@ function CurrentTournamentMenu() {
     setSelectedMenu(menu);
   };
 
+  const updateTournamentTableData = (data) => {
+    setTournamentParticipants(data);
+  };
+
   return (
     <div>
       <ul className="current-tournament__menu-list">
@@ -126,7 +130,7 @@ function CurrentTournamentMenu() {
         </div>
       )}
       {selectedMenu === 'table' && <CurrentTournamentTable data={tournamentParticipants} />}
-      {selectedMenu === 'games' && <Games />}
+      {selectedMenu === 'games' && <Games onUpdateTableData={updateTournamentTableData} />}
       {selectedMenu === 'admin' && (
         <AdminPanel
           registrations={registrations}
