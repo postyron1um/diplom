@@ -36,9 +36,8 @@ function generateTournamentData(participantNames) {
   return tournamentData;
 }
 
-function Games({ onUpdateTableData }) {
+function Games() {
   const [tournamentData, setTournamentData] = useState([]);
-  const [tableData, setTableData] = useState([]);
 
   useEffect(() => {
     const storedTournamentData = JSON.parse(localStorage.getItem('tournamentData'));
@@ -107,9 +106,7 @@ const updateTableData = (data) => {
     });
   });
 
-  setTableData(updatedTableData);
   localStorage.setItem('tableData', JSON.stringify(updatedTableData));
-  onUpdateTableData(updatedTableData);
 };
 
 const updateTeamData = (tableData, teamName, goalsFor, goalsAgainst, wins, draws, losses) => {

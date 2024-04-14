@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import styles from './AdminPanel.module.css';
 
 function TournamentRegistrations({ registrations, handleAccept, handleReject }) {
@@ -30,12 +30,14 @@ function TournamentRegistrations({ registrations, handleAccept, handleReject }) 
   );
 }
 
-function AdminPanel({ registrations, setRegistrations, setTournamentParticipants }) {
+// function AdminPanel({ registrations, setRegistrations, setTournamentParticipants }) {
+function AdminPanel() {
+  const [registrations, setRegistrations] = useState(JSON.parse(localStorage.getItem('tournamentParticipants')) || []);
+
   const handleAccept = (id) => {
     const acceptedRegistration = registrations.find((reg) => reg.id === id);
     if (acceptedRegistration) {
       setRegistrations((prevRegistrations) => prevRegistrations.filter((reg) => reg.id !== id));
-      setTournamentParticipants((prevParticipants) => [...prevParticipants, acceptedRegistration]);
       localStorage.setItem('tournamentParticipants', JSON.stringify([...registrations.filter((reg) => reg.id !== id)]));
       localStorage.setItem(
         'tournamentAcceptedParticipants',

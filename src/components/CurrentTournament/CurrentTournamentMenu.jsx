@@ -1,72 +1,85 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import CurrentTournamentTable from './CurrentTournamentTable';
 import Games from './Games/Games';
 import AdminPanel from './AdminPanel/AdminPanel';
-import { useLoaderData } from 'react-router-dom';
+import {Link, useLoaderData} from 'react-router-dom';
 import CurrentTournamentHeader from './CurrentTournamentHeader';
 import KnockoutTournament from './KnockoutTournament/KnockoutTournament';
 
 function CurrentTournamentMenu() {
-  const id = Number(useLoaderData());
-  const tournaments = JSON.parse(localStorage.getItem('tournaments'));
-  let currentTournament = null;
+    /*const id = Number(useLoaderData());
+    const tournaments = JSON.parse(localStorage.getItem('tournaments'));
+    let currentTournament = null;
 
-  for (let tournament of tournaments) {
-    if (tournament.id === id) {
-      currentTournament = tournament;
-      break;
-    }
-  }
+    for (let tournament of tournaments) {
+        if (tournament.id === id) {
+            currentTournament = tournament;
+            break;
+        }
+    }*/
+    let currentTournament = useLoaderData();
 
-  const [participantName, setParticipantName] = useState('');
-  const [teamName, setTeamName] = useState('');
-  const [registrations, setRegistrations] = useState(JSON.parse(localStorage.getItem('tournamentParticipants')) || []);
-  const [tournamentParticipants, setTournamentParticipants] = useState(
-    JSON.parse(localStorage.getItem('tournamentAcceptedParticipants')) || [],
-  );
+    const [participantName, setParticipantName] = useState('');
+    const [teamName, setTeamName] = useState('');
+    const [registrations, setRegistrations] = useState(JSON.parse(localStorage.getItem('tournamentParticipants')) || []);
+    const [tournamentParticipants, setTournamentParticipants] = useState(
+        JSON.parse(localStorage.getItem('tournamentAcceptedParticipants')) || [],
+    );
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const participant = {
-      id: Date.now(),
-      name: participantName,
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        const participant = {
+            id: Date.now(),
+            name: participantName,
+        };
+        setRegistrations((prevRegistrations) => [...prevRegistrations, participant]);
+        localStorage.setItem('tournamentParticipants', JSON.stringify([...registrations, participant]));
+        setParticipantName('');
     };
-    setRegistrations((prevRegistrations) => [...prevRegistrations, participant]);
-    localStorage.setItem('tournamentParticipants', JSON.stringify([...registrations, participant]));
-    setParticipantName('');
-  };
 
-  const handleCreateTeam = (e) => {
-    const tournamentTeams = JSON.parse(localStorage.getItem('tournamentTeams')) || [];
-    e.preventDefault();
-    const team = {
-      id: Date.now(),
-      name: teamName,
+    const handleCreateTeam = (e) => {
+        const tournamentTeams = JSON.parse(localStorage.getItem('tournamentTeams')) || [];
+        e.preventDefault();
+        const team = {
+            id: Date.now(),
+            name: teamName,
+        };
+        localStorage.setItem('tournamentTeams', JSON.stringify([...tournamentTeams, team]));
+        setTeamName('');
     };
-    localStorage.setItem('tournamentTeams', JSON.stringify([...tournamentTeams, team]));
-    setTeamName('');
-  };
 
-  const [selectedMenu, setSelectedMenu] = useState('home');
+    const [selectedMenu, setSelectedMenu] = useState('home');
 
-  const handleMenuClick = (menu) => {
-    setSelectedMenu(menu);
-  };
+    const handleMenuClick = (menu) => {
+        setSelectedMenu(menu);
+    };
 
-  const updateTournamentTableData = (data) => {
-    setTournamentParticipants(data);
-  };
+    const updateTournamentTableData = (data) => {
+        setTournamentParticipants(data);
+    };
 
-  return (
-    <div>
-      <ul className="current-tournament__menu-list">
-        <li
+    return (
+        <div>
+            <ul className="current-tournament__menu-list">
+                {/*<li
           className={`current-tournament__nav ${selectedMenu === 'home' ? 'current-tournament__menu_active' : ''}`}
           onClick={() => handleMenuClick('home')}>
           Главная
-        </li>
+        </li>*/}
+                <li><Link to="">Главная</Link></li>
+                <li><Link to="admin">Административаня панель</Link></li>
+                <li><Link to="reg">Регистрация</Link></li>
+                {currentTournament.typeTournament === 'На вылет' && (
+                    <li><Link to="matches">Матчи</Link></li>
+                )}
+                {currentTournament.typeTournament === 'Круговой' && (
+                    <>
+                        <li><Link to="table">Таблица</Link></li>
+                        <li><Link to="games">Игры</Link></li>
+                    </>
+                )}
 
-        <li
+                {/*<li
           className={`current-tournament__nav ${selectedMenu === 'admin' ? 'current-tournament__menu_active' : ''}`}
           onClick={() => handleMenuClick('admin')}>
           Административная панель
@@ -98,10 +111,10 @@ function CurrentTournamentMenu() {
           className={`current-tournament__nav ${selectedMenu === 'register' ? 'current-tournament__menu_active' : ''}`}
           onClick={() => handleMenuClick('register')}>
           Зарегистрироваться на турнир
-        </li>
-      </ul>
+        </li>*/}
+            </ul>
 
-      {selectedMenu === 'home' && (
+            {/*{selectedMenu === 'home' && (
         <div>
           <CurrentTournamentHeader
             title={currentTournament.title}
@@ -158,9 +171,9 @@ function CurrentTournamentMenu() {
           setTournamentParticipants={setTournamentParticipants}
         />
       )}
-      {currentTournament.typeTournament === 'На вылет' && selectedMenu === 'KnockoutTournament' && <KnockoutTournament />}
-    </div>
-  );
+      {currentTournament.typeTournament === 'На вылет' && selectedMenu === 'KnockoutTournament' && <KnockoutTournament />}*/}
+        </div>
+    );
 }
 
 export default CurrentTournamentMenu;
