@@ -4,6 +4,7 @@ import Games from './Games/Games';
 import AdminPanel from './AdminPanel/AdminPanel';
 import { useLoaderData } from 'react-router-dom';
 import CurrentTournamentHeader from './CurrentTournamentHeader';
+import KnockoutTournament from './KnockoutTournament/KnockoutTournament';
 
 function CurrentTournamentMenu() {
   const id = Number(useLoaderData());
@@ -70,6 +71,11 @@ function CurrentTournamentMenu() {
           Таблица
         </li>
         <li
+          className={`current-tournament__nav ${selectedMenu === 'KnockoutTournament' ? 'current-tournament__menu_active' : ''}`}
+          onClick={() => handleMenuClick('KnockoutTournament')}>
+          KnockoutTournament
+        </li>
+        <li
           className={`current-tournament__nav ${selectedMenu === 'games' ? 'current-tournament__menu_active' : ''}`}
           onClick={() => handleMenuClick('games')}>
           Игры
@@ -129,6 +135,9 @@ function CurrentTournamentMenu() {
           </div>
         </div>
       )}
+
+      {selectedMenu === 'KnockoutTournament' && <KnockoutTournament />}
+
       {selectedMenu === 'table' && <CurrentTournamentTable data={tournamentParticipants} />}
       {selectedMenu === 'games' && <Games onUpdateTableData={updateTournamentTableData} />}
       {selectedMenu === 'admin' && (

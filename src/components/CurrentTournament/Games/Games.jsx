@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import styles from './Games.module.css';
 
 function generateTournamentData(participantNames) {
+	console.log(participantNames);
   const numTeams = participantNames.length;
   const numRounds = numTeams - 1; // Количество туров
   const tournamentData = [];
@@ -15,8 +16,8 @@ function generateTournamentData(participantNames) {
         id: i + 1,
         team1: participantNames[i],
         team2: participantNames[numTeams - 1 - i],
-        score1: '0', // Измененные поля для результатов каждой команды
-        score2: '0', // Измененные поля для результатов каждой команды
+        score1: 0, // Измененные поля для результатов каждой команды
+        score2: 0, // Измененные поля для результатов каждой команды
         date: '04.04.2002',
         edited: false, // Флаг для отслеживания редактирования
       };
@@ -38,10 +39,12 @@ function generateTournamentData(participantNames) {
 function Games({ onUpdateTableData }) {
   const [tournamentData, setTournamentData] = useState([]);
   const [tableData, setTableData] = useState([]);
+
   useEffect(() => {
     const storedTournamentData = JSON.parse(localStorage.getItem('tournamentData'));
     if (storedTournamentData) {
       setTournamentData(storedTournamentData);
+      updateTableData(storedTournamentData); // Добавленный вызов функции
     } else {
       const participants = JSON.parse(localStorage.getItem('tournamentAcceptedParticipants'));
       if (participants) {
@@ -49,6 +52,7 @@ function Games({ onUpdateTableData }) {
         const newTournamentData = generateTournamentData(participantNames);
         setTournamentData(newTournamentData);
         localStorage.setItem('tournamentData', JSON.stringify(newTournamentData));
+        updateTableData(newTournamentData); // Добавленный вызов функции
       }
     }
   }, []);
@@ -79,57 +83,58 @@ function Games({ onUpdateTableData }) {
     setTournamentData(updatedTournamentData);
     updateTableData(updatedTournamentData);
   };
+const updateTableData = (data) => {
+  const updatedTableData = [];
+  data.forEach((tournament) => {
+    tournament.matches.forEach((match) => {
+      const team1Name = match.team1;
+      const team2Name = match.team2;
+      const team1Score = parseInt(match.score1);
+      const team2Score = parseInt(match.score2);
+      const team1GoalsFor = team1Score;
+      const team2GoalsFor = team2Score;
+      const team1GoalsAgainst = team2Score; // Пропущенные голы для первой команды
+      const team2GoalsAgainst = team1Score; // Пропущенные голы для второй команды
+      const team1Wins = team1Score > team2Score ? 1 : 0;
+      const team2Wins = team2Score > team1Score ? 1 : 0;
+      const team1Draws = team1Score === team2Score ? 1 : 0;
+      const team2Draws = team1Score === team2Score ? 1 : 0;
+      const team1Losses = team2Score > team1Score ? 1 : 0;
+      const team2Losses = team1Score < team2Score ? 1 : 0;
 
-  const updateTableData = (data) => {
-    const updatedTableData = [];
-    data.forEach((tournament) => {
-      tournament.matches.forEach((match) => {
-        const team1Name = match.team1;
-        const team2Name = match.team2;
-        const team1Score = parseInt(match.score1);
-        const team2Score = parseInt(match.score2);
-        const team1Goals = team1Score;
-        const team2Goals = team2Score;
-        const team1Wins = team1Score > team2Score ? 1 : 0;
-        const team2Wins = team2Score > team1Score ? 1 : 0;
-        const team1Draws = team1Score === team2Score ? 1 : 0;
-        const team2Draws = team1Score === team2Score ? 1 : 0;
-        const team1Losses = team2Score > team1Score ? 1 : 0;
-        const team2Losses = team1Score > team2Score ? 1 : 0;
-
-        updateTeamData(updatedTableData, team1Name, team1Goals, team1Wins, team1Draws, team1Losses);
-        updateTeamData(updatedTableData, team2Name, team2Goals, team2Wins, team2Draws, team2Losses);
-      });
+      updateTeamData(updatedTableData, team1Name, team1GoalsFor, team1GoalsAgainst, team1Wins, team1Draws, team1Losses);
+      updateTeamData(updatedTableData, team2Name, team2GoalsFor, team2GoalsAgainst, team2Wins, team2Draws, team2Losses);
     });
+  });
 
-    setTableData(updatedTableData);
-    localStorage.setItem('tableData', JSON.stringify(updatedTableData));
-    onUpdateTableData(updatedTableData);
-  };
+  setTableData(updatedTableData);
+  localStorage.setItem('tableData', JSON.stringify(updatedTableData));
+  onUpdateTableData(updatedTableData);
+};
 
-  const updateTeamData = (tableData, teamName, goals, wins, draws, losses) => {
-    const teamIndex = tableData.findIndex((team) => team.name === teamName);
-    if (teamIndex === -1) {
-      tableData.push({
-        name: teamName,
-        goals,
-        matches: 1,
-        wins,
-        draws,
-        losses,
-        goalsFor: goals,
-        goalsAgainst: 0,
-      });
-    } else {
-      tableData[teamIndex].goals += goals;
-      tableData[teamIndex].matches += 1;
-      tableData[teamIndex].wins += wins;
-      tableData[teamIndex].draws += draws;
-      tableData[teamIndex].losses += losses;
-      tableData[teamIndex].goalsFor += goals;
-    }
-  };
-
+const updateTeamData = (tableData, teamName, goalsFor, goalsAgainst, wins, draws, losses) => {
+  const teamIndex = tableData.findIndex((team) => team.name === teamName);
+  if (teamIndex === -1) {
+    tableData.push({
+      name: teamName,
+      goals: goalsFor, // Общее количество голов
+      matches: 1,
+      wins,
+      draws,
+      losses,
+      goalsFor,
+      goalsAgainst,
+    });
+  } else {
+    tableData[teamIndex].goals += goalsFor; // Обновляем общее количество голов
+    tableData[teamIndex].matches += 1;
+    tableData[teamIndex].wins += wins;
+    tableData[teamIndex].draws += draws;
+    tableData[teamIndex].losses += losses;
+    tableData[teamIndex].goalsFor += goalsFor;
+    tableData[teamIndex].goalsAgainst += goalsAgainst; // Обновляем общее количество пропущенных голов
+  }
+};
   return (
     <div>
       {tournamentData.map((tournament, tournamentIndex) => (
@@ -168,12 +173,16 @@ function Games({ onUpdateTableData }) {
                     </td>
                     <td className={styles['col-4']}>{match.team2}</td>
                     <td className={styles['col-2']}>
-                      <input
-                        className={styles['edit-input-date']}
-                        type="date"
-                        value={match.date}
-                        onChange={(e) => handleInputChange(tournamentIndex, matchIndex, 'date', e.target.value)}
-                      />
+                      {match.edited ? (
+                        <input
+                          className={styles['edit-input-date']}
+                          type="date"
+                          value={match.date}
+                          onChange={(e) => handleInputChange(tournamentIndex, matchIndex, 'date', e.target.value)}
+                        />
+                      ) : (
+                        match.date
+                      )}
                     </td>
                     <td>
                       <button onClick={() => handleEditSave(tournamentIndex, matchIndex)}>
