@@ -115,11 +115,13 @@ const KnockoutTournament = () => {
   };
 
   const generateNextRound = (completedRoundIndex, roundMatches) => {
-    const updatedRoundMatches = [...roundMatches];
-    const winnersOfCompletedRound = updatedRoundMatches[completedRoundIndex].map((match) => match.winner);
-    console.log('Winners of completed round:', winnersOfCompletedRound);
-    const nextRoundIndex = completedRoundIndex + 1;
+  const updatedRoundMatches = [...roundMatches];
+  const winnersOfCompletedRound = updatedRoundMatches[completedRoundIndex].map((match) => match.winner);
+  console.log('Winners of completed round:', winnersOfCompletedRound);
+  const nextRoundIndex = completedRoundIndex + 1;
 
+  // Проверяем, достигнут ли финальный раунд
+  if (nextRoundIndex < updatedRoundMatches.length) {
     // Проверяем, все ли матчи текущего раунда сыграны
     if (winnersOfCompletedRound.every((winner) => winner !== null)) {
       const winnersOfNextRound = getRoundWinnersFromWinners(winnersOfCompletedRound, roundMatches[completedRoundIndex]);
@@ -157,7 +159,11 @@ const KnockoutTournament = () => {
     } else {
       console.log('Not all matches of the current round have been played yet.');
     }
-  };
+  } else {
+    // Определяем победителя турнира
+    determineChampion();
+  }
+};
   const getRoundWinnersFromWinners = (winnersOfCompletedRound, currentRoundMatches) => {
     const remainingParticipants = [];
     for (let i = 0; i < winnersOfCompletedRound.length; i++) {
