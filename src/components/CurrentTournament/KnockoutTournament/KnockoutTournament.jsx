@@ -15,6 +15,13 @@ const KnockoutTournament = () => {
     }
   }, []);
 
+  useEffect(() => {
+    const savedRoundMatches = JSON.parse(localStorage.getItem('tournamentRoundMatches'));
+    if (savedRoundMatches && savedRoundMatches.length > 0) {
+      setRoundMatches(savedRoundMatches);
+    }
+  }, []);
+
   const shuffleArray = (array) => {
     const shuffledArray = [...array];
     for (let i = shuffledArray.length - 1; i > 0; i--) {
@@ -45,8 +52,8 @@ const KnockoutTournament = () => {
         if (team1 && team2) {
           const match = {
             id: j,
-            team1: team1.name, // Обновляем для доступа к свойству name
-            team2: team2.name, // Обновляем для доступа к свойству name
+            team1: team1.name,
+            team2: team2.name,
             scoreTeam1: '',
             scoreTeam2: '',
             winner: null,
@@ -76,7 +83,6 @@ const KnockoutTournament = () => {
         }
       });
 
-    // Проверяем, что количество победителей равно количеству матчей
     if (remainingParticipants.length !== matches.length) {
       console.error('Invalid number of winners in round match.');
       return [];
@@ -89,81 +95,69 @@ const KnockoutTournament = () => {
     setRoundMatches((prevRoundMatches) => {
       const updatedRoundMatches = [...prevRoundMatches];
       const updatedMatch = { ...updatedRoundMatches[roundIndex][matchIndex] };
-      updatedMatch[`scoreTeam${team}`] = parseInt(score); // Преобразуем в число
+      updatedMatch[`scoreTeam${team}`] = parseInt(score);
       updatedRoundMatches[roundIndex][matchIndex] = updatedMatch;
       return updatedRoundMatches;
     });
   };
 
   const handleSaveResult = (roundIndex, matchIndex) => {
-    console.log(`Saved result for round ${roundIndex + 1}, match ${matchIndex + 1}`);
     setRoundMatches((prevRoundMatches) => {
       const updatedRoundMatches = [...prevRoundMatches];
       const updatedMatch = { ...updatedRoundMatches[roundIndex][matchIndex] };
       updatedMatch.winner = updatedMatch.scoreTeam1 > updatedMatch.scoreTeam2 ? 'team1' : 'team2';
       updatedRoundMatches[roundIndex][matchIndex] = updatedMatch;
-
-      // Clear editing match after saving result
       setEditingMatch(null);
-
-      // Generate next round immediately after saving the result of a match
-      console.log('Generating next round...');
       generateNextRound(roundIndex, updatedRoundMatches);
-
       return updatedRoundMatches;
     });
   };
 
   const generateNextRound = (completedRoundIndex, roundMatches) => {
-  const updatedRoundMatches = [...roundMatches];
-  const winnersOfCompletedRound = updatedRoundMatches[completedRoundIndex].map((match) => match.winner);
-  console.log('Winners of completed round:', winnersOfCompletedRound);
-  const nextRoundIndex = completedRoundIndex + 1;
+    const updatedRoundMatches = [...roundMatches];
+    const winnersOfCompletedRound = updatedRoundMatches[completedRoundIndex].map((match) => match.winner);
+    const nextRoundIndex = completedRoundIndex + 1;
 
-  // Проверяем, достигнут ли финальный раунд
-  if (nextRoundIndex < updatedRoundMatches.length) {
-    // Проверяем, все ли матчи текущего раунда сыграны
-    if (winnersOfCompletedRound.every((winner) => winner !== null)) {
-      const winnersOfNextRound = getRoundWinnersFromWinners(winnersOfCompletedRound, roundMatches[completedRoundIndex]);
-      const nextRoundMatches = [];
-      for (let i = 0; i < Math.ceil(winnersOfNextRound.length / 2); i++) {
-        const team1 = winnersOfNextRound[i * 2];
-        const team2 = winnersOfNextRound[i * 2 + 1];
-        console.log('Team 1:', team1, 'Team 2:', team2);
-        if (team1 && team2) {
-          const match = {
-            id: i,
-            team1: team1.name ? team1.name : team1,
-            team2: team2.name ? team2.name : team2,
-            scoreTeam1: '',
-            scoreTeam2: '',
-            winner: null,
-          };
-          nextRoundMatches.push(match);
-        } else if (team1 && !team2) {
-          nextRoundMatches.push({
-            id: i,
-            team1: team1.name ? team1.name : team1,
-            team2: null,
-            scoreTeam1: '',
-            scoreTeam2: '',
-            winner: null,
-          });
-        } else {
-          console.error('Invalid participants in round match.');
+    if (nextRoundIndex < updatedRoundMatches.length) {
+      if (winnersOfCompletedRound.every((winner) => winner !== null)) {
+        const winnersOfNextRound = getRoundWinnersFromWinners(winnersOfCompletedRound, roundMatches[completedRoundIndex]);
+        const nextRoundMatches = [];
+        for (let i = 0; i < Math.ceil(winnersOfNextRound.length / 2); i++) {
+          const team1 = winnersOfNextRound[i * 2];
+          const team2 = winnersOfNextRound[i * 2 + 1];
+          if (team1 && team2) {
+            const match = {
+              id: i,
+              team1: team1.name ? team1.name : team1,
+              team2: team2.name ? team2.name : team2,
+              scoreTeam1: '',
+              scoreTeam2: '',
+              winner: null,
+            };
+            nextRoundMatches.push(match);
+          } else if (team1 && !team2) {
+            nextRoundMatches.push({
+              id: i,
+              team1: team1.name ? team1.name : team1,
+              team2: null,
+              scoreTeam1: '',
+              scoreTeam2: '',
+              winner: null,
+            });
+          } else {
+            console.error('Invalid participants in round match.');
+          }
         }
+        updatedRoundMatches[nextRoundIndex] = nextRoundMatches;
+        setRoundMatches(updatedRoundMatches);
+      } else {
+        console.log('Not all matches of the current round have been played yet.');
       }
-
-      updatedRoundMatches[nextRoundIndex] = nextRoundMatches;
-      setRoundMatches(updatedRoundMatches);
     } else {
-      console.log('Not all matches of the current round have been played yet.');
+      determineChampion();
     }
-  } else {
-    // Определяем победителя турнира
-    determineChampion();
-  }
-};
+  };
+
   const getRoundWinnersFromWinners = (winnersOfCompletedRound, currentRoundMatches) => {
     const remainingParticipants = [];
     for (let i = 0; i < winnersOfCompletedRound.length; i++) {
@@ -183,8 +177,6 @@ const KnockoutTournament = () => {
   }, [roundMatches]);
 
   const determineChampion = () => {
-    console.log('Determining champion...');
-    console.log('Round matches:', roundMatches);
     const lastRoundWinners = roundMatches[roundMatches.length - 1].map((match) => match.winner);
     const championTeam = lastRoundWinners.find((winner) => winner !== null);
     if (championTeam) {
@@ -204,6 +196,12 @@ const KnockoutTournament = () => {
     setEditingMatch({ roundIndex, matchIndex });
   };
 
+  useEffect(() => {
+    localStorage.setItem('tournamentRoundMatches', JSON.stringify(roundMatches));
+  }, [roundMatches]);
+
+  const showStartTournamentButton = !roundMatches || roundMatches.length === 0;
+
   return (
     <div>
       <h2 className={styles['h2-title']}>Турнир на вылет</h2>
@@ -220,10 +218,8 @@ const KnockoutTournament = () => {
                     <p>
                       Счет: {match.scoreTeam1} - {match.scoreTeam2}
                     </p>
-                    {/* )} */}
                   </p>
                   <div className={styles['input-box']}>
-                    {' '}
                     <input
                       type="number"
                       value={match.scoreTeam1}
@@ -250,7 +246,6 @@ const KnockoutTournament = () => {
                       </p>
                     )}
                   </p>
-
                   <button className={styles['edit_button']} onClick={() => handleEditMatch(roundIndex, matchIndex)}>
                     Редактировать
                   </button>
@@ -266,9 +261,7 @@ const KnockoutTournament = () => {
           <p className={styles['champion-name']}>{champion}</p>
         </div>
       ) : (
-        <div>
-          <button onClick={generateRoundMatches}>Start Tournament</button>
-        </div>
+        <div>{showStartTournamentButton && <button onClick={generateRoundMatches}>Start Tournament</button>}</div>
       )}
     </div>
   );

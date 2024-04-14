@@ -65,30 +65,39 @@ function CurrentTournamentMenu() {
           onClick={() => handleMenuClick('home')}>
           Главная
         </li>
-        <li
-          className={`current-tournament__nav ${selectedMenu === 'table' ? 'current-tournament__menu_active' : ''}`}
-          onClick={() => handleMenuClick('table')}>
-          Таблица
-        </li>
-        <li
-          className={`current-tournament__nav ${selectedMenu === 'KnockoutTournament' ? 'current-tournament__menu_active' : ''}`}
-          onClick={() => handleMenuClick('KnockoutTournament')}>
-          KnockoutTournament
-        </li>
-        <li
-          className={`current-tournament__nav ${selectedMenu === 'games' ? 'current-tournament__menu_active' : ''}`}
-          onClick={() => handleMenuClick('games')}>
-          Игры
-        </li>
-        <li
-          className={`current-tournament__nav ${selectedMenu === 'register' ? 'current-tournament__menu_active' : ''}`}
-          onClick={() => handleMenuClick('register')}>
-          Зарегистрироваться на турнир
-        </li>
+
         <li
           className={`current-tournament__nav ${selectedMenu === 'admin' ? 'current-tournament__menu_active' : ''}`}
           onClick={() => handleMenuClick('admin')}>
           Административная панель
+        </li>
+        {currentTournament.typeTournament === 'Круговой' && (
+          <>
+            <li
+              className={`current-tournament__nav ${selectedMenu === 'table' ? 'current-tournament__menu_active' : ''}`}
+              onClick={() => handleMenuClick('table')}>
+              Таблица
+            </li>
+            <li
+              className={`current-tournament__nav ${selectedMenu === 'games' ? 'current-tournament__menu_active' : ''}`}
+              onClick={() => handleMenuClick('games')}>
+              Игры
+            </li>
+          </>
+        )}
+        {currentTournament.typeTournament === 'На вылет' && (
+          <li
+            className={`current-tournament__nav ${
+              selectedMenu === 'KnockoutTournament' ? 'current-tournament__menu_active' : ''
+            }`}
+            onClick={() => handleMenuClick('KnockoutTournament')}>
+            Матчи
+          </li>
+        )}
+        <li
+          className={`current-tournament__nav ${selectedMenu === 'register' ? 'current-tournament__menu_active' : ''}`}
+          onClick={() => handleMenuClick('register')}>
+          Зарегистрироваться на турнир
         </li>
       </ul>
 
@@ -136,10 +145,12 @@ function CurrentTournamentMenu() {
         </div>
       )}
 
-      {selectedMenu === 'KnockoutTournament' && <KnockoutTournament />}
-
-      {selectedMenu === 'table' && <CurrentTournamentTable data={tournamentParticipants} />}
-      {selectedMenu === 'games' && <Games onUpdateTableData={updateTournamentTableData} />}
+      {currentTournament.typeTournament === 'Круговой' && (
+        <>
+          {selectedMenu === 'games' && <Games onUpdateTableData={updateTournamentTableData} />}
+          {selectedMenu === 'table' && <CurrentTournamentTable data={tournamentParticipants} />}
+        </>
+      )}
       {selectedMenu === 'admin' && (
         <AdminPanel
           registrations={registrations}
@@ -147,6 +158,7 @@ function CurrentTournamentMenu() {
           setTournamentParticipants={setTournamentParticipants}
         />
       )}
+      {currentTournament.typeTournament === 'На вылет' && selectedMenu === 'KnockoutTournament' && <KnockoutTournament />}
     </div>
   );
 }
