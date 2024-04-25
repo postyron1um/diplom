@@ -1,7 +1,10 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import styles from './AdminPanel.module.css';
+import { useLoaderData } from 'react-router-dom';
 
 function TournamentRegistrations({ registrations, handleAccept, handleReject }) {
+  let currentTournament = useLoaderData();
+  console.log(currentTournament);
   return (
     <div className={styles['tournamentRegistrations']}>
       <h2 className={styles['tournamentRegistrations-title']}>Заявки на участие в турнире:</h2>

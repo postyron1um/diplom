@@ -5,11 +5,13 @@ import TournamentName from './TournamentName/TournamentName';
 import DateInput from './DateInput/DateInput';
 import Button from '../Button/Button';
 
+import { useDispatch } from 'react-redux';
 import './CreateTournament.scss';
 import cn from 'classnames';
 import { useReducer, useState } from 'react';
 import { initialState, reducer, sportTypeOptions } from './CreateTournament.state';
 import { useNavigate } from 'react-router-dom';
+import { createTournament } from '../../redux/features/tournament/tournamentSlice';
 
 let nextId = 0;
 
@@ -18,12 +20,13 @@ function CreateTournament() {
   const { title, sportType, errors, typeTournament, tournamentDesc, startDate, endDate } = state;
   const [createdAt, setCreatedAt] = useState(null);
   const navigate = useNavigate();
+  const Dispatch = useDispatch();
 
-  const tournaments = JSON.parse(localStorage.getItem('tournaments'));
+  // const tournaments = JSON.parse(localStorage.getItem('tournaments'));
 
-  if (tournaments) {
-    nextId = tournaments[tournaments.length - 1].id + 1;
-  }
+  // if (tournaments) {
+  //   nextId = tournaments[tournaments.length - 1].id + 1;
+  // }
 
   const handleFieldChange = (field, value) => {
     dispatch({ type: 'SET_FIELD', field, value });
@@ -113,7 +116,7 @@ function CreateTournament() {
 
     const currentDate = new Date(); // Текущая дата и время
     const createdAt = currentDate.toISOString();
-		console.log(createdAt); // Преобразуем в строку в формате ISO
+    console.log(createdAt); // Преобразуем в строку в формате ISO
     const newTournament = {
       title,
       sportType,
@@ -122,9 +125,7 @@ function CreateTournament() {
       startDate,
       endDate,
       createdAt, // Добавляем поле createdAt
-      id: nextId++,
     };
-		console.log(newTournament);
     setCreatedAt(createdAt);
     // Вызываем функцию для добавления турнира
 
@@ -135,11 +136,17 @@ function CreateTournament() {
     }
     dispatch({ type: 'RESET_FORM' }); // Сброс формы после отправки
 
+    try {
+      Dispatch(createTournament(newTournament));
+    } catch (error) {
+      console.log(error);
+    }
+
     navigate('/alltournaments');
   };
 
   const handleAddTournament = (newTournament) => {
-    //setTournaments([...tournaments, { ...newTournament, id: tournaments.length + 1, createdAt: new Date() }]);
+    // setTournaments([...tournaments, { ...newTournament, id: tournaments.length + 1, createdAt: new Date() }]);
     let tournaments = JSON.parse(localStorage.getItem('tournaments'));
 
     if (!tournaments) {

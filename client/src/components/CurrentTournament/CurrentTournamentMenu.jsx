@@ -2,11 +2,9 @@ import { useSelector } from 'react-redux';
 import { NavLink, useLoaderData } from 'react-router-dom';
 import { checkIsAuth } from '../../redux/features/auth/authSlice';
 
-
 function CurrentTournamentMenu() {
   let currentTournament = useLoaderData();
-
-
+  // console.log(currentTournament);
 
   return (
     <div>

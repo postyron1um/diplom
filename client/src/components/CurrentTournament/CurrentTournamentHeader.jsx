@@ -1,9 +1,12 @@
 import React from 'react';
-import {useRouteLoaderData} from "react-router-dom";
+import { useSelector } from 'react-redux';
+import { useRouteLoaderData } from 'react-router-dom';
 
 function CurrentTournamentHeader() {
-    const tournament = useRouteLoaderData('all_tournaments');
-console.log(tournament);
+  const tournament = useRouteLoaderData('all_tournaments');
+  // console.log(tournament);
+	    const { participants } = useSelector((state) => state.participant);
+      console.log(participants);
   return (
     <>
       <h1 className="current-tournament__h1">Название: {tournament.title}</h1>

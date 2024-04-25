@@ -4,6 +4,7 @@ import mongoose from 'mongoose';
 import cors from 'cors';
 
 import authRoute from './routes/auth.js';
+import tournamentRoute from './routes/tournaments.js';
 
 const app = express();
 dotenv.config();
@@ -17,8 +18,9 @@ app.use(cors());
 app.use(express.json());
 
 // Routes
-// http://localhost:3002/
+// http://localhost:3002/api/tournaments
 app.use('/api/auth', authRoute);
+app.use('/api/tournaments', tournamentRoute);
 
 async function start() {
   try {

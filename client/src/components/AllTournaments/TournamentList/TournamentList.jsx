@@ -3,17 +3,16 @@ import CardButton from '../../CardButton/CardButton';
 import TournamentItem from '../TournamentItem/TournamentItem';
 import './TournamentList.scss';
 import { Link } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { getAllTournaments } from '../../../redux/features/tournament/tournamentSlice';
 
 function TournamentList({ searchInput, sportType, tournamentType, currentPage, tournamentsPerPage }) {
-  const [tournaments, setTournaments] = useState([]);
-
+  const dispatch = useDispatch();
+  const { tournaments } = useSelector((state) => state.tournament);
+  console.log(tournaments);
   useEffect(() => {
-    const storedTournaments = JSON.parse(localStorage.getItem('tournaments')) || [];
-    const sortedTournaments = storedTournaments
-      .map((tournament) => ({ ...tournament, createdAt: new Date(tournament.createdAt) }))
-      .sort((a, b) => b.createdAt - a.createdAt);
-    setTournaments(sortedTournaments);
-  }, []);
+    dispatch(getAllTournaments());
+  }, [dispatch]);
 
   const tournamentsWithDate = tournaments?.map((tournament) => ({
     ...tournament,
@@ -22,7 +21,7 @@ function TournamentList({ searchInput, sportType, tournamentType, currentPage, t
 
   const filteredTournaments = tournamentsWithDate.filter(
     (tournament) =>
-      tournament.title.toLowerCase().includes(searchInput.toLowerCase()) &&
+      // tournament.title.toLowerCase().includes(searchInput.toLowerCase()) &&
       (sportType ? tournament.sportType === sportType : true) &&
       (tournamentType ? tournament.typeTournament === tournamentType : true),
   );
@@ -38,7 +37,7 @@ function TournamentList({ searchInput, sportType, tournamentType, currentPage, t
   return (
     <div className="tournament__container">
       {currentTournaments.map((tournament) => (
-        <Link key={tournament.id} to={`${tournament.id}/main`}>
+        <Link key={tournament._id} to={`${tournament._id}/main`}>
           <CardButton className="tournament-item">
             <TournamentItem tournament={tournament} />
           </CardButton>

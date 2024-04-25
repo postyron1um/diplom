@@ -1,10 +1,16 @@
 import User from '../models/User.js';
+import Role from '../models/Role.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import { validationResult } from 'express-validator';
 // Register user
-export const register = async (reg, res) => {
+export const register = async (req, res) => {
   try {
-    const { username, password } = reg.body;
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.json({ message: 'Ошибка при регистрации', errors });
+    }
+    const { username, password } = req.body;
 
     const isUsed = await User.findOne({ username });
 
@@ -16,14 +22,17 @@ export const register = async (reg, res) => {
 
     const salt = bcrypt.genSaltSync(10);
     const hash = bcrypt.hashSync(password, salt);
+    const userRole = await Role.findOne({ value: 'USER' });
 
     const newUser = new User({
       username,
       password: hash,
+      roles: [userRole.value],
     });
     const token = jwt.sign(
       {
         id: newUser._id,
+        role: Role,
       },
       process.env.JWT_SECRET,
       { expiresIn: '30d' },
@@ -40,16 +49,14 @@ export const register = async (reg, res) => {
   }
 };
 // Login user
-export const login = async (reg, res) => {
+export const login = async (req, res) => {
   try {
-    const { username, password } = reg.body;
+    const { username, password } = req.body;
     const user = await User.findOne({ username });
     if (!user) {
       return res.json({ message: 'Такого пользователя нет.' });
     }
-
     const isPasswordCorrect = await bcrypt.compare(password, user.password);
-
     if (!isPasswordCorrect) {
       return res.json({ message: 'Неверный пароль' });
     }
@@ -57,6 +64,8 @@ export const login = async (reg, res) => {
     const token = jwt.sign(
       {
         id: user._id,
+				username:user.username,
+        roles: user.roles,
       },
       process.env.JWT_SECRET,
       { expiresIn: '30d' },
@@ -71,7 +80,18 @@ export const login = async (reg, res) => {
     res.json({ message: 'Ошибка при авторизации', error });
   }
 };
-// Get me
+
+// Список пользователей
+export const getUsers = async (req, res) => {
+  try {
+		const users = await User.find()
+    res.json(users);
+  } catch (error) {
+		console.log(error);
+		
+	}
+};
+
 export const getMe = async (req, res) => {
   try {
     const user = await User.findById(req.userId);

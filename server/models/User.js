@@ -11,10 +11,10 @@ const UserSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    roles: [{ type: String, ref: 'Role' }],
+    participatedTournaments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Tournament' }],
   },
-  {
-    timestamps: true,
-  },
+  
 );
 
 export default mongoose.model('User', UserSchema);

@@ -18,12 +18,14 @@ import Register from './pages/Register/Register.jsx';
 import Login from './pages/Login/Login.jsx';
 import { Provider } from 'react-redux';
 import { store } from './redux/store.js';
+import tournamentSlice from './redux/features/tournament/tournamentSlice.js';
+import axios from './utils/axios.js';
 
 const router = createBrowserRouter([
   {
     path: '/',
     element: <App />,
-    errorElement: <NotFoundPage />,
+    // errorElement: <NotFoundPage />,
     children: [
       {
         path: '/main',
@@ -50,12 +52,12 @@ const router = createBrowserRouter([
         element: <CurrentTournament />,
         id: 'all_tournaments',
         async loader({ params }) {
-          const id = Number(params.tournamentID);
-          const tournaments = JSON.parse(localStorage.getItem('tournaments'));
+          const id = params.tournamentID;
+          const tournaments = (await axios.get('/tournaments')).data.tournaments;
           let currentTournament = null;
 
           for (let tournament of tournaments) {
-            if (tournament.id === id) {
+            if (tournament._id === id) {
               currentTournament = tournament;
               break;
             }
@@ -74,6 +76,20 @@ const router = createBrowserRouter([
           {
             path: '/alltournaments/:tournamentID/reg',
             element: <RegistrationInTournament />,
+            id: ':tournamentID/reg',
+            async loader({ params }) {
+              const id = params.tournamentID;
+              const tournaments = (await axios.get('/tournaments')).data.tournaments;
+              let currentTournament = null;
+
+              for (let tournament of tournaments) {
+                if (tournament._id === id) {
+                  currentTournament = tournament;
+                  break;
+                }
+              }
+              return currentTournament;
+            },
           },
           {
             path: '/alltournaments/:tournamentID/matches',

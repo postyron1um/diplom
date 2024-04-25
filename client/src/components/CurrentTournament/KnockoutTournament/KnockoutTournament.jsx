@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import styles from './KnockoutTournament.module.css';
+import { useSelector } from 'react-redux';
 
 const KnockoutTournament = () => {
   const [participants, setParticipants] = useState([]);
@@ -8,6 +9,7 @@ const KnockoutTournament = () => {
   const [editingMatch, setEditingMatch] = useState(null);
 
   useEffect(() => {
+
     const storedParticipants = JSON.parse(localStorage.getItem('tournamentAcceptedParticipants'));
 
     if (storedParticipants) {

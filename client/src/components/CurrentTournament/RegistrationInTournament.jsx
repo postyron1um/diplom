@@ -1,64 +1,69 @@
-import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { checkIsAuth } from '../../redux/features/auth/authSlice';
-import { Link } from 'react-router-dom';
+import { Link, useLoaderData } from 'react-router-dom';
+import { getAllTournaments } from '../../redux/features/tournament/tournamentSlice';
+import { participateInTournament } from '../../redux/features/participant/participantSlice';
+import { toast } from 'react-toastify';
+
+const extractUserIdFromToken = (token) => {
+  try {
+    // декодируем токен, разделяя его по точке и декодируя вторую часть, содержащую полезные данные
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    return payload.id; // возвращаем ID пользователя
+  } catch (error) {
+    console.error('Ошибка при извлечении ID пользователя из токена:', error);
+    return null;
+  }
+};
 
 const Registration = () => {
-  const [registrations, setRegistrations] = useState(JSON.parse(localStorage.getItem('tournamentParticipants')) || []);
-  const [participantName, setParticipantName] = useState('');
-  const [teamName, setTeamName] = useState('');
+  const dispatch = useDispatch();
+  const userToken = localStorage.getItem('token');
   const isAuth = useSelector(checkIsAuth);
+  const userId = extractUserIdFromToken(userToken);
+  const { status } = useSelector((state) => state.participant);
+  const { participants } = useSelector((state) => state.participant);
+	console.log(participants);
+  // Проверяем, что participants является массивом и не пустым
+  if (Array.isArray(participants) && participants.length > 0) {
+    // Мы можем использовать метод map, чтобы извлечь поле user из каждого объекта
+    const users = participants?.map((participant) => participant?.user);
+    console.log(users);
+  } else {
+    console.log('Массив participants пуст или не является массивом');
+  } 
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const participant = {
-      id: Date.now(),
-      name: participantName,
-    };
-    setRegistrations((prevRegistrations) => [...prevRegistrations, participant]);
-    localStorage.setItem('tournamentParticipants', JSON.stringify([...registrations, participant]));
-    setParticipantName('');
-  };
+  let currentTournament = useLoaderData();
+  const tournamentId = currentTournament._id;
 
-  const handleCreateTeam = (e) => {
-    const tournamentTeams = JSON.parse(localStorage.getItem('tournamentTeams')) || [];
+  useEffect(() => {
+    dispatch(getAllTournaments());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (status) {
+      toast(status);
+    }
+  }, [status]);
+
+
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const team = {
-      id: Date.now(),
-      name: teamName,
-    };
-    localStorage.setItem('tournamentTeams', JSON.stringify([...tournamentTeams, team]));
-    setTeamName('');
+    dispatch(participateInTournament({ userId, tournamentId: tournamentId }));
   };
 
   return (
     <>
+      <br />
+
       {isAuth ? (
         <div className="tournament-register">
           <div className="participant">
             <form onSubmit={handleSubmit}>
               <div className="participant-row">
-                <input
-                  type="text"
-                  placeholder="Введите ваше имя"
-                  value={participantName}
-                  onChange={(e) => setParticipantName(e.target.value)}
-                />
                 <button type="submit">Зарегистрироваться как участник</button>
-              </div>
-            </form>
-          </div>
-          <div className="register_or"> ИЛИ </div>
-          <div className="teamName">
-            <form onSubmit={handleCreateTeam}>
-              <div className="teamName-row">
-                <input
-                  type="text"
-                  placeholder="Введите название вашей команды"
-                  value={teamName}
-                  onChange={(e) => setTeamName(e.target.value)}
-                />
-                <button type="submit">Создать команду</button>
               </div>
             </form>
           </div>
@@ -67,7 +72,7 @@ const Registration = () => {
         <div className="no-access">
           Чтобы участовать в турнирах, нужно{' '}
           <Link to="/registration">
-            <span className='need-register'>зарегистрироваться на сайте</span>
+            <span className="need-register">зарегистрироваться на сайте</span>
           </Link>
         </div>
       )}
@@ -76,3 +81,40 @@ const Registration = () => {
 };
 
 export default Registration;
+
+// const handleCreateTeam = (e) => {
+//   const tournamentTeams = JSON.parse(localStorage.getItem('tournamentTeams')) || [];
+//   e.preventDefault();
+//   const team = {
+//     id: Date.now(),
+//     name: teamName,
+//   };
+//   localStorage.setItem('tournamentTeams', JSON.stringify([...tournamentTeams, team]));
+//   setTeamName('');
+// };
+
+// import { useDispatch } from 'react-redux';
+// import { participateInTournament } from '../../redux/features/tournament/tournamentSlice'; // Укажите правильный путь к вашему slice
+
+// const Registration = () => {
+//   const dispatch = useDispatch();
+
+//   const handleParticipate = async () => {
+//     try {
+//       dispatch(participateInTournament());
+//       console.log('Успешно участвовали в турнире!');
+//     } catch (error) {
+//       console.error('Ошибка при участии в турнире:', error);
+//     }
+//   };
+
+//   return (
+//     <>
+//       <div className="participant">
+//         <button onClick={handleParticipate}>Участвовать в турнире</button>
+//       </div>
+//     </>
+//   );
+// };
+
+// export default Registration;
