@@ -37,6 +37,18 @@ export const getAll = async (req, res) => {
     res.json({ message: 'Упс...' });
   }
 };
+export const getAllParticipants = async (req, res) => {
+  try {
+    const participants = await Participant.find();
+    console.log(participants);
+    if (!participants) {
+      return res.json({ message: 'Участников нет' });
+    }
+    res.json({ participants });
+  } catch (error) {
+    res.json({ message: 'Упс...' });
+  }
+};
 
 export const registerParticipant = async (req, res) => {
   try {
@@ -46,7 +58,7 @@ export const registerParticipant = async (req, res) => {
     const existingParticipant = await Participant.findOne({ user: userId, tournament: tournamentId });
 
     const user = await User.findById(userId);
-    // console.log(user);
+    console.log(user);
 
     if (existingParticipant) {
       return res.json({ success: false, message: 'Вы уже зарегистрированы на этот турнир.' });
@@ -67,7 +79,7 @@ export const registerParticipant = async (req, res) => {
       },
       { new: true },
     );
-    return res.json({ success: true, newParticipant,message: 'Вы успешно зарегистрированы для участия в турнире.' });
+    return res.json({ success: true, newParticipant, message: 'Вы успешно зарегистрированы для участия в турнире.' });
   } catch (error) {
     // console.error('Ошибка при регистрации участника:', error);
     return res.json({ success: false, message: 'Ошибка при регистрации участника.' });

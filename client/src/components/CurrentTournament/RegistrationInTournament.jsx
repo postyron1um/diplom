@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { checkIsAuth } from '../../redux/features/auth/authSlice';
 import { Link, useLoaderData } from 'react-router-dom';
 import { getAllTournaments } from '../../redux/features/tournament/tournamentSlice';
-import { participateInTournament } from '../../redux/features/participant/participantSlice';
+import { getAllParticipate, participateInTournament } from '../../redux/features/participant/participantSlice';
 import { toast } from 'react-toastify';
 
 const extractUserIdFromToken = (token) => {
@@ -25,14 +25,7 @@ const Registration = () => {
   const { status } = useSelector((state) => state.participant);
   const { participants } = useSelector((state) => state.participant);
 	console.log(participants);
-  // Проверяем, что participants является массивом и не пустым
-  if (Array.isArray(participants) && participants.length > 0) {
-    // Мы можем использовать метод map, чтобы извлечь поле user из каждого объекта
-    const users = participants?.map((participant) => participant?.user);
-    console.log(users);
-  } else {
-    console.log('Массив participants пуст или не является массивом');
-  } 
+
 
   let currentTournament = useLoaderData();
   const tournamentId = currentTournament._id;
@@ -40,6 +33,11 @@ const Registration = () => {
   useEffect(() => {
     dispatch(getAllTournaments());
   }, [dispatch]);
+
+  useEffect(() => {
+    dispatch(getAllParticipate({ tournamentId }));
+  }, [dispatch, tournamentId]);
+
 
   useEffect(() => {
     if (status) {

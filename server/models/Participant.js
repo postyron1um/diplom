@@ -6,6 +6,11 @@ const participantSchema = new mongoose.Schema({
     ref: 'User',
     required: true,
   },
+  // username: {
+  //   type: mongoose.Schema.Types.ObjectId,
+  //   ref: 'User',
+  //   required: true,
+  // },
   tournament: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Tournament', // Ссылка на модель Tournament

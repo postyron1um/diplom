@@ -4,7 +4,7 @@ import { checkAuth } from '../utils/checkAuth.js';
 import { check } from 'express-validator';
 import authMiddleware from '../utils/authMiddleware.js';
 import roleMiddleware from '../utils/roleMiddleware.js';
-import { createTournament, getAll, registerParticipant } from '../controllers/tournaments.js';
+import { createTournament, getAll, getAllParticipants, registerParticipant } from '../controllers/tournaments.js';
 import Tournament from '../models/Tournament.js';
 // import { registerParticipant } from '../controllers/registerParticipant.js';
 
@@ -21,5 +21,7 @@ router.post('/', createTournament);
 router.get('/', getAll);
 
 router.post('/:tournamentId/register',checkAuth, registerParticipant);
+
+router.get('/:tournamentId',checkAuth, getAllParticipants);
 
 export default router;
