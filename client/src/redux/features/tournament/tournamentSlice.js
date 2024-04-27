@@ -4,10 +4,11 @@ import axios from '../../../utils/axios';
 const initialState = {
   tournaments: [],
   loading: false,
+  participants: [],
 };
 
 export const createTournament = createAsyncThunk('tournament/createTournament', async (params) => {
-  // console.log(params);
+  console.log(params);
 
   try {
     const { data } = await axios.post('/tournaments', params);
@@ -26,6 +27,18 @@ export const getAllTournaments = createAsyncThunk('tournament/getAllTournaments'
     console.log(error);
   }
 });
+
+export const getTournamentParticipants = createAsyncThunk('tournament/getTournamentParticipants', async (tournamentId) => {
+  try {
+    const { data } = await axios.get(`/tournaments/${tournamentId}`);
+    return data.participants;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+});
+
+
 
 export const tournamentSlice = createSlice({
   name: 'tournament',
@@ -58,23 +71,17 @@ export const tournamentSlice = createSlice({
         // state.status = action.payload.message;
         state.loading = false;
       });
-    // builder
-    //   .addCase(participateInTournament.pending, (state) => {
-    //     state.loading = true;
-    //     state.status = null;
-    //   })
-    //   .addCase(participateInTournament.fulfilled, (state, action) => {
-    //     state.loading = false;
-    //     state.status = action.payload.message;
-    //     state.participants.push(action.payload);
-
-    //     // Можно добавить дополнительную логику здесь, если это необходимо
-    //   })
-    //   .addCase(participateInTournament.rejected, (state, action) => {
-    //     state.loading = false;
-    //     state.status = action.payload.message;
-    //     // Можно добавить логику для обработки ошибок здесь, если это необходимо
-    //   });
+			builder
+        .addCase(getTournamentParticipants.pending, (state) => {
+          state.loading = true;
+        })
+        .addCase(getTournamentParticipants.fulfilled, (state, action) => {
+          state.loading = false;
+          state.participants = action.payload;
+        })
+        .addCase(getTournamentParticipants.rejected, (state) => {
+          state.loading = false;
+        });
   },
 });
 

@@ -10,7 +10,7 @@ import Tournament from '../models/Tournament.js';
 
 
 const router = new Router();
-// http://localhost:3002/api/tournaments
+// http://localhost:3007/api/tournaments
 // Create
 router.post('/', createTournament);
 
@@ -22,6 +22,11 @@ router.get('/', getAll);
 
 router.post('/:tournamentId/register',checkAuth, registerParticipant);
 
-router.get('/:tournamentId',checkAuth, getAllParticipants);
+router.get('/:tournamentId', getAllParticipants);
+router.get('/:tournamentId/participants', getAllParticipants);
+
+
+
+
 
 export default router;

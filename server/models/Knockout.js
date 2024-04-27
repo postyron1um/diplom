@@ -1,6 +1,18 @@
+// match.model.js
+
 import mongoose from 'mongoose';
 
-const knockoutMatchSchema = new Schema({
+
+const matchSchema = new mongoose.Schema({
+  tournamentId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Tournament',
+    required: true,
+  },
+  round: {
+    type: Number,
+    required: true,
+  },
   team1: {
     type: String,
     required: true,
@@ -9,21 +21,19 @@ const knockoutMatchSchema = new Schema({
     type: String,
     required: true,
   },
-  scoreTeam1: {
+  score1: {
     type: Number,
-    default: null,
+    default: 0,
   },
-  scoreTeam2: {
+  score2: {
     type: Number,
-    default: null,
+    default: 0,
   },
-  winner: {
-    type: String,
-    enum: ['team1', 'team2', null],
-    default: null,
+  date: {
+    type: Date,
+    default: Date.now,
   },
 });
 
-const Knockout = mongoose.model('Knockout', knockoutMatchSchema);
-
-export default Knockout;
+const Match = mongoose.model('Match', matchSchema);
+export default Match;

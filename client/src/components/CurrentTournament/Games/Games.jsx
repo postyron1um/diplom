@@ -1,8 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import styles from './Games.module.css';
+import { useDispatch, useSelector } from 'react-redux';
+import { getAllParticipate } from '../../../redux/features/participant/participantSlice';
+import { addMatch, fetchMatches } from '../../../redux/features/matchSlice/matchSlice';
+import axios from '../../../utils/axios';
 
 function generateTournamentData(participantNames) {
-	console.log(participantNames);
+  // console.log(participantNames);
   const numTeams = participantNames.length;
   const numRounds = numTeams - 1; // Количество туров
   const tournamentData = [];
@@ -37,103 +41,125 @@ function generateTournamentData(participantNames) {
 }
 
 function Games() {
+  const dispatch = useDispatch();
   const [tournamentData, setTournamentData] = useState([]);
+  const tournamentId = location.pathname.split('/')[2];
+  const participants = useSelector((state) => state.participant.tournaments[tournamentId] || []);
+  const matches = useSelector((state) => state.matches.matches); // Получаем матчи из состояния Redux
+  console.log(matches);
+  useEffect(() => {
+    if (tournamentId) {
+      dispatch(getAllParticipate({ tournamentId }));
+      dispatch(fetchMatches({ tournamentId }));
+    }
+  }, [dispatch, tournamentId]);
 
   useEffect(() => {
-    const storedTournamentData = JSON.parse(localStorage.getItem('tournamentData'));
-    if (storedTournamentData) {
-      setTournamentData(storedTournamentData);
-      updateTableData(storedTournamentData); // Добавленный вызов функции
-    } else {
-      const participants = JSON.parse(localStorage.getItem('tournamentAcceptedParticipants'));
-      if (participants) {
-        const participantNames = participants.map((participant) => participant.name);
-        const newTournamentData = generateTournamentData(participantNames);
-        setTournamentData(newTournamentData);
-        localStorage.setItem('tournamentData', JSON.stringify(newTournamentData));
-        updateTableData(newTournamentData); // Добавленный вызов функции
-      }
+    if (participants?.length > 0) {
+      setTournamentData((prevTournamentData) => {
+        const newTournamentData = generateTournamentData(participants.map((participant) => participant.username));
+        return newTournamentData;
+      });
     }
-  }, []);
+  }, [participants]);
 
-  const handleEditSave = (tournamentIndex, matchIndex) => {
-    const updatedTournamentData = [...tournamentData];
-    const match = updatedTournamentData[tournamentIndex].matches[matchIndex];
-    if (match.edited) {
-      match.edited = false;
-      localStorage.setItem('tournamentData', JSON.stringify(updatedTournamentData));
-    } else {
-      match.edited = true;
-    }
-    setTournamentData(updatedTournamentData);
-    updateTableData(updatedTournamentData);
-  };
-
-  const handleInputChange = (tournamentIndex, matchIndex, field, value) => {
-    const updatedTournamentData = [...tournamentData];
-    const match = updatedTournamentData[tournamentIndex].matches[matchIndex];
-    if (field === 'team1') {
-      match.score1 = value;
-    } else if (field === 'team2') {
-      match.score2 = value;
-    } else if (field === 'date') {
-      match.date = value;
-    }
-    setTournamentData(updatedTournamentData);
-    updateTableData(updatedTournamentData);
-  };
-const updateTableData = (data) => {
-  const updatedTableData = [];
-  data.forEach((tournament) => {
-    tournament.matches.forEach((match) => {
-      const team1Name = match.team1;
-      const team2Name = match.team2;
-      const team1Score = parseInt(match.score1);
-      const team2Score = parseInt(match.score2);
-      const team1GoalsFor = team1Score;
-      const team2GoalsFor = team2Score;
-      const team1GoalsAgainst = team2Score; // Пропущенные голы для первой команды
-      const team2GoalsAgainst = team1Score; // Пропущенные голы для второй команды
-      const team1Wins = team1Score > team2Score ? 1 : 0;
-      const team2Wins = team2Score > team1Score ? 1 : 0;
-      const team1Draws = team1Score === team2Score ? 1 : 0;
-      const team2Draws = team1Score === team2Score ? 1 : 0;
-      const team1Losses = team2Score > team1Score ? 1 : 0;
-      const team2Losses = team1Score < team2Score ? 1 : 0;
-
-      updateTeamData(updatedTableData, team1Name, team1GoalsFor, team1GoalsAgainst, team1Wins, team1Draws, team1Losses);
-      updateTeamData(updatedTableData, team2Name, team2GoalsFor, team2GoalsAgainst, team2Wins, team2Draws, team2Losses);
+useEffect(() => {
+  if (matches.length > 0) {
+    // Обновляем состояние tournamentData после загрузки матчей из Redux
+    setTournamentData((prevTournamentData) => {
+      const updatedTournamentData = [...prevTournamentData];
+      matches.forEach((match) => {
+        const tournamentIndex = updatedTournamentData.findIndex((tournament) => tournament.round === match.round);
+        if (tournamentIndex !== -1) {
+          const matchIndex = updatedTournamentData[tournamentIndex].matches.findIndex(
+            (m) => m.team1 === match.team1 && m.team2 === match.team2,
+          );
+          if (matchIndex !== -1) {
+            updatedTournamentData[tournamentIndex].matches[matchIndex] = {
+              ...updatedTournamentData[tournamentIndex].matches[matchIndex],
+              score1: match.score1,
+              score2: match.score2,
+            };
+          }
+        }
+      });
+      return updatedTournamentData;
     });
-  });
+  }
+}, [matches]);
 
-  localStorage.setItem('tableData', JSON.stringify(updatedTableData));
-};
+const handleEditSave = async (tournamentIndex, matchIndex) => {
+  try {
+    const matchToUpdate = tournamentData[tournamentIndex].matches[matchIndex];
+    const { score1, score2 } = matchToUpdate;
 
-const updateTeamData = (tableData, teamName, goalsFor, goalsAgainst, wins, draws, losses) => {
-  const teamIndex = tableData.findIndex((team) => team.name === teamName);
-  if (teamIndex === -1) {
-    tableData.push({
-      name: teamName,
-      goals: goalsFor, // Общее количество голов
-      matches: 1,
-      wins,
-      draws,
-      losses,
-      goalsFor,
-      goalsAgainst,
-    });
-  } else {
-    tableData[teamIndex].goals += goalsFor; // Обновляем общее количество голов
-    tableData[teamIndex].matches += 1;
-    tableData[teamIndex].wins += wins;
-    tableData[teamIndex].draws += draws;
-    tableData[teamIndex].losses += losses;
-    tableData[teamIndex].goalsFor += goalsFor;
-    tableData[teamIndex].goalsAgainst += goalsAgainst; // Обновляем общее количество пропущенных голов
+    // Получаем ID матча из состояния Redux
+    const matchId = matches.find((match) => match.team1 === matchToUpdate.team1 && match.team2 === matchToUpdate.team2)._id;
+
+    // Если матч ранее не был отредактирован, устанавливаем edited в true
+    if (!matchToUpdate.edited) {
+      const updatedTournamentData = [...tournamentData];
+      updatedTournamentData[tournamentIndex].matches[matchIndex].edited = true;
+      setTournamentData(updatedTournamentData);
+      return; // Прерываем выполнение функции, чтобы позволить пользователю редактировать данные
+    }
+
+    // Отправляем запрос на сервер для обновления матча
+    await axios.put(`/tournaments/${tournamentId}/matches/${matchId}`, { matchId,score1, score2 });
+
+    // Обновляем состояние tournamentData после успешного обновления матча на сервере
+    const updatedTournamentData = [...tournamentData];
+    updatedTournamentData[tournamentIndex].matches[matchIndex].edited = false;
+    setTournamentData(updatedTournamentData);
+  } catch (error) {
+    console.error('Ошибка при обновлении матча:', error);
   }
 };
+  const handleInputChange = (tournamentIndex, matchIndex, field, value) => {
+    const updatedTournamentData = [...tournamentData];
+    if (field === 'team1' || field === 'team2') {
+      updatedTournamentData[tournamentIndex].matches[matchIndex][field] = value;
+    } else if (field === 'date') {
+      updatedTournamentData[tournamentIndex].matches[matchIndex].date = value;
+    } else if (field === 'score1' || field === 'score2') {
+      updatedTournamentData[tournamentIndex].matches[matchIndex][field] = parseInt(value);
+    }
+    setTournamentData(updatedTournamentData);
+  };
+
+  const handleAddMatch = async () => {
+    try {
+      // Генерируем данные для матчей
+      const newTournamentData = generateTournamentData(participants.map((participant) => participant.username));
+
+      // Добавляем каждый сгенерированный матч на сервер
+      const newMatches = [];
+      newTournamentData.forEach((tournament) => {
+        tournament.matches.forEach((match) => {
+          const matchData = {
+            tournamentId,
+            round: tournament.round,
+            team1: match.team1,
+            team2: match.team2,
+            score1: match.score1,
+            score2: match.score2,
+          };
+          newMatches.push(dispatch(addMatch({ matchData, tournamentId })));
+        });
+      });
+
+      // Дожидаемся завершения всех запросов на добавление матчей
+      await Promise.all(newMatches);
+
+      // Обновляем состояние tournamentData после добавления новых матчей
+      setTournamentData(newTournamentData);
+    } catch (error) {
+      console.error('Ошибка при добавлении матча:', error);
+    }
+  };
   return (
     <div>
+      <button onClick={handleAddMatch}>Добавить матч</button>
       {tournamentData.map((tournament, tournamentIndex) => (
         <div key={tournamentIndex}>
           <p className={styles['round']}>Тур {tournament.round}</p>
@@ -142,7 +168,18 @@ const updateTeamData = (tableData, teamName, goalsFor, goalsAgainst, wins, draws
               <tbody>
                 {tournament.matches.map((match, matchIndex) => (
                   <tr key={matchIndex}>
-                    <td className={styles['col-4']}>{match.team1}</td>
+                    <td className={styles['col-4']}>
+                      {match.edited ? (
+                        <input
+                          className={styles['edit-input']}
+                          type="text"
+                          value={match.team1}
+                          onChange={(e) => handleInputChange(tournamentIndex, matchIndex, 'team1', e.target.value)}
+                        />
+                      ) : (
+                        match.team1
+                      )}
+                    </td>
                     <td className={styles['col-2']}>
                       <span className={styles['edit']}>
                         {match.edited ? (
@@ -150,7 +187,7 @@ const updateTeamData = (tableData, teamName, goalsFor, goalsAgainst, wins, draws
                             className={styles['edit-input']}
                             type="text"
                             value={match.score1}
-                            onChange={(e) => handleInputChange(tournamentIndex, matchIndex, 'team1', e.target.value)}
+                            onChange={(e) => handleInputChange(tournamentIndex, matchIndex, 'score1', e.target.value)}
                           />
                         ) : (
                           match.score1
@@ -161,14 +198,25 @@ const updateTeamData = (tableData, teamName, goalsFor, goalsAgainst, wins, draws
                             className={styles['edit-input']}
                             type="text"
                             value={match.score2}
-                            onChange={(e) => handleInputChange(tournamentIndex, matchIndex, 'team2', e.target.value)}
+                            onChange={(e) => handleInputChange(tournamentIndex, matchIndex, 'score2', e.target.value)}
                           />
                         ) : (
                           match.score2
                         )}
                       </span>
                     </td>
-                    <td className={styles['col-4']}>{match.team2}</td>
+                    <td className={styles['col-4']}>
+                      {match.edited ? (
+                        <input
+                          className={styles['edit-input']}
+                          type="text"
+                          value={match.team2}
+                          onChange={(e) => handleInputChange(tournamentIndex, matchIndex, 'team2', e.target.value)}
+                        />
+                      ) : (
+                        match.team2
+                      )}
+                    </td>
                     <td className={styles['col-2']}>
                       {match.edited ? (
                         <input

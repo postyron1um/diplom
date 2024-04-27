@@ -18,7 +18,6 @@ import Register from './pages/Register/Register.jsx';
 import Login from './pages/Login/Login.jsx';
 import { Provider } from 'react-redux';
 import { store } from './redux/store.js';
-import tournamentSlice from './redux/features/tournament/tournamentSlice.js';
 import axios from './utils/axios.js';
 
 const router = createBrowserRouter([

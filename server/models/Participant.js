@@ -6,18 +6,16 @@ const participantSchema = new mongoose.Schema({
     ref: 'User',
     required: true,
   },
-  // username: {
-  //   type: mongoose.Schema.Types.ObjectId,
-  //   ref: 'User',
-  //   required: true,
-  // },
+  username: {
+    type: String,
+    required: true,
+  },
   tournament: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Tournament', // Ссылка на модель Tournament
+    ref: 'Tournament',
     required: true,
   },
 });
-
 const Participant = mongoose.model('Participant', participantSchema);
 
 export default Participant;

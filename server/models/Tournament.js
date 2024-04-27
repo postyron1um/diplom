@@ -31,7 +31,7 @@ const tournamentSchema = new mongoose.Schema(
     matches: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'knockoutMatchSchema',
+        ref: 'Match',
       },
     ],
     participants: [

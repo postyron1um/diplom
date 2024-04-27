@@ -7,13 +7,24 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getAllTournaments } from '../../../redux/features/tournament/tournamentSlice';
 
 function TournamentList({ searchInput, sportType, tournamentType, currentPage, tournamentsPerPage }) {
-  const dispatch = useDispatch();
-  const { tournaments } = useSelector((state) => state.tournament);
-  console.log(tournaments);
-  useEffect(() => {
-    dispatch(getAllTournaments());
-  }, [dispatch]);
+ const [tournaments, setTournaments] = useState([]);
 
+  useEffect(() => {
+    const fetchTournaments = async () => {
+      try {
+        const response = await fetch('http://localhost:3007/api/tournaments');
+        if (!response.ok) {
+          throw new Error('Ошибка при получении данных о турнирах');
+        }
+        const data = await response.json();
+        setTournaments(data.tournaments);
+      } catch (error) {
+        console.error('Ошибка:', error.message);
+      }
+    };
+
+    fetchTournaments();
+  }, []);
   const tournamentsWithDate = tournaments?.map((tournament) => ({
     ...tournament,
     createdAt: new Date(tournament.createdAt),
