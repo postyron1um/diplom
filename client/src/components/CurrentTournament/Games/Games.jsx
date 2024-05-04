@@ -5,6 +5,7 @@ import { getAllParticipate } from '../../../redux/features/participant/participa
 import { addMatch, fetchMatches, updateMatchResult } from '../../../redux/features/matchSlice/matchSlice';
 import axios from '../../../utils/axios';
 import { updateTournamentStatus } from '../../../redux/features/tournament/tournamentSlice';
+import { toast } from 'react-toastify';
 
 const extractUserIdFromToken = (token) => {
   try {
@@ -62,7 +63,17 @@ function Games() {
   const role = extractUserIdFromToken(userToken);
   const isAdmin = role.includes('ADMIN');
   const isTournamentStarted = useSelector((state) => state.tournament.isTournamentStarted);
-  // console.log(isTournamentStarted);
+	const {status} = useSelector((state) => state.matches)
+
+	useEffect(() => {
+    if (status) {
+      toast(status);
+    }
+  }, [status]);
+
+
+
+
   useEffect(() => {
     if (tournamentId) {
       dispatch(getAllParticipate({ tournamentId }));
@@ -174,7 +185,7 @@ function Games() {
 
       // Обновляем состояние tournamentData после добавления новых матчей
       setTournamentData(newTournamentData);
-      // await axios.put(`/tournaments/${tournamentId}/status`);
+      await axios.put(`/tournaments/${tournamentId}/status`);
 			 await dispatch(updateTournamentStatus({ tournamentId }));
     } catch (error) {
       console.error('Ошибка при добавлении матча:', error);

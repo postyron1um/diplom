@@ -113,7 +113,7 @@ export const registerParticipant = async (req, res) => {
 
 export const updateTournamentStatus = async (req, res) => {
   try {
-    const { tournamentId } = req.body;
+    const { tournamentId } = req.params;
     console.log('туруру');
 
     // Находим турнир по его ID и обновляем его статус

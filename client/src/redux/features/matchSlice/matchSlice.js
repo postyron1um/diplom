@@ -4,7 +4,7 @@ import axios from '../../../utils/axios.js';
 
 const initialState = {
   matches: [],
-  status: 'idle',
+  status: null,
   error: null,
 };
 
@@ -35,10 +35,10 @@ const matchSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(fetchMatches.pending, (state) => {
-        state.status = 'loading';
+        state.status = null;
       })
       .addCase(fetchMatches.fulfilled, (state, action) => {
-        state.status = 'idle';
+        state.status = null;
         state.matches = action.payload;
       })
       .addCase(fetchMatches.rejected, (state, action) => {
@@ -47,6 +47,11 @@ const matchSlice = createSlice({
       })
       .addCase(addMatch.fulfilled, (state, action) => {
         state.matches.push(action.payload);
+        state.status = action.payload.message
+      })
+      .addCase(addMatch.rejected, (state) => {
+        // state.matches.push(action.payload);
+        state.status = action.payload.message
       })
       .addCase(updateMatchResult.fulfilled, (state, action) => {
         // Обновляем состояние матчей после успешного обновления результатов матча
