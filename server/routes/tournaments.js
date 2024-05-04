@@ -1,5 +1,4 @@
 import { Router } from 'express';
-import { register, login, getMe, getUsers } from '../controllers/auth.js';
 import { checkAuth } from '../utils/checkAuth.js';
 import { check } from 'express-validator';
 import authMiddleware from '../utils/authMiddleware.js';
@@ -23,9 +22,15 @@ router.post('/', createTournament);
 // Get All tournaments
 router.get('/', getAll);
 
+// Получаем конкретный турнир
+router.get('/:tournamentId',async(req,res) => {
+  const { tournamentId } = req.params;
+  const tournament = await Tournament.find({_id: tournamentId})
+  res.json({tournament})
+})
+
 router.post('/:tournamentId/register',checkAuth, registerParticipant);
 
-// router.get('/:tournamentId', getAllParticipants);
 router.get('/:tournamentId/participants', getAllParticipants);
 
 
@@ -58,12 +63,6 @@ router.get('/:tournamentId/players', async (req, res) => {
     res.status(500).json({ success: false, message: 'Ошибка при получении данных об игроках турнира.' });
   }
 });
-
-
-
-
-
-
 
 
 

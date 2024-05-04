@@ -19,7 +19,7 @@ function Navigation() {
   };
 
   const role = extractUserRoleFromToken(userToken);
-console.log(role);
+// console.log(role);
   return (
     <div>
       <div className="fl-direction">

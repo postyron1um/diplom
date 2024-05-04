@@ -4,7 +4,7 @@ import axios from '../../utils/axios.js';
 function CurrentTournamentTable() {
   const [tableData, setTableData] = useState([]);
   const tournamentId = location.pathname.split('/')[2];
-  console.log(tournamentId);
+  // console.log(tournamentId);
   useEffect(() => {
     // Функция для загрузки данных об игроках турнира из базы данных
     const fetchPlayerData = async () => {
@@ -23,9 +23,9 @@ function CurrentTournamentTable() {
   }, []);
 
   tableData.map((player) => {
-    console.log(player.team1);
+    // console.log(player.team1);
   });
-  console.log(tableData);
+  // console.log(tableData);
 
   return (
     <div className="currentTournamentTable">

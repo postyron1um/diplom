@@ -56,7 +56,7 @@ function Games() {
   const tournamentId = location.pathname.split('/')[2];
   const participants = useSelector((state) => state.participant.tournaments[tournamentId] || []);
   const matches = useSelector((state) => state.matches.matches); // Получаем матчи из состояния Redux
-	console.log(matches);
+	// console.log(matches);
   // const [isTournamentStarted, setIsTournamentStarted] = useState(false);
   const userToken = localStorage.getItem('token');
   const role = extractUserIdFromToken(userToken);
@@ -109,7 +109,9 @@ function Games() {
     try {
       const matchToUpdate = tournamentData[tournamentIndex].matches[matchIndex];
       const { score1, score2 } = matchToUpdate;
-			console.log(score1);
+			console.log(matchToUpdate);
+			console.log(matches);
+    
 
       // Получаем ID матча из состояния Redux
       const matchId = matches.find((match) => match.team1 === matchToUpdate.team1 && match.team2 === matchToUpdate.team2)._id;

@@ -4,7 +4,7 @@ import TournamentItem from '../TournamentItem/TournamentItem';
 import './TournamentList.scss';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { getAllTournaments } from '../../../redux/features/tournament/tournamentSlice';
+// import { getAllTournaments } from '../../../redux/features/tournament/tournamentSlice';
 
 function TournamentList({ searchInput, sportType, tournamentType, currentPage, tournamentsPerPage }) {
  const [tournaments, setTournaments] = useState([]);
@@ -32,7 +32,7 @@ function TournamentList({ searchInput, sportType, tournamentType, currentPage, t
 
   const filteredTournaments = tournamentsWithDate.filter(
     (tournament) =>
-      // tournament.title.toLowerCase().includes(searchInput.toLowerCase()) &&
+      tournament.title.toLowerCase().includes(searchInput.toLowerCase()) &&
       (sportType ? tournament.sportType === sportType : true) &&
       (tournamentType ? tournament.typeTournament === tournamentType : true),
   );

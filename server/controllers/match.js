@@ -20,8 +20,8 @@ console.log('RTRTRT', team1Participant);
       const newMatch = new Match({
         tournamentId,
         round,
-        team1: team1Participant._id,
-        team2: team2Participant._id,
+        team1: team1Participant.username,
+        team2: team2Participant.username,
         score1,
         score2,
         date,

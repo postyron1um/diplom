@@ -23,7 +23,7 @@ export const participateInTournament = createAsyncThunk(
 export const getAllParticipate = createAsyncThunk('participant/getAllParticipate', async ({ tournamentId }) => {
   try {
     const { data } = await axios.get(`/tournaments/${tournamentId}/participants`);
-    console.log(data);
+    // console.log(data);
 
     return { tournamentId, participants: data.participants };
   } catch (error) {
