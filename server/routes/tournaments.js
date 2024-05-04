@@ -39,11 +39,11 @@ router.put('/:tournamentId/status', updateTournamentStatus);
 router.get('/:tournamentId/players', async (req, res) => {
   try {
     const { tournamentId } = req.params;
-    // Находим всех игроков турнира по его ID
+    // Находим всех игроков турнира по его ID`
     const players = await Player.find({ tournamentId });
 
-    // Сортировка игроков по количеству очков (победы * 3 + ничьи)
-    players.sort((a, b) => {
+    // Сортировка игроков по количеству очков (победы * 3 + ничьи)`
+    players.sort((a, b) => {`
       const pointsA = a.wins * 3 + a.draws;
       const pointsB = b.wins * 3 + b.draws;
       // Сначала сравниваем количество очков
