@@ -1,29 +1,32 @@
 import React, { useEffect, useState } from 'react';
+import axios from '../../utils/axios.js';
 
 function CurrentTournamentTable() {
   const [tableData, setTableData] = useState([]);
-
+  const tournamentId = location.pathname.split('/')[2];
+  console.log(tournamentId);
   useEffect(() => {
-    // Загрузка данных из localStorage при монтировании компонента
-    const storedTableData = JSON.parse(localStorage.getItem('tableData'));
-    if (storedTableData) {
-      // Сортировка данных по количеству очков
-      const sortedTableData = storedTableData.slice().sort((a, b) => {
-        // Сначала сравниваем количество очков, затем количество побед, затем количество ничьих
-        const pointsA = a.wins * 3 + a.draws;
-        const pointsB = b.wins * 3 + b.draws;
-        if (pointsA !== pointsB) {
-          return pointsB - pointsA; // Сортируем по убыванию количества очков
+    // Функция для загрузки данных об игроках турнира из базы данных
+    const fetchPlayerData = async () => {
+      try {
+        // Здесь нужно заменить 'tournamentId' на актуальный ID турнира
+        const response = await axios.get(`/tournaments/${tournamentId}/players`);
+        if (response.data.success) {
+          setTableData(response.data.players);
         }
-        // Если количество очков одинаково, сравниваем количество забитых голов
-        const goalsDifferenceA = a.goalsFor - a.goalsAgainst;
-        const goalsDifferenceB = b.goalsFor - b.goalsAgainst;
-        return goalsDifferenceB - goalsDifferenceA; // Сортируем по убыванию разницы забитых и пропущенных голов
-      });
-      setTableData(sortedTableData);
-    }
+      } catch (error) {
+        console.error('Ошибка при загрузке данных об игроках турнира:', error);
+      }
+    };
+
+    fetchPlayerData(); // Вызов функции загрузки данных об игроках турнира
   }, []);
-console.log(tableData);
+
+  tableData.map((player) => {
+    console.log(player.team1);
+  });
+  console.log(tableData);
+
   return (
     <div className="currentTournamentTable">
       <table className="table">
@@ -41,8 +44,8 @@ console.log(tableData);
         <tbody>
           {tableData.map((player, id) => (
             <tr key={id}>
-              <td>{player.name}</td>
-              <td>{player.wins * 3 + player.draws}</td> {/* Отображаем сумму очков, рассчитанную по системе */}
+              <td>{player.username}</td>
+              <td>{player.wins * 3 + player.draws}</td>
               <td>{player.matches}</td>
               <td>{player.wins}</td>
               <td>{player.draws}</td>

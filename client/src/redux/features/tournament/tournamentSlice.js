@@ -1,10 +1,12 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import axios from '../../../utils/axios';
+import axios from '../../../utils/axios.js';
 
 const initialState = {
   tournaments: [],
   loading: false,
+	status:null,
   participants: [],
+  isTournamentStarted: null,
 };
 
 export const createTournament = createAsyncThunk('tournament/createTournament', async (params) => {
@@ -38,7 +40,11 @@ export const getTournamentParticipants = createAsyncThunk('tournament/getTournam
   }
 });
 
-
+export const updateTournamentStatus = createAsyncThunk('matches/updateTournamentStatus', async ({ tournamentId }) => {
+  const response = await axios.put(`/tournaments/${tournamentId}/status`);
+  console.log(response.data.success);
+  return response.data.success; // Возвращаем обновленное значение статуса турнира
+});
 
 export const tournamentSlice = createSlice({
   name: 'tournament',
@@ -49,13 +55,15 @@ export const tournamentSlice = createSlice({
     builder
       .addCase(createTournament.pending, (state) => {
         state.loading = true;
+				state.status = null
       })
       .addCase(createTournament.fulfilled, (state, action) => {
         state.loading = false;
         state.tournaments.push(action.payload);
+				state.status = action.payload.message
       })
       .addCase(createTournament.rejected, (state) => {
-        // state.status = action.payload.message;
+        state.status = action.payload.message;
         state.loading = false;
       });
     // Получение всех турниров
@@ -71,17 +79,22 @@ export const tournamentSlice = createSlice({
         // state.status = action.payload.message;
         state.loading = false;
       });
-			builder
-        .addCase(getTournamentParticipants.pending, (state) => {
-          state.loading = true;
-        })
-        .addCase(getTournamentParticipants.fulfilled, (state, action) => {
-          state.loading = false;
-          state.participants = action.payload;
-        })
-        .addCase(getTournamentParticipants.rejected, (state) => {
-          state.loading = false;
-        });
+    builder
+      .addCase(getTournamentParticipants.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(getTournamentParticipants.fulfilled, (state, action) => {
+        state.loading = false;
+        state.participants = action.payload;
+      })
+      .addCase(getTournamentParticipants.rejected, (state) => {
+        state.loading = false;
+      })
+      .addCase(updateTournamentStatus.fulfilled, (state, action) => {
+        // Обновляем состояние isTournamentStarted после успешного обновления статуса турнира
+				console.log('Action payload:', action.payload);
+        state.isTournamentStarted = action.payload;
+      });
   },
 });
 

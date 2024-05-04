@@ -1,6 +1,7 @@
 import Tournament from '../models/Tournament.js';
 import User from '../models/User.js';
 import Participant from '../models/Participant.js';
+import Player from '../models/Player.js';
 // Create
 
 export const createTournament = async (req, res) => {
@@ -39,6 +40,8 @@ export const getAll = async (req, res) => {
 export const getAllParticipants = async (req, res) => {
   try {
     const tournamentId = req.params.tournamentId;
+		console.log(tournamentId);
+		
     const participants = await Participant.find({ tournament: tournamentId }); // Фильтрация участников по идентификатору турнира
     if (!participants) {
       return res.json({ message: 'Участников нет' });
@@ -54,23 +57,44 @@ export const registerParticipant = async (req, res) => {
   try {
     const userId = req.body.userId;
     const tournamentId = req.params.tournamentId;
-    // Получите информацию о пользователе (включая его имя) из базы данных
+
+    // Получаем информацию о пользователе (включая его имя) из базы данных
     const user = await User.findById(userId);
     if (!user) {
       return res.json({ success: false, message: 'Пользователь не найден.' });
     }
-    const username = user.username; 
+    const username = user.username;
+
+    // Проверяем, зарегистрирован ли пользователь уже на этот турнир
     const existingParticipant = await Participant.findOne({ user: userId, tournament: tournamentId });
     if (existingParticipant) {
       return res.json({ success: false, message: 'Вы уже зарегистрированы на этот турнир.' });
     }
-    // Создайте новую запись участника с именем пользователя
+
+    // Создаем новую запись участника с информацией о турнире
     const newParticipant = new Participant({
       user: userId,
-      username: username, // Сохраните имя пользователя
+      username: username,
       tournament: tournamentId,
     });
-    // Сохраните участника в базе данных
+
+    // Создаем данные игрока для нового участника
+    const playerData = {
+      participant: newParticipant._id,
+      username: username,
+      tournamentId: tournamentId, // Добавляем tournamentId
+      matches: 0,
+      wins: 0,
+      losses: 0,
+      draws: 0,
+      goalsFor: 0,
+      goalsAgainst:0,
+    };
+
+    // // Создаем нового игрока и сохраняем его
+    // const newPlayer = await Player.create(playerData);
+
+    // Сохраняем участника в базе данных и обновляем список участников турнира
     await newParticipant.save();
     await Tournament.findByIdAndUpdate(
       tournamentId,
@@ -79,9 +103,24 @@ export const registerParticipant = async (req, res) => {
       },
       { new: true },
     );
+
     return res.json({ success: true, newParticipant, message: 'Вы успешно зарегистрированы для участия в турнире.' });
   } catch (error) {
     console.error('Ошибка при регистрации участника:', error);
     return res.json({ success: false, message: 'Ошибка при регистрации участника.' });
+  }
+};
+
+export const updateTournamentStatus = async (req, res) => {
+  try {
+    const { tournamentId } = req.body;
+    console.log('туруру');
+
+    // Находим турнир по его ID и обновляем его статус
+    await Tournament.findByIdAndUpdate(tournamentId, { isStarted: true });
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Ошибка при обновлении статуса турнира:', error);
+    res.status(500).json({ success: false, message: 'Ошибка при обновлении статуса турнира.' });
   }
 };

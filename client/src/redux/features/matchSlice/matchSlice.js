@@ -1,6 +1,6 @@
 // matchSlice.js
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from '../../../utils/axios';
+import axios from '../../../utils/axios.js';
 
 const initialState = {
   matches: [],
@@ -13,23 +13,20 @@ export const fetchMatches = createAsyncThunk('matches/fetchMatches', async ({ to
   return response.data.matches;
 });
 
-export const addMatch = createAsyncThunk('matches/addMatch', async ({matchData,tournamentId}) => {
+export const addMatch = createAsyncThunk('matches/addMatch', async ({ matchData, tournamentId }) => {
   const response = await axios.post(`/tournaments/${tournamentId}/matches`, matchData);
-	console.log(matchData);
-	
+  console.log(matchData);
+
   return response.data.match;
 });
 
-
-export const updateMatch = createAsyncThunk('matches/updateMatch', async ({ matchId, score1, score2 }) => {
-  try {
-    const response = await axios.put(`/api/matches/${matchId}`, { score1, score2 });
-    return response.data.match;
-  } catch (error) {
-    throw error;
-  }
-});
-
+export const updateMatchResult = createAsyncThunk(
+  'matches/updateMatchResult',
+  async ({ matchId, score1, score2, tournamentId }) => {
+    const response = await axios.put(`/tournaments/${tournamentId}/matches/${matchId}/result`, { score1, score2, matchId });
+    return response.data.message; // Возвращаем сообщение об успешном обновлении
+  },
+);
 
 const matchSlice = createSlice({
   name: 'matches',
@@ -51,19 +48,14 @@ const matchSlice = createSlice({
       .addCase(addMatch.fulfilled, (state, action) => {
         state.matches.push(action.payload);
       })
-      builder
-        .addCase(updateMatch.pending, (state) => {
-          state.status = 'loading';
-        })
-        .addCase(updateMatch.fulfilled, (state, action) => {
-          state.status = 'idle';
-					
-          state.matches = state.matches.map((match) => (match._id === action.payload._id ? action.payload : match));
-        })
-        .addCase(updateMatch.rejected, (state, action) => {
-          state.status = 'idle';
-          state.error = action.error.message;
-        });
+      .addCase(updateMatchResult.fulfilled, (state, action) => {
+        // Обновляем состояние матчей после успешного обновления результатов матча
+        state.matches = state.matches.map((match) =>
+          match._id === action.payload.matchId
+            ? { ...match, score1: action.payload.score1, score2: action.payload.score2 }
+            : match,
+        );
+      });
   },
 });
 

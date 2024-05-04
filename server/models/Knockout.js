@@ -29,6 +29,14 @@ const matchSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
+	previousScore1: {
+    type: Number,
+    default: 0
+  },
+  previousScore2: {
+    type: Number,
+    default: 0
+  },
   date: {
     type: Date,
     default: Date.now,

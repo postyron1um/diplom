@@ -23,7 +23,14 @@ const Registration = () => {
   const location = useLocation();
   const tournamentId = location.pathname.split('/')[2];
   const participants = useSelector((state) => state.participant.tournaments[tournamentId] || []);
-	console.log(participants);
+	const {status} = useSelector((state) => state.participant)
+
+	useEffect(() => {
+    if (status) {
+      toast(status);
+    }
+  }, [status]);
+
 
   useEffect(() => {
     if (tournamentId) {

@@ -40,6 +40,10 @@ const tournamentSchema = new mongoose.Schema(
         ref: 'Participant', // Ссылка на модель Participant
       },
     ],
+    isStarted: {
+      type: Boolean,
+      default: false, // По умолчанию турнир не начат
+    },
   },
   {
     timestamps: true,

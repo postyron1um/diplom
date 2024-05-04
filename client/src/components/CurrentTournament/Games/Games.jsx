@@ -2,11 +2,21 @@ import React, { useEffect, useState } from 'react';
 import styles from './Games.module.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { getAllParticipate } from '../../../redux/features/participant/participantSlice';
-import { addMatch, fetchMatches } from '../../../redux/features/matchSlice/matchSlice';
+import { addMatch, fetchMatches, updateMatchResult } from '../../../redux/features/matchSlice/matchSlice';
 import axios from '../../../utils/axios';
+import { updateTournamentStatus } from '../../../redux/features/tournament/tournamentSlice';
+
+const extractUserIdFromToken = (token) => {
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    return payload.roles;
+  } catch (error) {
+    console.error('Ошибка при извлечении ID пользователя из токена:', error);
+    return null;
+  }
+};
 
 function generateTournamentData(participantNames) {
-  // console.log(participantNames);
   const numTeams = participantNames.length;
   const numRounds = numTeams - 1; // Количество туров
   const tournamentData = [];
@@ -46,7 +56,13 @@ function Games() {
   const tournamentId = location.pathname.split('/')[2];
   const participants = useSelector((state) => state.participant.tournaments[tournamentId] || []);
   const matches = useSelector((state) => state.matches.matches); // Получаем матчи из состояния Redux
-  console.log(matches);
+	console.log(matches);
+  // const [isTournamentStarted, setIsTournamentStarted] = useState(false);
+  const userToken = localStorage.getItem('token');
+  const role = extractUserIdFromToken(userToken);
+  const isAdmin = role.includes('ADMIN');
+  const isTournamentStarted = useSelector((state) => state.tournament.isTournamentStarted);
+  // console.log(isTournamentStarted);
   useEffect(() => {
     if (tournamentId) {
       dispatch(getAllParticipate({ tournamentId }));
@@ -56,65 +72,67 @@ function Games() {
 
   useEffect(() => {
     if (participants?.length > 0) {
-      setTournamentData((prevTournamentData) => {
+      setTournamentData(() => {
         const newTournamentData = generateTournamentData(participants.map((participant) => participant.username));
         return newTournamentData;
       });
     }
   }, [participants]);
 
-useEffect(() => {
-  if (matches.length > 0) {
-    // Обновляем состояние tournamentData после загрузки матчей из Redux
-    setTournamentData((prevTournamentData) => {
-      const updatedTournamentData = [...prevTournamentData];
-      matches.forEach((match) => {
-        const tournamentIndex = updatedTournamentData.findIndex((tournament) => tournament.round === match.round);
-        if (tournamentIndex !== -1) {
-          const matchIndex = updatedTournamentData[tournamentIndex].matches.findIndex(
-            (m) => m.team1 === match.team1 && m.team2 === match.team2,
-          );
-          if (matchIndex !== -1) {
-            updatedTournamentData[tournamentIndex].matches[matchIndex] = {
-              ...updatedTournamentData[tournamentIndex].matches[matchIndex],
-              score1: match.score1,
-              score2: match.score2,
-            };
+  useEffect(() => {
+    if (matches.length > 0) {
+      // Обновляем состояние tournamentData после загрузки матчей из Redux
+      setTournamentData((prevTournamentData) => {
+        const updatedTournamentData = [...prevTournamentData];
+        matches.forEach((match) => {
+          const tournamentIndex = updatedTournamentData.findIndex((tournament) => tournament.round === match.round);
+          if (tournamentIndex !== -1) {
+            const matchIndex = updatedTournamentData[tournamentIndex].matches.findIndex(
+              (m) => m.team1 === match.team1 && m.team2 === match.team2,
+            );
+            if (matchIndex !== -1) {
+              updatedTournamentData[tournamentIndex].matches[matchIndex] = {
+                ...updatedTournamentData[tournamentIndex].matches[matchIndex],
+                score1: match.score1,
+                score2: match.score2,
+              };
+            }
           }
-        }
+        });
+        return updatedTournamentData;
       });
-      return updatedTournamentData;
-    });
-  }
-}, [matches]);
-
-const handleEditSave = async (tournamentIndex, matchIndex) => {
-  try {
-    const matchToUpdate = tournamentData[tournamentIndex].matches[matchIndex];
-    const { score1, score2 } = matchToUpdate;
-
-    // Получаем ID матча из состояния Redux
-    const matchId = matches.find((match) => match.team1 === matchToUpdate.team1 && match.team2 === matchToUpdate.team2)._id;
-
-    // Если матч ранее не был отредактирован, устанавливаем edited в true
-    if (!matchToUpdate.edited) {
-      const updatedTournamentData = [...tournamentData];
-      updatedTournamentData[tournamentIndex].matches[matchIndex].edited = true;
-      setTournamentData(updatedTournamentData);
-      return; // Прерываем выполнение функции, чтобы позволить пользователю редактировать данные
     }
+  }, [matches]);
 
-    // Отправляем запрос на сервер для обновления матча
-    await axios.put(`/tournaments/${tournamentId}/matches/${matchId}`, { matchId,score1, score2 });
+  const handleEditSave = async (tournamentIndex, matchIndex) => {
+    if (!isAdmin) return;
+    try {
+      const matchToUpdate = tournamentData[tournamentIndex].matches[matchIndex];
+      const { score1, score2 } = matchToUpdate;
+			console.log(score1);
 
-    // Обновляем состояние tournamentData после успешного обновления матча на сервере
-    const updatedTournamentData = [...tournamentData];
-    updatedTournamentData[tournamentIndex].matches[matchIndex].edited = false;
-    setTournamentData(updatedTournamentData);
-  } catch (error) {
-    console.error('Ошибка при обновлении матча:', error);
-  }
-};
+      // Получаем ID матча из состояния Redux
+      const matchId = matches.find((match) => match.team1 === matchToUpdate.team1 && match.team2 === matchToUpdate.team2)._id;
+			console.log(matchId);
+      // Если матч ранее не был отредактирован, устанавливаем edited в true
+      if (!matchToUpdate.edited) {
+        const updatedTournamentData = [...tournamentData];
+        updatedTournamentData[tournamentIndex].matches[matchIndex].edited = true;
+        setTournamentData(updatedTournamentData);
+        return; // Прерываем выполнение функции, чтобы позволить пользователю редактировать данные
+      }
+      // Отправляем запрос на сервер для обновления матча
+      await axios.put(`/tournaments/${tournamentId}/matches/${matchId}`, { matchId, score1, score2 });
+      await axios.put(`/tournaments/${tournamentId}/matches/${matchId}/result`, { matchId, score1, score2 });
+      // dispatch(updateMatchResult({ matchId, score1, score2, tournamentId })); // Вызываем действие updateMatchResult с параметрами
+      // Обновляем состояние tournamentData после успешного обновления матча на сервере
+      const updatedTournamentData = [...tournamentData];
+      updatedTournamentData[tournamentIndex].matches[matchIndex].edited = false;
+      setTournamentData(updatedTournamentData);
+    } catch (error) {
+      console.error('Ошибка при обновлении матча:', error);
+    }
+  };
   const handleInputChange = (tournamentIndex, matchIndex, field, value) => {
     const updatedTournamentData = [...tournamentData];
     if (field === 'team1' || field === 'team2') {
@@ -128,6 +146,7 @@ const handleEditSave = async (tournamentIndex, matchIndex) => {
   };
 
   const handleAddMatch = async () => {
+    if (!isAdmin) return;
     try {
       // Генерируем данные для матчей
       const newTournamentData = generateTournamentData(participants.map((participant) => participant.username));
@@ -153,13 +172,15 @@ const handleEditSave = async (tournamentIndex, matchIndex) => {
 
       // Обновляем состояние tournamentData после добавления новых матчей
       setTournamentData(newTournamentData);
+      // await axios.put(`/tournaments/${tournamentId}/status`);
+			 await dispatch(updateTournamentStatus({ tournamentId }));
     } catch (error) {
       console.error('Ошибка при добавлении матча:', error);
     }
   };
   return (
     <div>
-      <button onClick={handleAddMatch}>Добавить матч</button>
+      {isAdmin && !isTournamentStarted && <button onClick={handleAddMatch}>Начать турнир</button>}
       {tournamentData.map((tournament, tournamentIndex) => (
         <div key={tournamentIndex}>
           <p className={styles['round']}>Тур {tournament.round}</p>
@@ -229,11 +250,13 @@ const handleEditSave = async (tournamentIndex, matchIndex) => {
                         match.date
                       )}
                     </td>
-                    <td>
-                      <button onClick={() => handleEditSave(tournamentIndex, matchIndex)}>
-                        {match.edited ? 'Сохранить' : 'Редактировать'}
-                      </button>
-                    </td>
+                    {isAdmin && (
+                      <td>
+                        <button onClick={() => handleEditSave(tournamentIndex, matchIndex)}>
+                          {match.edited ? 'Сохранить' : 'Редактировать'}
+                        </button>
+                      </td>
+                    )}
                   </tr>
                 ))}
               </tbody>

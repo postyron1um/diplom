@@ -5,15 +5,15 @@ import TournamentName from './TournamentName/TournamentName';
 import DateInput from './DateInput/DateInput';
 import Button from '../Button/Button';
 
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import './CreateTournament.scss';
 import cn from 'classnames';
-import { useReducer, useState } from 'react';
+import { useEffect, useReducer, useState } from 'react';
 import { initialState, reducer, sportTypeOptions } from './CreateTournament.state';
 import { useNavigate } from 'react-router-dom';
 import { createTournament } from '../../redux/features/tournament/tournamentSlice';
+import { toast } from 'react-toastify';
 
-let nextId = 0;
 
 function CreateTournament() {
   const [state, dispatch] = useReducer(reducer, initialState);
@@ -21,12 +21,14 @@ function CreateTournament() {
   const [createdAt, setCreatedAt] = useState(null);
   const navigate = useNavigate();
   const Dispatch = useDispatch();
+  const { status } = useSelector((state) => state.tournament)
 
-  // const tournaments = JSON.parse(localStorage.getItem('tournaments'));
 
-  // if (tournaments) {
-  //   nextId = tournaments[tournaments.length - 1].id + 1;
-  // }
+	useEffect(() => {
+    if (status) {
+      toast(status);
+    }
+  }, [status]);
 
   const handleFieldChange = (field, value) => {
     dispatch({ type: 'SET_FIELD', field, value });
@@ -116,7 +118,6 @@ function CreateTournament() {
 
     const currentDate = new Date(); // Текущая дата и время
     const createdAt = currentDate.toISOString();
-    console.log(createdAt); // Преобразуем в строку в формате ISO
     const newTournament = {
       title,
       sportType,
@@ -142,7 +143,7 @@ function CreateTournament() {
       console.log(error);
     }
 
-    navigate('/alltournaments');
+    // navigate('/alltournaments');
   };
 
   const handleAddTournament = (newTournament) => {
