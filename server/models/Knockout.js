@@ -41,6 +41,10 @@ const matchSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  isFirstZeroZeroEdit: {
+    type: Boolean,
+    default: true,
+  },
 });
 
 const Match = mongoose.model('Match', matchSchema);
