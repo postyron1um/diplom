@@ -203,8 +203,13 @@ export const updatedMatchResultTimur = async (req, res) => {
 
   if (score1 !== score2 && previousScore1 === previousScore2) {
     // Это первое редактирование, и счет больше не равен 0:0
-    player1.draws -= 1;
-    player2.draws -= 1;
+    if(player1.draws > 0 ) {
+      player1.draws -= 1;
+    }
+    if(player2.draws > 0 ) {
+      player2.draws -= 1;
+    }
+
     // match.isFirstZeroZeroEdit = false;
     // await match.save();
   }
@@ -214,6 +219,31 @@ export const updatedMatchResultTimur = async (req, res) => {
     let goalsForChange2 = score2 - previousScore2;
     let goalsAgainstChange2 = score1 - previousScore1;
 
+    if (score1 === score2) {
+      // При ничье вычитаем голы из предыдущего редактирования
+      goalsForChange1 -= match.goalsForChange1 || 0;
+      goalsAgainstChange1 -= match.goalsAgainstChange1 || 0;
+      goalsForChange2 -= match.goalsForChange2 || 0;
+      goalsAgainstChange2 -= match.goalsAgainstChange2 || 0;
+
+      // Обнуляем предыдущие изменения в голах
+      match.goalsForChange1 = 0;
+      match.goalsAgainstChange1 = 0;
+      match.goalsForChange2 = 0;
+      match.goalsAgainstChange2 = 0;
+    } else {
+      // Обновляем изменения в голах в матче
+      match.goalsForChange1 = goalsForChange1;
+      match.goalsAgainstChange1 = goalsAgainstChange1;
+      match.goalsForChange2 = goalsForChange2;
+      match.goalsAgainstChange2 = goalsAgainstChange2;
+    }
+
+    // Обновляем забитые и пропущенные голы
+    player1.goalsFor += goalsForChange1;
+    player1.goalsAgainst += goalsAgainstChange1;
+    player2.goalsFor += goalsForChange2;
+    player2.goalsAgainst += goalsAgainstChange2;
 
     await player1.save();
     await player2.save();
