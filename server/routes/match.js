@@ -1,6 +1,6 @@
 // match.route.js
 import { Router } from 'express';
-import { createMatch, getAllMatches, updateMatch, updateMatchResult } from '../controllers/match.js';
+import { createMatch, getAllMatches, updateMatch, updateMatchResult, updatedMatchResultTimur } from '../controllers/match.js';
 import { checkAuth } from '../utils/checkAuth.js';
 
 // import { updateTournamentStatus } from '../../client/src/redux/features/matchSlice/matchSlice.js';
@@ -17,7 +17,8 @@ router.post('/', checkAuth, createMatch);
 router.get('/', getAllMatches);
 
 // Обновление матча
-router.put('/:matchId/result', updateMatchResult);
+// router.put('/:matchId/result', updateMatchResult);
+router.put('/:matchId/result', updatedMatchResultTimur);
 router.put('/:matchId', updateMatch);
 
 

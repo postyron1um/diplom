@@ -71,9 +71,6 @@ function Games() {
     }
   }, [status]);
 
-
-
-
   useEffect(() => {
     if (tournamentId) {
       dispatch(getAllParticipate({ tournamentId }));
@@ -126,7 +123,7 @@ function Games() {
 
       // Получаем ID матча из состояния Redux
       const matchId = matches.find((match) => match.team1 === matchToUpdate.team1 && match.team2 === matchToUpdate.team2)._id;
-			console.log(matchId);
+			// console.log(matchId);
       // Если матч ранее не был отредактирован, устанавливаем edited в true
       if (!matchToUpdate.edited) {
         const updatedTournamentData = [...tournamentData];
@@ -136,7 +133,7 @@ function Games() {
       }
       // Отправляем запрос на сервер для обновления матча
       await axios.put(`/tournaments/${tournamentId}/matches/${matchId}`, { matchId, score1, score2 });
-      await axios.put(`/tournaments/${tournamentId}/matches/${matchId}/result`, { matchId, score1, score2 });
+      await axios.put(`/tournaments/${tournamentId}/matches/${matchId}/result`, { matchId, score1, score2, tournamentId });
       // dispatch(updateMatchResult({ matchId, score1, score2, tournamentId })); // Вызываем действие updateMatchResult с параметрами
       // Обновляем состояние tournamentData после успешного обновления матча на сервере
       const updatedTournamentData = [...tournamentData];
