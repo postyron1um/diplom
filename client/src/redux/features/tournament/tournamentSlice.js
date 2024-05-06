@@ -60,9 +60,9 @@ export const tournamentSlice = createSlice({
       .addCase(createTournament.fulfilled, (state, action) => {
         state.loading = false;
         state.tournaments.push(action.payload);
-				state.status = action.payload.message
+				state.status = action.payload.message;
       })
-      .addCase(createTournament.rejected, (state) => {
+      .addCase(createTournament.rejected, (state,action) => {
         state.status = action.payload.message;
         state.loading = false;
       });

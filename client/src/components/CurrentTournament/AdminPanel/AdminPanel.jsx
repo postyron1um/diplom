@@ -1,27 +1,26 @@
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 import styles from './AdminPanel.module.css';
-import { useLoaderData } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { getAllParticipate, acceptParticipant, rejectParticipant } from '../../../redux/features//participant/participantSlice';
 
 function TournamentRegistrations({ registrations, handleAccept, handleReject }) {
-  let currentTournament = useLoaderData();
-  // console.log(currentTournament);
   return (
     <div className={styles['tournamentRegistrations']}>
       <h2 className={styles['tournamentRegistrations-title']}>Заявки на участие в турнире:</h2>
       <ul className={styles['tournamentRegistrations-ul']}>
         {registrations.map((registration) => (
-          <li key={registration.id}>
+          <li key={registration._id}>
             <div className={styles['tournamentRegistrations-row']}>
               <div>
                 <span className={styles['tournamentRegistrations-span']}>
-                  {registration.name} {registration.teamName}
+                  {registration.username} {registration.teamName}
                 </span>
               </div>
               <div className={styles['tournamentRegistrations-div-end']}>
-                <button className={styles['tournamentRegistrations-btn-accept']} onClick={() => handleAccept(registration.id)}>
+                <button className={styles['tournamentRegistrations-btn-accept']} onClick={() => handleAccept(registration._id)}>
                   Принять
                 </button>
-                <button className={styles['tournamentRegistrations-btn-reject']} onClick={() => handleReject(registration.id)}>
+                <button className={styles['tournamentRegistrations-btn-reject']} onClick={() => handleReject(registration._id)}>
                   Отклонить
                 </button>
               </div>
@@ -33,25 +32,23 @@ function TournamentRegistrations({ registrations, handleAccept, handleReject }) 
   );
 }
 
-// function AdminPanel({ registrations, setRegistrations, setTournamentParticipants }) {
 function AdminPanel() {
-  const [registrations, setRegistrations] = useState(JSON.parse(localStorage.getItem('tournamentParticipants')) || []);
-
-  const handleAccept = (id) => {
-    const acceptedRegistration = registrations.find((reg) => reg.id === id);
-    if (acceptedRegistration) {
-      setRegistrations((prevRegistrations) => prevRegistrations.filter((reg) => reg.id !== id));
-      localStorage.setItem('tournamentParticipants', JSON.stringify([...registrations.filter((reg) => reg.id !== id)]));
-      localStorage.setItem(
-        'tournamentAcceptedParticipants',
-        JSON.stringify([...(JSON.parse(localStorage.getItem('tournamentAcceptedParticipants')) || []), acceptedRegistration]),
-      );
+  const dispatch = useDispatch();
+  const tournamentId = location.pathname.split('/')[2];
+  const registrations = useSelector((state) => state.pendingParticipant.tournaments[tournamentId] || []);
+console.log(registrations);
+  useEffect(() => {
+    if (tournamentId) {
+      dispatch(getAllParticipate({ tournamentId }));
     }
+  }, [dispatch, tournamentId]);
+
+  const handleAccept = (participantId) => {
+    dispatch(acceptParticipant({ tournamentId, participantId }));
   };
 
-  const handleReject = (id) => {
-    setRegistrations((prevRegistrations) => prevRegistrations.filter((reg) => reg.id !== id));
-    localStorage.setItem('tournamentParticipants', JSON.stringify([...registrations.filter((reg) => reg.id !== id)]));
+  const handleReject = (participantId) => {
+    dispatch(rejectParticipant({ tournamentId, participantId }));
   };
 
   return (

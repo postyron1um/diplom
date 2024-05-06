@@ -1,6 +1,6 @@
 import React from 'react';
 import './Modal.css';
-import { FaBeer } from 'react-icons/fa';
+
 const Modal = ({ children, onClose }) => {
   return (
     <div className="modal-overlay">

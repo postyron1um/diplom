@@ -2,6 +2,7 @@ import Match from "../models/Knockout.js";
 import Player from "../models/Player.js";
 import Tournament from "../models/Tournament.js";
 import Participant from "../models/Participant.js";
+import TournamentParticipant from "../models/TournamentParticipant.js";
 
 // Создание нового матча
 export const createMatch = async (req, res) => {
@@ -13,22 +14,19 @@ export const createMatch = async (req, res) => {
     const tournament = await Tournament.findById(tournamentId);
     if (!tournament.isStarted) {
       // Получаем ObjectId участников команд
-<<<<<<< HEAD
-      const team1Participant = await Participant.findOne({ username: team1, tournament: tournamentId });
-      const team2Participant = await Participant.findOne({ username: team2, tournament: tournamentId });
-      console.log('RTRTRT', team1Participant);
-=======
-      const team1Participant = await Participant.findOne({
+      const team1Participant = await TournamentParticipant.findOne({
         username: team1,
         tournament: tournamentId,
+        status:'accepted'
       });
-      const team2Participant = await Participant.findOne({
+      const team2Participant = await TournamentParticipant.findOne({
         username: team2,
         tournament: tournamentId,
       });
-      console.log("RTRTRT", team1Participant);
->>>>>>> b95348de86aa707cb2930ef48bda26a52af3f3c7
 
+      if(!team1Participant || !team2Participant) {
+        return res.json({message: "Участники не найдены"})
+      }
       // Теперь создаем матч, передавая ObjectId участников команд
       const newMatch = new Match({
         tournamentId,
@@ -55,9 +53,29 @@ export const createMatch = async (req, res) => {
         username: team2Participant.username,
       });
 
+      // Создаем новые записи в базе данных Participant для участников команд
+      const participant1 = new Participant({
+        user: team1Participant.user,
+        username: team1Participant.username,
+        tournament: tournamentId,
+      });
+
+      const participant2 = new Participant({
+        user: team2Participant.user,
+        username: team2Participant.username,
+        tournament: tournamentId,
+      });
+
+      // Сохраняем новых участников в базе данных Participant
+      await participant1.save();
+      await participant2.save();
+
       // Сохраняем новых игроков
       await team1Player.save();
       await team2Player.save();
+
+      await TournamentParticipant.deleteOne({ _id: team1Participant._id });
+      await TournamentParticipant.deleteOne({ _id: team2Participant._id })
 
       // Обновляем список матчей турнира в базе данных tournaments
       tournament.matches.push(newMatch._id);
@@ -118,8 +136,6 @@ export const updateMatch = async (req, res) => {
   }
 };
 
-<<<<<<< HEAD
-=======
 export const updatedMatchResultTimur = async (req, res) => {
   try {
     // const { tournamentId } = req.params;
@@ -263,7 +279,6 @@ export const updatedMatchResultTimur = async (req, res) => {
   }
 };
 
->>>>>>> b95348de86aa707cb2930ef48bda26a52af3f3c7
 export const updateMatchResult = async (req, res) => {
   try {
     const { matchId, score1, score2 } = req.body;
@@ -277,11 +292,6 @@ export const updateMatchResult = async (req, res) => {
     // Получаем предыдущие результаты матча перед его обновлением
     const previousScore1 = match.previousScore1 || 0;
     const previousScore2 = match.previousScore2 || 0;
-<<<<<<< HEAD
-
-    if (score1 === previousScore1 && score2 === previousScore2 && (score1 !== 0 || score2 !== 0)) {
-      return res.status(200).json({ message: 'Результаты матча не изменились' });
-=======
     // Добавляем проверку, чтобы не блокировать выполнение кода, если новые результаты не равны нулю,
     // даже если предыдущие результаты были нулевыми
     if (
@@ -292,7 +302,6 @@ export const updateMatchResult = async (req, res) => {
       return res
         .status(200)
         .json({ message: "Результаты матча не изменились" });
->>>>>>> b95348de86aa707cb2930ef48bda26a52af3f3c7
     }
 
     // Сохраняем предыдущие результаты матча

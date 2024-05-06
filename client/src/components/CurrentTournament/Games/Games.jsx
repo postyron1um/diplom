@@ -55,9 +55,11 @@ function Games() {
   const dispatch = useDispatch();
   const [tournamentData, setTournamentData] = useState([]);
   const tournamentId = location.pathname.split('/')[2];
-  const participants = useSelector((state) => state.participant.tournaments[tournamentId] || []);
+  const participantS = useSelector((state) => state.participant.pendingParticipants[tournamentId] || []);
+  console.log(participantS);
+  const participants = useSelector((state) => state.participant.acceptedParticipants[tournamentId] || []);
   const matches = useSelector((state) => state.matches.matches); // Получаем матчи из состояния Redux
-	// console.log(matches);
+	console.log('acceptedParticipants',participants);
   // const [isTournamentStarted, setIsTournamentStarted] = useState(false);
   const userToken = localStorage.getItem('token');
   const role = extractUserIdFromToken(userToken);

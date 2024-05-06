@@ -22,9 +22,10 @@ const Registration = () => {
   const userId = extractUserIdFromToken(userToken);
   const location = useLocation();
   const tournamentId = location.pathname.split('/')[2];
-  const participants = useSelector((state) => state.participant.tournaments[tournamentId] || []);
-	const {status} = useSelector((state) => state.participant)
-
+  // console.log(tournamentId);
+  const participants = useSelector((state) => state.participant.acceptedParticipants[tournamentId] || []);
+	const {status} = useSelector((state) => state.participant);
+console.log(participants);
 	useEffect(() => {
     if (status) {
       toast(status);

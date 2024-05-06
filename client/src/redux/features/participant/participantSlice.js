@@ -2,7 +2,8 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from '../../../utils/axios';
 
 const initialState = {
-  tournaments: {},
+  pendingParticipants: {},
+  acceptedParticipants: {},
   loading: false,
   status: null,
 };
@@ -20,16 +21,24 @@ export const participateInTournament = createAsyncThunk(
   },
 );
 
-export const getAllParticipate = createAsyncThunk('participant/getAllParticipate', async ({ tournamentId }) => {
-  try {
-    const { data } = await axios.get(`/tournaments/${tournamentId}/participants`);
-    // console.log(data);
+export const acceptParticipant = createAsyncThunk('participant/acceptParticipant', async ({ tournamentId, participantId }) => {
+  const response = await axios.put(`/tournaments/${tournamentId}/participants/${participantId}/accept`);
+  console.log('response.data',response.data)
+  return response.data;
+});
 
-    return { tournamentId, participants: data.participants };
-  } catch (error) {
-    console.log(error);
-    throw error;
-  }
+export const rejectParticipant = createAsyncThunk('participant/rejectParticipant', async ({ tournamentId, participantId }) => {
+  const response = await axios.put(`/tournaments/${tournamentId}/participants/${participantId}/reject`);
+  console.log(response.data);
+  return response.data;
+
+});
+
+
+export const getAllParticipate = createAsyncThunk('participant/getAllParticipate', async ({ tournamentId }) => {
+  const { data } = await axios.get(`/tournaments/${tournamentId}/participants`);
+  
+  return { tournamentId, participants: data.participants };
 });
 
 const participantSlice = createSlice({
@@ -46,18 +55,14 @@ const participantSlice = createSlice({
         state.loading = false;
         state.status = action.payload.message;
 
-        const { tournamentId, newParticipant } = action.payload;
-        console.log(tournamentId);
-        console.log(newParticipant);
+        const { tournamentId,newParticipant } = action.payload;
 
-        // Создаем новый массив участников для данного турнира,
-        // если он еще не существует
-        if (!state.tournaments[tournamentId]) {
-          state.tournaments[tournamentId] = [];
+        if (!state.pendingParticipants[tournamentId]) {
+          state.pendingParticipants[tournamentId] = [];
         }
 
         // Добавляем нового участника в список участников для данного турнира
-        state.tournaments[tournamentId].push(newParticipant);
+        state.pendingParticipants[tournamentId].push(newParticipant);
       })
       .addCase(participateInTournament.rejected, (state, action) => {
         state.loading = false;
@@ -67,15 +72,37 @@ const participantSlice = createSlice({
       .addCase(getAllParticipate.pending, (state) => {
         state.loading = true;
       })
-      .addCase(getAllParticipate.fulfilled, (state, action) => {
-        state.loading = false;
-        const { tournamentId, participants } = action.payload;
-        // Очищаем данные участников для текущего турнира перед загрузкой новых данных
-        state.tournaments[tournamentId] = participants;
-      })
+.addCase(getAllParticipate.fulfilled, (state, action) => {
+  const { tournamentId, participants } = action.payload;
+
+  // Разбиваем участников на pending и accepted
+  const pendingParticipants = participants.filter(participant => participant.status === 'pending');
+  const acceptedParticipants = participants.filter(participant => participant.status === 'accepted');
+
+  state.pendingParticipants[tournamentId] = pendingParticipants;
+  state.acceptedParticipants[tournamentId] = acceptedParticipants;
+})
       .addCase(getAllParticipate.rejected, (state) => {
         state.loading = false;
         state.status = 'Ошибка загрузки участников';
+      })
+      .addCase(acceptParticipant.fulfilled, (state, action) => {
+        const { tournament, user } = action.payload;
+        
+        // Удаляем принятого участника из списка "pendingParticipants"
+        state.pendingParticipants[tournament] = state.pendingParticipants[tournament].filter(participant => participant.user !== user);
+        
+        // Добавляем принятого участника в список "acceptedParticipants"
+        if (!state.acceptedParticipants[tournament]) {
+          state.acceptedParticipants[tournament] = [];
+        }
+        state.acceptedParticipants[tournament].push(action.payload);
+      })
+      .addCase(rejectParticipant.fulfilled, (state, action) => {
+        const { tournament, user } = action.payload;
+        console.log('user',user);
+        console.log('tournament', tournament);
+        state.acceptedParticipants[tournament] = state.pendingParticipants[tournament].filter(participant => participant.user !== user);
       });
   },
 });

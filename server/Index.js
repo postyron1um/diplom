@@ -7,6 +7,7 @@ import cors from 'cors';
 import authRoute from './routes/auth.js';
 import tournamentRoute from './routes/tournaments.js';
 import matchRoute from './routes/match.js'; // Импорт роута для матчей
+import tournamentParticipantsRoute from './routes/tournamentParticipants.route.js';
 
 const app = express();
 dotenv.config();
@@ -23,6 +24,8 @@ app.use(express.json());
 app.use('/api/auth', authRoute);
 app.use('/api/tournaments', tournamentRoute);
 app.use('/api/tournaments/:tournamentId/matches', matchRoute); // Обновленный путь для матчей
+app.use('/api/tournaments/:tournamentId/participants',tournamentParticipantsRoute)
+
 
 async function start() {
   try {

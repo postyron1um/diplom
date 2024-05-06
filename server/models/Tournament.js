@@ -34,6 +34,12 @@ const tournamentSchema = new mongoose.Schema(
         ref: 'Match',
       },
     ],
+    pendingParticipants: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'TournamentParticipant', // Ссылка на модель Participant
+      },
+    ],
     participants: [
       {
         type: mongoose.Schema.Types.ObjectId,
