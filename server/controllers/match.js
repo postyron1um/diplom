@@ -14,7 +14,7 @@ export const createMatch = async (req, res) => {
       // Получаем ObjectId участников команд
       const team1Participant = await Participant.findOne({ username: team1, tournament: tournamentId });
       const team2Participant = await Participant.findOne({ username: team2, tournament: tournamentId });
-console.log('RTRTRT', team1Participant);
+      console.log('RTRTRT', team1Participant);
 
       // Теперь создаем матч, передавая ObjectId участников команд
       const newMatch = new Match({
@@ -26,8 +26,8 @@ console.log('RTRTRT', team1Participant);
         score2,
         date,
       });
-			console.log(newMatch);
-			
+      console.log(newMatch);
+
       await newMatch.save();
 
       // Создаем новых игроков и связываем их с текущим турниром
@@ -76,7 +76,6 @@ export const updateMatch = async (req, res) => {
   }
 };
 
-
 export const updateMatchResult = async (req, res) => {
   try {
     const { matchId, score1, score2 } = req.body;
@@ -86,14 +85,15 @@ export const updateMatchResult = async (req, res) => {
     if (!match) {
       return res.status(404).json({ message: 'Матч не найден' });
     }
+
     // Получаем предыдущие результаты матча перед его обновлением
     const previousScore1 = match.previousScore1 || 0;
     const previousScore2 = match.previousScore2 || 0;
-    // Добавляем проверку, чтобы не блокировать выполнение кода, если новые результаты не равны нулю,
-    // даже если предыдущие результаты были нулевыми
+
     if (score1 === previousScore1 && score2 === previousScore2 && (score1 !== 0 || score2 !== 0)) {
       return res.status(200).json({ message: 'Результаты матча не изменились' });
     }
+
     // Сохраняем предыдущие результаты матча
     match.previousScore1 = match.score1;
     match.previousScore2 = match.score2;
@@ -113,6 +113,29 @@ export const updateMatchResult = async (req, res) => {
       // Обновляем данные игроков
       const player1 = await Player.findOneAndUpdate({ participant: team1User._id }, { matches: 1 }, { upsert: true, new: true });
       const player2 = await Player.findOneAndUpdate({ participant: team2User._id }, { matches: 1 }, { upsert: true, new: true });
+
+      if (score1 > score2 && previousScore1 <= previousScore2) {
+        player1.wins += 1;
+        player2.losses += 1;
+
+				player1.losses -= 1
+				player2.wins -=1
+      }
+			if (score1 < score2 && previousScore1 >= previousScore2) {
+        player2.wins += 1;
+        player1.losses += 1;
+			}
+
+
+
+
+
+
+
+
+
+
+
 
       // Рассчитываем изменения в данных игроков
       let winsChange1 = 0;

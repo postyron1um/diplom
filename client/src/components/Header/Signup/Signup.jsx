@@ -6,7 +6,7 @@ import { checkIsAuth, logout } from '../../../redux/features/auth/authSlice';
 import { toast } from 'react-toastify';
 import { useEffect } from 'react';
 import Modal from './../../Modal/Modal'; // Импортируем компонент модального окна
-
+import extractUserUsernameFromToken from '../../../Func/extractUserDetailsFromToken';
 function Signup() {
   const userToken = localStorage.getItem('token');
   const isAuth = useSelector(checkIsAuth);
@@ -14,18 +14,7 @@ function Signup() {
   const logoutHandler = () => {
     setShowModal(true); // Показываем модальное окно при нажатии на кнопку выхода
   };
-
-  const extractUserUsernameFromToken = (token) => {
-    try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      return payload.username;
-    } catch (error) {
-      console.error('Ошибка при извлечении ID пользователя из токена:', error);
-      return null;
-    }
-  };
-
-  const username = extractUserUsernameFromToken(userToken);
+  const username = extractUserUsernameFromToken(userToken,'username');
 
   // Создаем состояние для отображения/скрытия модального окна
   const [showModal, setShowModal] = useState(false);

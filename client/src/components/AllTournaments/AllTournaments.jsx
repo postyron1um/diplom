@@ -3,32 +3,45 @@ import TournamentList from './TournamentList/TournamentList';
 import cn from 'classnames';
 import './AllTournaments.scss';
 import { sportTypeOptions, typeTournamentMap } from '../CreateTournament/CreateTournament.state';
-
+import axios from './../../utils/axios';
 function AllTournaments() {
   const [searchInput, setSearchInput] = useState('');
   const [sportType, setSportType] = useState('');
-	const [typeTournament, setTournamentType] = useState('');
+  const [typeTournament, setTournamentType] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [tournamentsPerPage] = useState(10); // Количество турниров на странице
   const [totalPages, setTotalPages] = useState(1); // Общее количество страниц
 
-useEffect(() => {
-  const storedTournaments = JSON.parse(localStorage.getItem('tournaments') || '[]');
-  const filtered = storedTournaments
-    .map((tournament) => ({ ...tournament, createdAt: new Date(tournament.createdAt) }))
-    .filter(
-      (tournament) =>
-        tournament.title.toLowerCase().includes(searchInput.toLowerCase()) &&
-        (sportType ? tournament.sportType === sportType : true) &&
-        (typeTournament ? tournament.tournamentType === typeTournament : true),
-    );
+  useEffect(() => {
+    const fetchTournaments = async () => {
+      try {
+        const response = await fetch('http://localhost:3007/api/tournaments');
+        if (!response.ok) {
+          throw new Error('Ошибка при получении данных о турнирах');
+        }
+        const data = await response.json();
 
-  // Устанавливаем общее количество страниц
-  setTotalPages(Math.ceil(filtered.length / tournamentsPerPage));
+        const filtered = data.tournaments
+          .map((tournament) => ({ ...tournament, createdAt: new Date(tournament.createdAt) }))
+          .filter(
+            (tournament) =>
+              tournament.title.toLowerCase().includes(searchInput.toLowerCase()) &&
+              (sportType ? tournament.sportType === sportType : true) &&
+              (typeTournament ? tournament.tournamentType === typeTournament : true),
+          );
 
+        // Устанавливаем общее количество страниц
+        setTotalPages(Math.ceil(filtered.length / tournamentsPerPage));
 
-  setCurrentPage(1); // Сбрасываем текущую страницу при изменении фильтров
-}, [searchInput, sportType, typeTournament, tournamentsPerPage]);
+        setCurrentPage(1);
+      } catch (error) {
+        console.error('Ошибка:', error.message);
+      }
+    };
+
+    fetchTournaments();
+    // Сбрасываем текущую страницу при изменении фильтров
+  }, [searchInput, sportType, typeTournament, tournamentsPerPage]);
 
   const handleSearchInputChange = (event) => {
     setSearchInput(event.target.value);
@@ -37,14 +50,14 @@ useEffect(() => {
   const handleSportTypeChange = (event) => {
     setSportType(event.target.value);
   };
-	const handleTournamentTypeChange = (event) => {
+  const handleTournamentTypeChange = (event) => {
     setTournamentType(event.target.value);
   };
-
 
   const handleResetFilters = () => {
     setSearchInput('');
     setSportType('');
+		setTournamentType('');
   };
 
   const handlePreviousPage = () => {
@@ -56,11 +69,10 @@ useEffect(() => {
   };
 
   return (
-		
     <div className="tournament">
       <div className="container">
         <h1>Все турниры и чемпионаты</h1>
-				
+
         <div className="searchInput-wrapper">
           <input
             className="searchInput"
@@ -100,8 +112,8 @@ useEffect(() => {
           <button onClick={handlePreviousPage} disabled={currentPage === 1} className="pagination-btn">
             Предыдущая
           </button>
-          {/* Отображаем первые 10 страниц или меньше, если их меньше */}
-          {Array.from({ length: Math.min(totalPages, 10) }, (_, index) => index + 1).map((pageNumber) => (
+          {/* Отображаем первые 20 страниц или меньше, если их меньше */}
+          {Array.from({ length: Math.min(totalPages, 20) }, (_, index) => index + 1).map((pageNumber) => (
             <button
               key={pageNumber}
               onClick={() => setCurrentPage(pageNumber)}

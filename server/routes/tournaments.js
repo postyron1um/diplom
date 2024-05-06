@@ -14,7 +14,7 @@ import Player from '../models/Player.js';
 const router = new Router();
 // http://localhost:3007/api/tournaments
 // Create
-router.post('/', createTournament);
+router.post('/', roleMiddleware(['ADMIN']),createTournament);
 
 // router.post('/',roleMiddleware(['ADMIN']), createTournament);
 // тут было так  -   позже исправить ошибку

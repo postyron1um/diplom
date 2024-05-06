@@ -13,7 +13,7 @@ import { initialState, reducer, sportTypeOptions } from './CreateTournament.stat
 import { useNavigate } from 'react-router-dom';
 import { createTournament } from '../../redux/features/tournament/tournamentSlice';
 import { toast } from 'react-toastify';
-
+import extractUserRoleFromToken  from '../../Func/extractUserDetailsFromToken';
 
 function CreateTournament() {
   const [state, dispatch] = useReducer(reducer, initialState);
@@ -21,10 +21,12 @@ function CreateTournament() {
   const [createdAt, setCreatedAt] = useState(null);
   const navigate = useNavigate();
   const Dispatch = useDispatch();
-  const { status } = useSelector((state) => state.tournament)
+  const { status } = useSelector((state) => state.tournament);
+  const userToken = localStorage.getItem('token');
+  const role = extractUserRoleFromToken(userToken,'roles');
+  const isAdmin = role.includes('ADMIN');
 
-
-	useEffect(() => {
+  useEffect(() => {
     if (status) {
       toast(status);
     }
@@ -160,68 +162,72 @@ function CreateTournament() {
 
   return (
     <div className="container createTournament__container">
-      <div className="createTournament">
-        <h1 className="createTournament__title">Создание турнира</h1>
-        <form onSubmit={handleSubmit}>
-          <TournamentName
-            className={cn('tournamentName', { invalid: errors.title })}
-            name="title"
-            label="Название:"
-            maxLength="100"
-            value={title}
-            onChange={(value) => handleFieldChange('title', value)} // Используем общую функцию для изменения поля
-          />
-          {errors.title && <div className="error-message">Ошибка: {errors.title}</div>}
-          <SelectInput
-            className={cn('createTournament__select', { invalid: errors.sportType })}
-            name="sportType"
-            label="Вид спорта:"
-            options={sportTypeOptions}
-            value={sportType}
-            onChange={(value) => handleFieldChange('sportType', value)} // Используем общую функцию для изменения поля
-          />
-          {errors.sportType && <div className="error-message">Ошибка: {errors.sportType}</div>}
-          <TypeTournament
-            name="typeTournament"
-            label="Тип турнира:"
-            options={['Круговой', 'На вылет']}
-            defaultValue={typeTournament} // Установка "Круговой" по умолчанию
-            onChange={(value) => handleFieldChange('typeTournament', value)}
-          />
-          <TournamentDesc
-            className={cn('createTournament__select', { invalid: errors.tournamentDesc })}
-            name="tournamentDesc"
-            label="Описание:"
-            maxLength="2000"
-            value={tournamentDesc} // Добавьте это
-            onChange={(value) => handleFieldChange('tournamentDesc', value)}
-          />
-          {errors.tournamentDesc && <div className="error-message">Ошибка: {errors.tournamentDesc} </div>}
-          <div className="form-group__container">
-            <DateInput
-              className={cn('datepicker', { invalid: errors.startDate })}
-              id="startDate"
-              value={startDate}
-              onChange={(value) => handleFieldChange('startDate', value)}>
-              Дата начала
-            </DateInput>
-            <DateInput
-              appearance="endDate"
-              minDate={startDate}
-              className={cn('datepicker', { invalid: errors.endDate })}
-              id="endDate"
-              value={endDate}
-              onChange={(value) => handleFieldChange('endDate', value)}>
-              Дата окончания
-            </DateInput>
-          </div>
-          {errors.startDate && <div className="error-message error-message__date-input">Ошибка: {errors.startDate}</div>}
-          <div className="form-group btn-container">
-            <Button type="submit">Создать</Button>
-            <Button onClick={() => window.history.go(-1)}>Отменить</Button>
-          </div>
-        </form>
-      </div>
+      {isAdmin ? (
+        <div className="createTournament">
+          <h1 className="createTournament__title">Создание турнира</h1>
+          <form onSubmit={handleSubmit}>
+            <TournamentName
+              className={cn('tournamentName', { invalid: errors.title })}
+              name="title"
+              label="Название:"
+              maxLength="100"
+              value={title}
+              onChange={(value) => handleFieldChange('title', value)} // Используем общую функцию для изменения поля
+            />
+            {errors.title && <div className="error-message">Ошибка: {errors.title}</div>}
+            <SelectInput
+              className={cn('createTournament__select', { invalid: errors.sportType })}
+              name="sportType"
+              label="Вид спорта:"
+              options={sportTypeOptions}
+              value={sportType}
+              onChange={(value) => handleFieldChange('sportType', value)} // Используем общую функцию для изменения поля
+            />
+            {errors.sportType && <div className="error-message">Ошибка: {errors.sportType}</div>}
+            <TypeTournament
+              name="typeTournament"
+              label="Тип турнира:"
+              options={['Круговой', 'На вылет']}
+              defaultValue={typeTournament} // Установка "Круговой" по умолчанию
+              onChange={(value) => handleFieldChange('typeTournament', value)}
+            />
+            <TournamentDesc
+              className={cn('createTournament__select', { invalid: errors.tournamentDesc })}
+              name="tournamentDesc"
+              label="Описание:"
+              maxLength="2000"
+              value={tournamentDesc} // Добавьте это
+              onChange={(value) => handleFieldChange('tournamentDesc', value)}
+            />
+            {errors.tournamentDesc && <div className="error-message">Ошибка: {errors.tournamentDesc} </div>}
+            <div className="form-group__container">
+              <DateInput
+                className={cn('datepicker', { invalid: errors.startDate })}
+                id="startDate"
+                value={startDate}
+                onChange={(value) => handleFieldChange('startDate', value)}>
+                Дата начала
+              </DateInput>
+              <DateInput
+                appearance="endDate"
+                minDate={startDate}
+                className={cn('datepicker', { invalid: errors.endDate })}
+                id="endDate"
+                value={endDate}
+                onChange={(value) => handleFieldChange('endDate', value)}>
+                Дата окончания
+              </DateInput>
+            </div>
+            {errors.startDate && <div className="error-message error-message__date-input">Ошибка: {errors.startDate}</div>}
+            <div className="form-group btn-container">
+              <Button type="submit">Создать</Button>
+              <Button onClick={() => window.history.go(-1)}>Отменить</Button>
+            </div>
+          </form>
+        </div>
+      ) : (
+        <div className="no-access-create">У вас нет доступа к этой странице.</div>
+      )}
     </div>
   );
 }

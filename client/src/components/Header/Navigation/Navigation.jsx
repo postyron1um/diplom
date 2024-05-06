@@ -2,24 +2,13 @@
 import { Link, NavLink } from 'react-router-dom';
 import './Navigation.scss';
 import cn from 'classnames';
-
-// import classNames from 'classnames';
+import extractUserRoleFromToken from '../../../Func/extractUserDetailsFromToken';
 
 function Navigation() {
   const userToken = localStorage.getItem('token');
-  const extractUserRoleFromToken = (token) => {
-    try {
-      // декодируем токен, разделяя его по точке и декодируя вторую часть, содержащую полезные данные
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      return payload.roles
-    } catch (error) {
-      console.error('Ошибка при извлечении ID пользователя из токена:', error);
-      return null;
-    }
-  };
+  const role = extractUserRoleFromToken(userToken,'roles');
+  const isAdmin = role.includes('ADMIN');
 
-  const role = extractUserRoleFromToken(userToken);
-// console.log(role);
   return (
     <div>
       <div className="fl-direction">
@@ -46,7 +35,7 @@ function Navigation() {
               Новости
             </a>
           </li> */}
-
+          {isAdmin ? (
             <li className="nav-item">
               <NavLink
                 className={({ isActive }) => (isActive ? 'nav_active' : 'pending')}
@@ -55,7 +44,9 @@ function Navigation() {
                 Создать турнир
               </NavLink>
             </li>
-
+          ) : (
+            ''
+          )}
         </ul>
       </div>
     </div>

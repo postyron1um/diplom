@@ -82,5 +82,10 @@
 }
 .modal-cancell:hover {
   background-color: #0c0c0e;
+}
 
+.username-container {
+  @media (max-width: 880px) {
+    display: none;
+  }
 }
