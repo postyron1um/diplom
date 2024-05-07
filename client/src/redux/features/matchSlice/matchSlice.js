@@ -47,11 +47,11 @@ const matchSlice = createSlice({
       })
       .addCase(addMatch.fulfilled, (state, action) => {
         state.matches.push(action.payload);
-        state.status = action.payload.message
+        state.status = action.payload.message;
       })
-      .addCase(addMatch.rejected, (state) => {
+      .addCase(addMatch.rejected, (state,action) => {
         // state.matches.push(action.payload);
-        state.status = action.payload.message
+        state.status = action.payload.message;
       })
       .addCase(updateMatchResult.fulfilled, (state, action) => {
         // Обновляем состояние матчей после успешного обновления результатов матча

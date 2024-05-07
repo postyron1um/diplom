@@ -1,7 +1,12 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link, useLocation } from 'react-router-dom';
-import { getAllParticipate, participateInTournament } from '../../redux/features/participant/participantSlice';
+import { Link, useLoaderData, useLocation } from 'react-router-dom';
+import {
+  getAllParticipate,
+  // registerInRoundTournament,
+  // registerInKnockoutTournament,
+	participateInTournament,
+} from '../../redux/features/participant/participantSlice';
 import { checkIsAuth } from '../../redux/features/auth/authSlice';
 import { toast } from 'react-toastify';
 
@@ -22,16 +27,19 @@ const Registration = () => {
   const userId = extractUserIdFromToken(userToken);
   const location = useLocation();
   const tournamentId = location.pathname.split('/')[2];
-  // console.log(tournamentId);
+	console.log(tournamentId);
   const participants = useSelector((state) => state.participant.acceptedParticipants[tournamentId] || []);
-	const {status} = useSelector((state) => state.participant);
-console.log(participants);
-	useEffect(() => {
+  const { status } = useSelector((state) => state.participant);
+
+let currentTournament = useLoaderData();
+const typeTournament = currentTournament.typeTournament;
+console.log(typeTournament);
+
+  useEffect(() => {
     if (status) {
       toast(status);
     }
   }, [status]);
-
 
   useEffect(() => {
     if (tournamentId) {
@@ -39,10 +47,17 @@ console.log(participants);
     }
   }, [dispatch, tournamentId]);
 
-  const handleSubmit = async (e) => {
+  const handleRoundTournamentRegistration = async (e) => {
     e.preventDefault();
     if (tournamentId) {
       dispatch(participateInTournament({ userId, tournamentId }));
+    }
+  };
+
+  const handleKnockoutTournamentRegistration = async (e) => {
+    e.preventDefault();
+    if (tournamentId) {
+      dispatch(registerInKnockoutTournament({ userId, tournamentId }));
     }
   };
 
@@ -52,11 +67,20 @@ console.log(participants);
       {isAuth ? (
         <div className="tournament-register">
           <div className="participant">
-            <form onSubmit={handleSubmit}>
-              <div className="participant-row">
-                <button type="submit">Зарегистрироваться как участник</button>
-              </div>
-            </form>
+            {typeTournament === 'Круговой' ? (
+              <form onSubmit={handleRoundTournamentRegistration}>
+                <div className="participant-row">
+                  <button type="submit">Зарегистрироваться как участник в круговом турнире</button>
+                </div>
+              </form>
+            ) : (
+              <form onSubmit={handleKnockoutTournamentRegistration}>
+                <div className="participant-row">
+                  <button type="submit">Зарегистрироваться как участник в турнире на вылет</button>
+                </div>
+              </form>
+            )}
+
           </div>
         </div>
       ) : (

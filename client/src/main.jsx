@@ -93,6 +93,20 @@ const router = createBrowserRouter([
           {
             path: '/alltournaments/:tournamentID/matches',
             element: <KnockoutTournament />,
+            id: ':tournamentID/matches',
+            async loader({ params }) {
+              const id = params.tournamentID;
+              const tournaments = (await axios.get('/tournaments')).data.tournaments;
+              let currentTournament = null;
+
+              for (let tournament of tournaments) {
+                if (tournament._id === id) {
+                  currentTournament = tournament;
+                  break;
+                }
+              }
+              return currentTournament;
+            },
           },
           {
             path: '/alltournaments/:tournamentID/games',

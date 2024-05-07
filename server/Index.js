@@ -8,6 +8,7 @@ import authRoute from './routes/auth.js';
 import tournamentRoute from './routes/tournaments.js';
 import matchRoute from './routes/match.js'; // Импорт роута для матчей
 import tournamentParticipantsRoute from './routes/tournamentParticipants.route.js';
+import knockoutRoute from './routes/knockout.route.js';
 
 const app = express();
 dotenv.config();
@@ -23,9 +24,10 @@ app.use(express.json());
 // Подключаем роуты
 app.use('/api/auth', authRoute);
 app.use('/api/tournaments', tournamentRoute);
-app.use('/api/tournaments/:tournamentId/matches', matchRoute); // Обновленный путь для матчей
-app.use('/api/tournaments/:tournamentId/participants',tournamentParticipantsRoute)
+app.use('/api/tournaments/:tournamentId/matches', matchRoute);
+app.use('/api/tournaments/:tournamentId/participants', tournamentParticipantsRoute);
 
+app.use('/api/tournaments/:tournamentId/knockout', knockoutRoute);
 
 async function start() {
   try {

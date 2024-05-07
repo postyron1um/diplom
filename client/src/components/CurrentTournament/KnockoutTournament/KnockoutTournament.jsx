@@ -1,17 +1,37 @@
 import React, { useEffect, useState } from 'react';
 import styles from './KnockoutTournament.module.css';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+
+
+import {
+  fetchParticipants,
+  fetchMatches,
+  createNewParticipant,
+  createNewMatch,
+} from '../../../redux/features/knockout/knockoutSlice';
+import { useLoaderData } from 'react-router-dom';
 
 const KnockoutTournament = () => {
   const [participants, setParticipants] = useState([]);
   const [roundMatches, setRoundMatches] = useState([]);
   const [champion, setChampion] = useState(null);
   const [editingMatch, setEditingMatch] = useState(null);
+  const dispatch = useDispatch();
+  const participantsq = useSelector((state) => state.knockout.participants);
+  const roundMatchesq = useSelector((state) => state.knockout.matches);
+
+let currentTournament = useLoaderData();
+const typeTournament = currentTournament.typeTournament;
+console.log(typeTournament);
+
+  console.log(participantsq);
+  // useEffect(() => {
+  //   dispatch(fetchParticipants());
+  //   dispatch(fetchMatches());
+  // }, [dispatch]);
 
   useEffect(() => {
-
     const storedParticipants = JSON.parse(localStorage.getItem('tournamentAcceptedParticipants'));
-
     if (storedParticipants) {
       setParticipants(storedParticipants);
     }

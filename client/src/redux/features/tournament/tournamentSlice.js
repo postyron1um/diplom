@@ -55,7 +55,7 @@ export const tournamentSlice = createSlice({
     builder
       .addCase(createTournament.pending, (state) => {
         state.loading = true;
-				state.status = null
+				state.status = null;
       })
       .addCase(createTournament.fulfilled, (state, action) => {
         state.loading = false;
