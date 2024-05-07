@@ -20,6 +20,19 @@ export const participateInTournament = createAsyncThunk(
     }
   },
 );
+export const participateInTournamentKnock = createAsyncThunk(
+  'participant/participateInTournamentKnock',
+  async ({ userId, tournamentId }) => {
+    try {
+      const response = await axios.post(`/tournaments/${tournamentId}/knockout/participants`, { userId });
+      return response.data;
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  },
+);
+
 
 export const acceptParticipant = createAsyncThunk('participant/acceptParticipant', async ({ tournamentId, participantId }) => {
   const response = await axios.put(`/tournaments/${tournamentId}/participants/${participantId}/accept`);

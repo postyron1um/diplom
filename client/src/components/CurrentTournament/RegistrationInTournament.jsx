@@ -6,6 +6,7 @@ import {
   // registerInRoundTournament,
   // registerInKnockoutTournament,
 	participateInTournament,
+  participateInTournamentKnock,
 } from '../../redux/features/participant/participantSlice';
 import { checkIsAuth } from '../../redux/features/auth/authSlice';
 import { toast } from 'react-toastify';
@@ -57,7 +58,7 @@ console.log(typeTournament);
   const handleKnockoutTournamentRegistration = async (e) => {
     e.preventDefault();
     if (tournamentId) {
-      dispatch(registerInKnockoutTournament({ userId, tournamentId }));
+      dispatch(participateInTournamentKnock({ userId, tournamentId }));
     }
   };
 

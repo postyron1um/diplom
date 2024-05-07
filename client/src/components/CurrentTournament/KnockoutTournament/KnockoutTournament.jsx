@@ -25,10 +25,10 @@ const typeTournament = currentTournament.typeTournament;
 console.log(typeTournament);
 
   console.log(participantsq);
-  // useEffect(() => {
-  //   dispatch(fetchParticipants());
-  //   dispatch(fetchMatches());
-  // }, [dispatch]);
+  useEffect(() => {
+    dispatch(fetchParticipants());
+    dispatch(fetchMatches());
+  }, [dispatch]);
 
   useEffect(() => {
     const storedParticipants = JSON.parse(localStorage.getItem('tournamentAcceptedParticipants'));
