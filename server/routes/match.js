@@ -1,6 +1,6 @@
 // match.route.js
 import { Router } from 'express';
-import { createMatch, getAllMatches, updateMatch, updateMatchResult, updatedMatchResultTimur } from '../controllers/match.js';
+import { createMatch, getAllMatches, updateMatch, updatedMatchResultTimur } from '../controllers/match.js';
 import { checkAuth } from '../utils/checkAuth.js';
 
 // import { updateTournamentStatus } from '../../client/src/redux/features/matchSlice/matchSlice.js';

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import styles from './Games.module.css';
 import { useDispatch, useSelector } from 'react-redux';
-import { getAllParticipate } from '../../../redux/features/participant/participantSlice';
+import { getAllAcceptedParticipants, getAllParticipate } from '../../../redux/features/participant/participantSlice';
 import { addMatch, fetchMatches, updateMatchResult } from '../../../redux/features/matchSlice/matchSlice';
 import axios from '../../../utils/axios';
 import { updateTournamentStatus } from '../../../redux/features/tournament/tournamentSlice';
@@ -55,19 +55,21 @@ function Games() {
   const dispatch = useDispatch();
   const [tournamentData, setTournamentData] = useState([]);
   const tournamentId = location.pathname.split('/')[2];
-  const participantS = useSelector((state) => state.participant.pendingParticipants[tournamentId] || []);
-  console.log(participantS);
-  const participants = useSelector((state) => state.participant.acceptedParticipants[tournamentId] || []);
+
   const matches = useSelector((state) => state.matches.matches); // Получаем матчи из состояния Redux
-	console.log('acceptedParticipants',participants);
+	const participants = useSelector((state) => state.participant.acceptedParticipants.participantsd);
+	const filteredParticipants = participants?.filter((participant) => participant.tournament === tournamentId);
+	console.log(filteredParticipants);
+  // const participantsd = useSelector((state) => state.participant.acceptedParticipants[tournamentId] || []);
+  console.log('acceptedParticipants', participants);
   // const [isTournamentStarted, setIsTournamentStarted] = useState(false);
   const userToken = localStorage.getItem('token');
   const role = extractUserIdFromToken(userToken);
   const isAdmin = role.includes('ADMIN');
   const isTournamentStarted = useSelector((state) => state.tournament.isTournamentStarted);
-	const {status} = useSelector((state) => state.matches)
+  const { status } = useSelector((state) => state.matches);
 
-	useEffect(() => {
+  useEffect(() => {
     if (status) {
       toast(status);
     }
@@ -75,15 +77,15 @@ function Games() {
 
   useEffect(() => {
     if (tournamentId) {
-      dispatch(getAllParticipate({ tournamentId }));
+      dispatch(getAllAcceptedParticipants({ tournamentId }));
       dispatch(fetchMatches({ tournamentId }));
     }
   }, [dispatch, tournamentId]);
 
   useEffect(() => {
-    if (participants?.length > 0) {
+    if (filteredParticipants?.length > 0) {
       setTournamentData(() => {
-        const newTournamentData = generateTournamentData(participants.map((participant) => participant.username));
+        const newTournamentData = generateTournamentData(filteredParticipants.map((participant) => participant.username));
         return newTournamentData;
       });
     }
@@ -119,13 +121,12 @@ function Games() {
     try {
       const matchToUpdate = tournamentData[tournamentIndex].matches[matchIndex];
       const { score1, score2 } = matchToUpdate;
-			console.log(matchToUpdate);
-			console.log(matches);
-    
+      console.log(matchToUpdate);
+      console.log(matches);
 
       // Получаем ID матча из состояния Redux
       const matchId = matches.find((match) => match.team1 === matchToUpdate.team1 && match.team2 === matchToUpdate.team2)._id;
-			// console.log(matchId);
+      console.log(matchId);
       // Если матч ранее не был отредактирован, устанавливаем edited в true
       if (!matchToUpdate.edited) {
         const updatedTournamentData = [...tournamentData];
@@ -161,7 +162,7 @@ function Games() {
     if (!isAdmin) return;
     try {
       // Генерируем данные для матчей
-      const newTournamentData = generateTournamentData(participants.map((participant) => participant.username));
+      const newTournamentData = generateTournamentData(filteredParticipants.map((participant) => participant.username));
 
       // Добавляем каждый сгенерированный матч на сервер
       const newMatches = [];
@@ -185,7 +186,7 @@ function Games() {
       // Обновляем состояние tournamentData после добавления новых матчей
       setTournamentData(newTournamentData);
       await axios.put(`/tournaments/${tournamentId}/status`);
-			 await dispatch(updateTournamentStatus({ tournamentId }));
+      await dispatch(updateTournamentStatus({ tournamentId }));
     } catch (error) {
       console.error('Ошибка при добавлении матча:', error);
     }

@@ -76,10 +76,48 @@
 .form-matches {
   display: flex;
   justify-content: end;
-	margin-top: 20px;
+  margin-top: 20px;
 }
 
 .form-matches-btn {
   background-color: rgb(15, 214, 240);
   padding: 10px 20px;
+}
+
+.confirmAction {
+  text-align: center;
+}
+
+.acceptOrReject {
+  padding: 10px;
+  margin-bottom: 20px;
+}
+.acceptOrReject-container {
+  /* text-align: center; */
+  display: flex;
+  justify-content: space-around;
+}
+
+.acceptOrReject-btn {
+  /* display: flex; */
+  padding: 10px;
+  text-align: center;
+  background: green;
+  width: 130px;
+}
+.acceptOrReject-btn:hover {
+  background: rgb(3, 77, 3);
+
+}
+
+.acceptOrReject-btn-cancel {
+  background: red;
+
+  padding: 10px;
+  text-align: center;
+  width: 130px;
+}
+
+.acceptOrReject-btn-cancel:hover {
+	  background: rgb(114, 1, 1);
 }
