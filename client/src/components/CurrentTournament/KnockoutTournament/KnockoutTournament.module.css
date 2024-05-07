@@ -1,0 +1,115 @@
+.h2-title {
+  font-size: 24px;
+  margin-bottom: 15px;
+  margin-top: 15px;
+}
+
+.input {
+  border: 1px solid;
+  max-width: 100px;
+  max-height: 30px;
+  text-align: center;
+}
+.roundMatches {
+  background-color: rgb(28, 77, 58);
+  margin-bottom: 20px;
+  display: grid;
+  gap: 15px;
+  padding: 10px;
+  box-shadow: -3px -2px 6px 6px rgb(34 34 99);
+}
+.matchVs {
+  background-color: rgb(19, 69, 73);
+  border: 1px solid;
+  min-width: 300px;
+  padding: 10px 20px;
+  height: fit-content;
+}
+.matchVs-div {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+.input-box {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.champion {
+  border: 1px solid #c6ee38;
+  padding: 5px 10px;
+  background-color: rgb(45, 47, 163);
+  min-width: 200px;
+  /* max-width: fit-content; */
+  text-align: center;
+}
+
+.champion-title {
+  margin-top: 0;
+  font-weight: 600;
+  /* text-align: center; */
+  font-size: 19px;
+  padding: 5px;
+}
+
+.champion-name {
+  /* text-align: center; */
+  font-size: 18px;
+  font-weight: 600;
+  padding: 5px;
+}
+
+.edit_button,
+.save_button {
+  font-size: 14px;
+  background-color: rgb(48, 60, 61);
+  padding: 5px;
+  border: 1px solid;
+  height: fit-content;
+  align-self: center;
+}
+
+.edit_button:hover,
+.save_button:hover {
+  background-color: rgb(33, 40, 41);
+  border-color: #c6ee38;
+}
+
+/* MEDIA  */
+
+@media (max-width: 670px) {
+  .input-box {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+}
+
+@media (max-width: 670px) {
+  .matchVs {
+    min-width: 150px;
+    padding: 5px 10px;
+  }
+}
+
+@media (max-width: 415px) {
+  .matchVs-div {
+    display: flex;
+    /* justify-content: space-between; */
+    gap: 10px;
+  }
+  .matchVs {
+    /* Ограничение текста по ширине и разрешение переноса слов */
+    max-width: 100%;
+    word-wrap: break-word; /* Разрешает перенос слов */
+    white-space: pre-wrap; /* Разрешает перенос строк */
+  }
+}
+
+@media (max-width: 360px) {
+  .matchVs {
+    min-width: 100px;
+    padding: 5px 5px;
+  }
+}

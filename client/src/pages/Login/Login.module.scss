@@ -1,0 +1,151 @@
+.login {
+  display: flex;
+  justify-content: center;
+  padding: 70px 10px 50px;
+}
+
+.login-form {
+  // background-image: linear-gradient(to right top, #75a4eb, #519cec, #329bf7, #2197ec, #28a1ee);
+  -webkit-box-shadow: 0px 0px 13px 0px rgba(27, 36, 194, 1);
+  -moz-box-shadow: 0px 0px 13px 0px rgba(27, 36, 194, 1);
+  box-shadow: 0px 0px 13px 0px rgba(27, 36, 194, 1);
+  border: 1px solid #6cb3f7;
+  padding: 15px 30px;
+  min-height: 300px;
+  // max-width: 650px;
+  width: max(50%, 800px);
+  border-radius: 20px;
+  -webkit-border-radius: 20px;
+  -moz-border-radius: 20px;
+  -ms-border-radius: 20px;
+  -o-border-radius: 20px;
+  display: grid;
+  grid-template-columns: 1fr;
+  // gap: 40px;
+  justify-items: center;
+}
+.log-in-form {
+  max-width: 400px;
+  width: max(50%, 300px);
+}
+
+.login-form > .wrap-input:not(:first-child) {
+  margin-bottom: 25px;
+}
+
+.login-title {
+  margin: 0;
+  display: block;
+  padding: 0px 20px;
+  margin-bottom: 15px;
+  text-align: center;
+  font-size: 30px;
+  @media (max-width: 400px) {
+    font-size: 25px;
+  }
+}
+.wrap-input {
+  width: 100%;
+}
+.wrap-input input:focus {
+  box-shadow: 0px 0px 10px 2px rgba(27, 36, 194, 1);
+}
+.wrap-input input {
+  font-weight: 500;
+  border: 1px solid #277170;
+  border-radius: 6px;
+  -webkit-border-radius: 6px;
+  -moz-border-radius: 6px;
+  -ms-border-radius: 6px;
+  -o-border-radius: 6px;
+  background-color: #2b2c2e;
+  width: 100%;
+  padding: 10px 20px;
+}
+
+.login-input {
+  padding: 5px 10px;
+}
+
+.login-input::placeholder {
+  color: #fff;
+}
+
+.login-btn {
+  background-color: rgba(85, 74, 230, 0.699);
+  padding: 10px 65px;
+  border-radius: 10px;
+  width: 100%;
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  -ms-border-radius: 10px;
+  -o-border-radius: 10px;
+  @media (max-width: 420px) {
+    padding: 10px 40px;
+  }
+  @media (max-width: 360px) {
+    padding: 10px 30px;
+  }
+}
+
+.wrap-input_log-in {
+  @media (max-width: 700px) {
+    width: 250px;
+  }
+}
+.wrap-input_log-in input {
+  @media (max-width: 700px) {
+    width: 250px;
+  }
+}
+.login-btn:hover {
+  transition: background-color 0.3s ease;
+  background-color: rgba(72, 61, 228, 0.9);
+  -webkit-transition: background-color 0.3s ease;
+  -moz-transition: background-color 0.3s ease;
+  -ms-transition: background-color 0.3s ease;
+  -o-transition: background-color 0.3s ease;
+}
+
+.login {
+  margin-top: 80px;
+}
+
+.log-in-form__btn {
+  margin-bottom: 10px;
+  @media (max-width: 420px) {
+    padding: 10px 60px;
+  }
+}
+
+.wrap-input input::placeholder {
+  color: #f7f7f7;
+  font-weight: 500;
+}
+
+.not-account-need-register {
+  display: grid;
+  grid-template-columns: 5fr 1fr;
+	justify-content: space-between;
+  gap: 10px;
+	margin-bottom: 10px;
+
+	width: 100%;
+}
+.no-account {
+	display: inline-grid;
+	margin: 0;
+}
+.no-account:hover {
+	color: #70ec1d;
+	transition: color 0.1s ease;
+	-webkit-transition: color 0.1s ease;
+	-moz-transition: color 0.1s ease;
+	-ms-transition: color 0.1s ease;
+	-o-transition: color 0.1s ease;
+}
+
+
+.no-account-align {
+	align-self: center;
+}

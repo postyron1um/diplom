@@ -1,0 +1,123 @@
+.admin-title {
+  margin-bottom: 15px;
+}
+
+.tournamentRegistrations {
+  box-shadow: 0px 0px 13px 0px rgba(27, 36, 194, 1);
+  border: 1px solid #6cb3f7;
+  border-radius: 20px;
+  padding: 20px 40px;
+  margin-top: 30px;
+}
+
+.tournamentRegistrations-title {
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+
+.tournamentRegistrations-ul {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.tournamentRegistrations-ul li {
+  border: 1px solid #24dd24;
+  padding: 15px;
+  /* display: flex; */
+}
+.tournamentRegistrations-btn-accept {
+  background: green;
+  margin-right: 30px;
+  padding: 10px;
+}
+
+.tournamentRegistrations-btn-accept:hover {
+  background: rgb(2, 75, 2);
+  transition: background 0.4s ease;
+  -webkit-transition: background 0.4s ease;
+  -moz-transition: background 0.4s ease;
+  -ms-transition: background 0.4s ease;
+  -o-transition: background 0.4s ease;
+}
+
+.tournamentRegistrations-btn-reject {
+  background: red;
+  padding: 10px;
+}
+.tournamentRegistrations-btn-reject:hover {
+  background: rgb(136, 8, 8);
+  transition: background 0.4s ease;
+  -webkit-transition: background 0.4s ease;
+  -moz-transition: background 0.4s ease;
+  -ms-transition: background 0.4s ease;
+  -o-transition: background 0.4s ease;
+}
+.tournamentRegistrations-span {
+  display: inline-block;
+  min-width: 100px;
+  background-color: #032757;
+  padding: 10px;
+  margin-right: 20px;
+  text-align: center;
+  margin-top: 0;
+}
+
+.tournamentRegistrations-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 5px;
+}
+
+.tournamentRegistrations-div-end {
+  align-self: flex-end;
+}
+
+.form-matches {
+  display: flex;
+  justify-content: end;
+  margin-top: 20px;
+}
+
+.form-matches-btn {
+  background-color: rgb(15, 214, 240);
+  padding: 10px 20px;
+}
+
+.confirmAction {
+  text-align: center;
+}
+
+.acceptOrReject {
+  padding: 10px;
+  margin-bottom: 20px;
+}
+.acceptOrReject-container {
+  /* text-align: center; */
+  display: flex;
+  justify-content: space-around;
+}
+
+.acceptOrReject-btn {
+  /* display: flex; */
+  padding: 10px;
+  text-align: center;
+  background: green;
+  width: 130px;
+}
+.acceptOrReject-btn:hover {
+  background: rgb(3, 77, 3);
+
+}
+
+.acceptOrReject-btn-cancel {
+  background: red;
+
+  padding: 10px;
+  text-align: center;
+  width: 130px;
+}
+
+.acceptOrReject-btn-cancel:hover {
+	  background: rgb(114, 1, 1);
+}
