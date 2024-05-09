@@ -15,11 +15,6 @@ const knockoutParticipantSchema = new mongoose.Schema({
     ref: 'Tournament',
     required: true,
   },
-  status: {
-    type: String,
-    enum: ['accepted', 'rejected', 'pending'],
-    default: 'pending',
-  },
 });
 
 const KnockoutParticipant = mongoose.model('KnockoutParticipant', knockoutParticipantSchema);

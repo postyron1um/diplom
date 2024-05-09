@@ -25,9 +25,10 @@ app.use(express.json());
 app.use('/api/auth', authRoute);
 app.use('/api/tournaments', tournamentRoute);
 app.use('/api/tournaments/:tournamentId/matches', matchRoute);
+// app.use('/api/tournaments/:tournamentId/participants', tournamentParticipantsRoute);
 app.use('/api/tournaments/:tournamentId/participants', tournamentParticipantsRoute);
 
-app.use('/api/tournaments/:tournamentId/knockout', knockoutRoute);
+app.use('/api/tournaments/', knockoutRoute);
 
 async function start() {
   try {

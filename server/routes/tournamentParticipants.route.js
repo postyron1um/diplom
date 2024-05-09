@@ -39,7 +39,7 @@ router.put('/:id/accept', async (req, res) => {
 router.get('/accepted', async (req, res) => {
   try {
     const { tournamentId } = req.body; // Получаем tournamentId из параметров запроса
-		console.log(tournamentId,'ddsdfgfg');
+		// console.log(tournamentId,'yy');
     // const participantsd = await Participant.find({ tournament: tournamentId });
     const participantsd = await TournamentParticipant.find({ status: 'accepted' });
     res.json({ participantsd, message: 'GG' });

@@ -1,48 +1,87 @@
 import React, { useEffect, useState } from 'react';
 import styles from './KnockoutTournament.module.css';
 import { useDispatch, useSelector } from 'react-redux';
-
-
-import {
-  fetchParticipants,
-  fetchMatches,
-  createNewParticipant,
-  createNewMatch,
-} from '../../../redux/features/knockout/knockoutSlice';
+import axios from '../../../utils/axios';
+// import {
+//   fetchParticipants,
+//   fetchMatches,
+//   createNewParticipant,
+//   createNewMatch,
+// } from '../../../redux/features/knockout/knockoutSlice';
 import { useLoaderData } from 'react-router-dom';
+import {
+  getAllAcceptedParticipants,
+  getAllAcceptedParticipantsKnock,
+} from '../../../redux/features/participant/participantSlice';
+import { createNewMatch, fetchMatches } from '../../../redux/features/knockout/knockoutSlice';
 
 const KnockoutTournament = () => {
+  let currentTournament = useLoaderData();
+  const tournamentId = currentTournament._id;
   const [participants, setParticipants] = useState([]);
   const [roundMatches, setRoundMatches] = useState([]);
   const [champion, setChampion] = useState(null);
   const [editingMatch, setEditingMatch] = useState(null);
   const dispatch = useDispatch();
-  const participantsq = useSelector((state) => state.knockout.participants);
-  const roundMatchesq = useSelector((state) => state.knockout.matches);
+  // const participantsd = useSelector((state) => state.participant.acceptedParticipants.participantsd);
+  // const filteredParticipants = participantsd?.filter((participant) => participant.tournament === tournamentId);
+  // console.log(participantsd);
 
-let currentTournament = useLoaderData();
-const typeTournament = currentTournament.typeTournament;
-console.log(typeTournament);
-
-  console.log(participantsq);
+  // const typeTournament = currentTournament.typeTournament;
+  // console.log(tournamentId);
   useEffect(() => {
-    dispatch(fetchParticipants());
-    dispatch(fetchMatches());
-  }, [dispatch]);
+    const fetchTournaments = async () => {
+      try {
+        const response = await fetch(`http://localhost:3007/api/tournaments/${tournamentId}/knockout/participants/accepted`);
+        if (!response.ok) {
+          throw new Error('Ошибка при получении данных о турнирах');
+        }
+        const data = await response.json();
+        console.log(data.participantsd);
+        const storedParticipants = data.participantsd.map((participant) => participant.username);
+        if (storedParticipants) {
+          setParticipants(storedParticipants);
+        }
+      } catch (error) {
+        console.error('Ошибка:', error.message);
+      }
+    };
 
-  useEffect(() => {
-    const storedParticipants = JSON.parse(localStorage.getItem('tournamentAcceptedParticipants'));
-    if (storedParticipants) {
-      setParticipants(storedParticipants);
-    }
+    fetchTournaments();
   }, []);
 
   useEffect(() => {
-    const savedRoundMatches = JSON.parse(localStorage.getItem('tournamentRoundMatches'));
-    if (savedRoundMatches && savedRoundMatches.length > 0) {
-      setRoundMatches(savedRoundMatches);
-    }
+    const fetchMatches = async () => {
+      try {
+        // Отправляем GET-запрос на сервер для получения матчей
+        const response = await axios.get(`/tournaments/${tournamentId}/knockout/matches`);
+				console.log('fetchMatches', response.data);
+				setRoundMatches(response.data);
+        if (!response.data.success) {
+          throw new Error('Ошибка при получении матчей');
+        }
+        // Обновляем состояние матчей
+        // setMatches(response.data.matches);
+      } catch (error) {
+        console.error('Ошибка при получении матчей:', error.message);
+      }
+    };
+
+    fetchMatches();
   }, []);
+
+  useEffect(() => {
+    // dispatch(fetchParticipants());
+    const RoundMatches = dispatch(fetchMatches(tournamentId));
+    // setRoundMatches(RoundMatches);
+  }, [dispatch, tournamentId]);
+
+  // useEffect(() => {
+  //   const savedRoundMatches = JSON.parse(localStorage.getItem('tournamentRoundMatches'));
+  //   if (savedRoundMatches && savedRoundMatches.length > 0) {
+  //     setRoundMatches(savedRoundMatches);
+  //   }
+  // }, []);
 
   const shuffleArray = (array) => {
     const shuffledArray = [...array];
@@ -50,6 +89,7 @@ console.log(typeTournament);
       const j = Math.floor(Math.random() * (i + 1));
       [shuffledArray[i], shuffledArray[j]] = [shuffledArray[j], shuffledArray[i]];
     }
+    // console.log(shuffledArray);
     return shuffledArray;
   };
 
@@ -66,21 +106,28 @@ console.log(typeTournament);
     const numRounds = Math.ceil(Math.log2(numParticipants));
     const matchesPerRound = numParticipants / 2;
     let shuffledParticipants = shuffleArray(participants);
+    // console.log(shuffledParticipants);
     for (let i = 0; i < numRounds; i++) {
       const roundMatches = [];
       for (let j = 0; j < matchesPerRound; j++) {
         const team1 = shuffledParticipants[j * 2];
+        // console.log(team1);
+
         const team2 = shuffledParticipants[j * 2 + 1];
+        // console.log(team2);
         if (team1 && team2) {
           const match = {
             id: j,
-            team1: team1.name,
-            team2: team2.name,
+            team1: team1,
+            team2: team2,
             scoreTeam1: '',
             scoreTeam2: '',
             winner: null,
           };
           roundMatches.push(match);
+          // console.log(match);
+          dispatch(createNewMatch({ team1: match.team1, team2: match.team2, tournamentId }));
+          console.log(roundMatches);
         } else {
           console.error('Invalid participants in round match.');
         }
@@ -220,10 +267,16 @@ console.log(typeTournament);
 
   useEffect(() => {
     localStorage.setItem('tournamentRoundMatches', JSON.stringify(roundMatches));
+    console.log();
   }, [roundMatches]);
 
-  const showStartTournamentButton = !roundMatches || roundMatches.length === 0;
+  // const showStartTournamentButton = !roundMatches || roundMatches.length === 0;
 
+  console.log(participants);
+  console.log(roundMatches);
+	roundMatches.map((round) => {
+		console.log(round);
+	})
   return (
     <div>
       <h2 className={styles['h2-title']}>Турнир на вылет</h2>
@@ -285,7 +338,7 @@ console.log(typeTournament);
           <p className={styles['champion-name']}>{champion}</p>
         </div>
       ) : (
-        <div>{showStartTournamentButton && <button onClick={generateRoundMatches}>Start Tournament</button>}</div>
+        <div>{<button onClick={generateRoundMatches}>Start Tournament</button>}</div>
       )}
     </div>
   );

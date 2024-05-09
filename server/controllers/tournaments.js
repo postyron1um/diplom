@@ -66,6 +66,8 @@ export const registerParticipant = async (req, res) => {
       return res.json({ success: false, message: 'Пользователь не найден.' });
     }
     const username = user.username;
+		console.log('username', username);
+		
 
     // Проверяем, зарегистрирован ли пользователь уже на этот турнир
     const existingParticipant = await TournamentParticipant.findOne({ user: userId, tournament: tournamentId });

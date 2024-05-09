@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import styles from './AdminPanel.module.css';
 import { useDispatch, useSelector } from 'react-redux';
-import { getAllParticipate, acceptParticipant, rejectParticipant } from '../../../redux/features/participant/participantSlice';
+import { getAllParticipate, acceptParticipant, rejectParticipant, acceptParticipantKnock } from '../../../redux/features/participant/participantSlice';
 import Modal from '../../Modal/Modal';
 
 
@@ -38,7 +38,7 @@ function AdminPanel() {
   const dispatch = useDispatch();
   const tournamentId = location.pathname.split('/')[2];
   const registrations = useSelector((state) => state.participant.pendingParticipants[tournamentId] || []);
-
+console.log(registrations);
   // Состояние для отслеживания открытия модального окна
   const [isModalOpen, setIsModalOpen] = useState(false);
   // Состояние для отслеживания типа модального окна ('accept' или 'reject')
@@ -77,6 +77,7 @@ function AdminPanel() {
     // В зависимости от типа модального окна, отправляем запрос на принятие или отклонение участника
     if (modalType === 'accept') {
       dispatch(acceptParticipant({ tournamentId, participantId }));
+			dispatch(acceptParticipantKnock({ tournamentId: tournamentId, participantId: participantId }));
     } else if (modalType === 'reject') {
       dispatch(rejectParticipant({ tournamentId, participantId }));
     }

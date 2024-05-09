@@ -4,14 +4,15 @@ import axios from '../../../utils/axios';
 
 // /api/tournaments/:tournamentId/knockout
 
-
 export const fetchMatches = createAsyncThunk('tournament/fetchMatches', async (tournamentId) => {
   const response = await axios.get(`/tournaments/${tournamentId}/knockout/matches`);
+	console.log('fetchMatches', response.data);
+	
   return response.data;
 });
 
 export const createNewMatch = createAsyncThunk('tournament/createNewMatch', async ({ tournamentId, team1, team2 }) => {
-  const response = await axios.post(`/tournaments/${tournamentId}/knockout/matches`, { team1, team2 });
+  const response = await axios.post(`/tournaments/${tournamentId}/knockout/matches`, { team1, team2, tournamentId });
   return response.data;
 });
 
@@ -28,21 +29,19 @@ export const createNewParticipant = createAsyncThunk(
   },
 );
 
-export const acceptParticipant = createAsyncThunk(
-  'tournament/acceptParticipant',
-  async ({ tournamentId, participantId }) => {
-    const response = await axios.put(`/tournaments/${tournamentId}/knockout/participants/${participantId}/accept`);
-    return { tournamentId, participantId, response.data };
-  }
-);
+export const acceptParticipant = createAsyncThunk('tournament/acceptParticipant', async ({ tournamentId, participantId }) => {
+  const response = await axios.put(`/tournaments/${tournamentId}/knockout/participants/${participantId}/accept`);
+  const resData = response.data;
+  return { tournamentId, participantId, resData };
+});
 
-export const rejectParticipant = createAsyncThunk(
-  'tournament/rejectParticipant',
-  async ({ tournamentId, participantId }) => {
-    const response = await axios.put(`/tournaments/${tournamentId}/knockout/participants/${participantId}/reject`);
-    return { tournamentId, participantId, response.data };
-  }
-);
+export const rejectParticipant = createAsyncThunk('tournament/rejectParticipant', async ({ tournamentId, participantId }) => {
+  const response = await axios.put(`/tournaments/${tournamentId}/knockout/participants/${participantId}/reject`);
+  const resData = response.data;
+  return { tournamentId, participantId, resData };
+});
+
+
 
 const tournamentSlice = createSlice({
   name: 'tournament',
@@ -55,17 +54,17 @@ const tournamentSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(fetchMatches.pending, (state) => {
-        state.status = 'loading';
-      })
-      .addCase(fetchMatches.fulfilled, (state, action) => {
-        state.status = 'succeeded';
-        state.matches = action.payload;
-      })
-      .addCase(fetchMatches.rejected, (state, action) => {
-        state.status = 'failed';
-        state.error = action.error.message;
-      })
+      // .addCase(fetchMatches.pending, (state) => {
+      //   state.status = 'loading';
+      // })
+      // .addCase(fetchMatches.fulfilled, (state, action) => {
+      //   state.status = 'succeeded';
+      //   state.matches = action.payload;
+      // })
+      // .addCase(fetchMatches.rejected, (state, action) => {
+      //   state.status = 'failed';
+      //   state.error = action.error.message;
+      // })
       .addCase(createNewMatch.fulfilled, (state, action) => {
         state.matches.push(action.payload);
       })
@@ -93,7 +92,7 @@ const tournamentSlice = createSlice({
         state.participants = state.participants.map((participant) =>
           participant._id === participantId && participant.tournament === tournamentId
             ? { ...participant, status: 'accepted' }
-            : participant
+            : participant,
         );
       })
       .addCase(acceptParticipant.rejected, (state, action) => {
@@ -110,7 +109,7 @@ const tournamentSlice = createSlice({
         state.participants = state.participants.map((participant) =>
           participant._id === participantId && participant.tournament === tournamentId
             ? { ...participant, status: 'rejected' }
-            : participant
+            : participant,
         );
       })
       .addCase(rejectParticipant.rejected, (state, action) => {
