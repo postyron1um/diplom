@@ -2,33 +2,25 @@ import React, { useEffect, useState } from 'react';
 import styles from './KnockoutTournament.module.css';
 import { useDispatch, useSelector } from 'react-redux';
 import axios from '../../../utils/axios';
-// import {
-//   fetchParticipants,
-//   fetchMatches,
-//   createNewParticipant,
-//   createNewMatch,
-// } from '../../../redux/features/knockout/knockoutSlice';
+import extractUserRoleFromToken from '../../../Func/extractUserDetailsFromToken';
+
 import { useLoaderData } from 'react-router-dom';
-import {
-  getAllAcceptedParticipants,
-  getAllAcceptedParticipantsKnock,
-} from '../../../redux/features/participant/participantSlice';
-import { createNewMatch, fetchMatches } from '../../../redux/features/knockout/knockoutSlice';
+
+import { createNewMatch } from '../../../redux/features/knockout/knockoutSlice';
 
 const KnockoutTournament = () => {
   let currentTournament = useLoaderData();
   const tournamentId = currentTournament._id;
-  const [participants, setParticipants] = useState([]);
-  const [roundMatches, setRoundMatches] = useState([]);
+  const userToken = localStorage.getItem('token');
+  const role = extractUserRoleFromToken(userToken, 'roles');
+  const isAdmin = role.includes('ADMIN');
+ const [tournamentStarted, setTournamentStarted] = useState(false); 
+
+  const [participants, setParticipants] = useState([]); // тут лежат наши участники из бд
+  const [roundMatches, setRoundMatches] = useState([]); // матчи турнира из бд
   const [champion, setChampion] = useState(null);
   const [editingMatch, setEditingMatch] = useState(null);
   const dispatch = useDispatch();
-  // const participantsd = useSelector((state) => state.participant.acceptedParticipants.participantsd);
-  // const filteredParticipants = participantsd?.filter((participant) => participant.tournament === tournamentId);
-  // console.log(participantsd);
-
-  // const typeTournament = currentTournament.typeTournament;
-  // console.log(tournamentId);
   useEffect(() => {
     const fetchTournaments = async () => {
       try {
@@ -37,8 +29,8 @@ const KnockoutTournament = () => {
           throw new Error('Ошибка при получении данных о турнирах');
         }
         const data = await response.json();
-        console.log(data.participantsd);
-        const storedParticipants = data.participantsd.map((participant) => participant.username);
+        // console.log(data.participantsd);
+        const storedParticipants = data.participantsd;
         if (storedParticipants) {
           setParticipants(storedParticipants);
         }
@@ -48,40 +40,25 @@ const KnockoutTournament = () => {
     };
 
     fetchTournaments();
-  }, []);
+  }, [tournamentId]);
 
   useEffect(() => {
     const fetchMatches = async () => {
       try {
         // Отправляем GET-запрос на сервер для получения матчей
-        const response = await axios.get(`/tournaments/${tournamentId}/knockout/matches`);
-				console.log('fetchMatches', response.data);
-				setRoundMatches(response.data);
-        if (!response.data.success) {
-          throw new Error('Ошибка при получении матчей');
-        }
-        // Обновляем состояние матчей
-        // setMatches(response.data.matches);
+        const response = await fetch(`http://localhost:3007/api/tournaments/${tournamentId}/knockout/matches`);
+        // if (!response.data.success) {
+        //   throw new Error('Ошибка при получении матчей');
+        // }
+        const data = await response.json();
+        console.log(data.roundMatches);
+        setRoundMatches(data.roundMatches);
       } catch (error) {
         console.error('Ошибка при получении матчей:', error.message);
       }
     };
-
     fetchMatches();
-  }, []);
-
-  useEffect(() => {
-    // dispatch(fetchParticipants());
-    const RoundMatches = dispatch(fetchMatches(tournamentId));
-    // setRoundMatches(RoundMatches);
-  }, [dispatch, tournamentId]);
-
-  // useEffect(() => {
-  //   const savedRoundMatches = JSON.parse(localStorage.getItem('tournamentRoundMatches'));
-  //   if (savedRoundMatches && savedRoundMatches.length > 0) {
-  //     setRoundMatches(savedRoundMatches);
-  //   }
-  // }, []);
+  }, [tournamentId]);
 
   const shuffleArray = (array) => {
     const shuffledArray = [...array];
@@ -94,8 +71,6 @@ const KnockoutTournament = () => {
   };
 
   const generateRoundMatches = () => {
-    console.log('Generating round matches...');
-    console.log('Participants:', participants);
     const numParticipants = participants.length;
     if (numParticipants % 2 !== 0) {
       console.error('Number of participants must be even for knockout tournament.');
@@ -106,18 +81,15 @@ const KnockoutTournament = () => {
     const numRounds = Math.ceil(Math.log2(numParticipants));
     const matchesPerRound = numParticipants / 2;
     let shuffledParticipants = shuffleArray(participants);
-    // console.log(shuffledParticipants);
     for (let i = 0; i < numRounds; i++) {
       const roundMatches = [];
       for (let j = 0; j < matchesPerRound; j++) {
         const team1 = shuffledParticipants[j * 2];
-        // console.log(team1);
-
         const team2 = shuffledParticipants[j * 2 + 1];
-        // console.log(team2);
         if (team1 && team2) {
           const match = {
             id: j,
+            round: i + 1, // Устанавливаем номер раунда
             team1: team1,
             team2: team2,
             scoreTeam1: '',
@@ -125,17 +97,19 @@ const KnockoutTournament = () => {
             winner: null,
           };
           roundMatches.push(match);
-          // console.log(match);
-          dispatch(createNewMatch({ team1: match.team1, team2: match.team2, tournamentId }));
-          console.log(roundMatches);
         } else {
           console.error('Invalid participants in round match.');
         }
       }
       initialRoundMatches.push(roundMatches);
-      shuffledParticipants = getRoundWinners(shuffledParticipants, initialRoundMatches[i]);
+      shuffledParticipants = getRoundWinners(shuffledParticipants, roundMatches); // Обновляем участников для следующего раунда
     }
+    console.log(initialRoundMatches);
+    dispatch(createNewMatch({ initialRoundMatches, tournamentId }));
     setRoundMatches(initialRoundMatches);
+		setTournamentStarted(true); // Устанавливаем флаг, что турнир начался
+    // После начала турнира обновляем страницу
+    window.location.reload();
   };
 
   const getRoundWinners = (participants, matches) => {
@@ -170,35 +144,63 @@ const KnockoutTournament = () => {
     });
   };
 
-  const handleSaveResult = (roundIndex, matchIndex) => {
-    setRoundMatches((prevRoundMatches) => {
-      const updatedRoundMatches = [...prevRoundMatches];
-      const updatedMatch = { ...updatedRoundMatches[roundIndex][matchIndex] };
-      updatedMatch.winner = updatedMatch.scoreTeam1 > updatedMatch.scoreTeam2 ? 'team1' : 'team2';
-      updatedRoundMatches[roundIndex][matchIndex] = updatedMatch;
+  const handleSaveResult = async (roundIndex, matchIndex) => {
+		console.log(roundIndex);
+    try {
+      const matchToUpdate = roundMatches[roundIndex][matchIndex];
+      console.log('matchToUpdate', matchToUpdate);
+      const updatedMatch = {
+        scoreTeam1: matchToUpdate.scoreTeam1,
+        scoreTeam2: matchToUpdate.scoreTeam2,
+        winner: matchToUpdate.scoreTeam1 > matchToUpdate.scoreTeam2 ? matchToUpdate.team1 : matchToUpdate.team2,
+      };
+      await axios.put(`/tournaments/${tournamentId}/knockout/matches/${matchToUpdate._id}`, { updatedMatch });
       setEditingMatch(null);
-      generateNextRound(roundIndex, updatedRoundMatches);
-      return updatedRoundMatches;
-    });
+
+      // Проверяем, были ли сохранены все матчи текущего раунда
+      const isAllMatchesSaved = roundMatches.every((round) =>
+        round.every((match) => match.scoreTeam1 !== '' && match.scoreTeam2 !== ''),
+      );
+      if (isAllMatchesSaved) {
+        console.log('FDFDF');
+        await generateNextRound(roundIndex, roundMatches);
+      }
+    } catch (error) {
+      console.error('Ошибка при сохранении результата матча:', error);
+    }
   };
 
-  const generateNextRound = (completedRoundIndex, roundMatches) => {
+  const generateNextRound = async (completedRoundIndex, roundMatches) => {
+		console.log(roundMatches);
     const updatedRoundMatches = [...roundMatches];
+    console.log(updatedRoundMatches);
     const winnersOfCompletedRound = updatedRoundMatches[completedRoundIndex].map((match) => match.winner);
-    const nextRoundIndex = completedRoundIndex + 1;
+    // console.log('winnersOfCompletedRound', winnersOfCompletedRound);
+    // if (winnersOfCompletedRound.every((winner) => winner !== null)) {
+    //   console.log('6');
+    // } else {
+		// console.log('4');	
+		// }
 
+    const nextRoundIndex = completedRoundIndex;
+    console.log('nextRoundIndex', nextRoundIndex);
+    console.log(updatedRoundMatches.length);
     if (nextRoundIndex < updatedRoundMatches.length) {
+      console.log('DSDS');
       if (winnersOfCompletedRound.every((winner) => winner !== null)) {
         const winnersOfNextRound = getRoundWinnersFromWinners(winnersOfCompletedRound, roundMatches[completedRoundIndex]);
+				console.log(winnersOfNextRound);
         const nextRoundMatches = [];
         for (let i = 0; i < Math.ceil(winnersOfNextRound.length / 2); i++) {
           const team1 = winnersOfNextRound[i * 2];
           const team2 = winnersOfNextRound[i * 2 + 1];
+					console.log(team1.username);
           if (team1 && team2) {
             const match = {
               id: i,
-              team1: team1.name ? team1.name : team1,
-              team2: team2.name ? team2.name : team2,
+							round: nextRoundIndex + 1,
+              team1: team1.username ? team1.username : team1,
+              team2: team2.username ? team2.username : team2,
               scoreTeam1: '',
               scoreTeam2: '',
               winner: null,
@@ -207,7 +209,8 @@ const KnockoutTournament = () => {
           } else if (team1 && !team2) {
             nextRoundMatches.push({
               id: i,
-              team1: team1.name ? team1.name : team1,
+              round: nextRoundIndex + 1,
+              team1: team1.username ? team1.username : team1,
               team2: null,
               scoreTeam1: '',
               scoreTeam2: '',
@@ -218,26 +221,47 @@ const KnockoutTournament = () => {
           }
         }
         updatedRoundMatches[nextRoundIndex] = nextRoundMatches;
+        console.log(nextRoundMatches);
         setRoundMatches(updatedRoundMatches);
+
+        // Отправляем данные новых матчей следующего раунда на сервер
+        try {
+          // dispatch(createNewMatch({ initialRoundMatches: nextRoundMatches, tournamentId }));
+          const response = await axios.post(`/tournaments/${tournamentId}/knockout/matches/next`, {
+            initialRoundMatches: nextRoundMatches,
+            tournamentId,
+          });
+          console.log('Новые матчи следующего раунда сохранены в базе данных:', response.data);
+        } catch (error) {
+          console.error('Ошибка при сохранении новых матчей следующего раунда:', error.message);
+        }
       } else {
         console.log('Not all matches of the current round have been played yet.');
       }
     } else {
+      console.log('JHJH');
       determineChampion();
     }
   };
-
-  const getRoundWinnersFromWinners = (winnersOfCompletedRound, currentRoundMatches) => {
-    const remainingParticipants = [];
-    for (let i = 0; i < winnersOfCompletedRound.length; i++) {
-      if (winnersOfCompletedRound[i] === 'team1') {
-        remainingParticipants.push(participants.find((participant) => participant.name === currentRoundMatches[i].team1));
-      } else if (winnersOfCompletedRound[i] === 'team2') {
-        remainingParticipants.push(participants.find((participant) => participant.name === currentRoundMatches[i].team2));
-      }
+	
+// use
+const getRoundWinnersFromWinners = (winnersOfCompletedRound, currentRoundMatches) => {
+  console.log(winnersOfCompletedRound);
+  console.log(currentRoundMatches);
+  console.log(participants);
+  const remainingParticipants = [];
+  for (let i = 0; i < winnersOfCompletedRound.length; i++) {
+    const winnerName = winnersOfCompletedRound[i];
+    const winnerParticipant = participants.find((participant) => participant.username === winnerName);
+    if (winnerParticipant) {
+      remainingParticipants.push(winnerParticipant);
+    } else {
+      console.error(`Winner ${winnerName} not found in participants.`);
     }
-    return remainingParticipants;
-  };
+  }
+  console.log(remainingParticipants);
+  return remainingParticipants;
+};
 
   useEffect(() => {
     if (roundMatches.length > 0) {
@@ -245,38 +269,58 @@ const KnockoutTournament = () => {
     }
   }, [roundMatches]);
 
-  const determineChampion = () => {
-    const lastRoundWinners = roundMatches[roundMatches.length - 1].map((match) => match.winner);
-    const championTeam = lastRoundWinners.find((winner) => winner !== null);
-    if (championTeam) {
-      const lastRound = roundMatches[roundMatches.length - 1];
-      for (let i = 0; i < lastRound.length; i++) {
-        if (lastRound[i].winner === championTeam) {
-          setChampion(championTeam === 'team1' ? lastRound[i].team1 : lastRound[i].team2);
-          return;
-        }
+const determineChampion = async () => {
+  const lastRound = roundMatches[roundMatches.length - 1];
+  let championName = null;
+
+  for (let i = 0; i < lastRound.length; i++) {
+    const match = lastRound[i];
+    if (match.scoreTeam1 !== '' && match.scoreTeam2 !== '') {
+      if (match.scoreTeam1 > match.scoreTeam2) {
+        championName = match.team1;
+      } else if (match.scoreTeam2 > match.scoreTeam1) {
+        championName = match.team2;
+      } else {
+        console.log('Match ended in a draw.');
+        // В случае ничьей, вы можете обработать ситуацию по вашему усмотрению
       }
-    } else {
-      console.log('No champion determined yet.');
+      break; // Прекращаем цикл после нахождения победителя
     }
-  };
+  }
+
+  if (championName) {
+    setChampion(championName);
+    await saveChampionToDatabase(championName); // Сохраняем чемпиона в базу данных
+  } else {
+    console.log('No champion determined yet.');
+  }
+};
+
+const saveChampionToDatabase = async (championName) => {
+  try {
+    const response = await axios.put(`/tournaments/${tournamentId}/champion`, { champion: championName });
+    console.log('Champion saved to database:', response.data);
+  } catch (error) {
+    console.error('Error saving champion to database:', error.message);
+  }
+};
 
   const handleEditMatch = (roundIndex, matchIndex) => {
     setEditingMatch({ roundIndex, matchIndex });
   };
 
-  useEffect(() => {
-    localStorage.setItem('tournamentRoundMatches', JSON.stringify(roundMatches));
-    console.log();
-  }, [roundMatches]);
+  // useEffect(() => {
+  //   localStorage.setItem('tournamentRoundMatches', JSON.stringify(roundMatches));
+  //   console.log();
+  // }, [roundMatches]);
 
   // const showStartTournamentButton = !roundMatches || roundMatches.length === 0;
 
-  console.log(participants);
-  console.log(roundMatches);
-	roundMatches.map((round) => {
-		console.log(round);
-	})
+  // console.log(participants);
+  // console.log(roundMatches);
+  // roundMatches.map((round) => {
+  //   console.log(round);
+  // });
   return (
     <div>
       <h2 className={styles['h2-title']}>Турнир на вылет</h2>
@@ -285,11 +329,16 @@ const KnockoutTournament = () => {
           <h3>Round {roundIndex + 1}</h3>
           {round.map((match, matchIndex) => (
             <div key={matchIndex}>
-              {editingMatch !== null && editingMatch.roundIndex === roundIndex && editingMatch.matchIndex === matchIndex ? (
+              {isAdmin &&
+              editingMatch !== null &&
+              editingMatch.roundIndex === roundIndex &&
+              editingMatch.matchIndex === matchIndex ? (
                 <div className={styles['matchVs-div']}>
                   <p className={styles['matchVs']}>
-                    {match.team1 && match.team1.name ? match.team1.name : match.team1} vs{' '}
-                    {match.team2 && match.team2.name ? match.team2.name : match.team2}
+                    {/* {match.team1 && match.team1.name ? match.team1.name : match.team1} vs{' '}
+                    {match.team2 && match.team2.name ? match.team2.name : match.team2} */}
+                    {match.team1 && typeof match.team1 === 'object' ? match.team1.name : match.name} vs{' '}
+                    {match.team2 && typeof match.team2 === 'object' ? match.team2.name : match.name}
                     <p>
                       Счет: {match.scoreTeam1} - {match.scoreTeam2}
                     </p>
@@ -307,25 +356,34 @@ const KnockoutTournament = () => {
                       value={match.scoreTeam2}
                       onChange={(e) => handleScoreChange(roundIndex, matchIndex, 2, e.target.value)}
                     />
-                    <button className={styles['save_button']} onClick={() => handleSaveResult(roundIndex, matchIndex)}>
-                      Сохранить
-                    </button>
+                    {isAdmin ? (
+                      <button className={styles['save_button']} onClick={() => handleSaveResult(roundIndex, matchIndex)}>
+                        Сохранить
+                      </button>
+                    ) : (
+                      ''
+                    )}
                   </div>
                 </div>
               ) : (
                 <div className={styles['matchVs-div']}>
                   <p className={styles['matchVs']}>
-                    {match.team1 && match.team1.name ? match.team1.name : match.team1} vs{' '}
-                    {match.team2 && match.team2.name ? match.team2.name : match.team2}
+                    {match.team1 && typeof match.team1 === 'object' ? match.team1.username : match.team1} vs{' '}
+                    {match.team2 && typeof match.team2 === 'object' ? match.team2.username : match.team2}
                     {match.scoreTeam1 !== '' && match.scoreTeam2 !== '' && (
                       <p>
                         Счет: {match.scoreTeam1} - {match.scoreTeam2}
                       </p>
                     )}
                   </p>
-                  <button className={styles['edit_button']} onClick={() => handleEditMatch(roundIndex, matchIndex)}>
-                    Редактировать
-                  </button>
+
+                  {isAdmin ? (
+                    <button className={styles['edit_button']} onClick={() => handleEditMatch(roundIndex, matchIndex)}>
+                      Редактировать
+                    </button>
+                  ) : (
+                    ''
+                  )}
                 </div>
               )}
             </div>
@@ -338,7 +396,11 @@ const KnockoutTournament = () => {
           <p className={styles['champion-name']}>{champion}</p>
         </div>
       ) : (
-        <div>{<button onClick={generateRoundMatches}>Start Tournament</button>}</div>
+        <div>
+          {isAdmin
+            ? !currentTournament.isStarted && isAdmin && <button onClick={generateRoundMatches}>Start Tournament</button>
+            : ''}
+        </div>
       )}
     </div>
   );

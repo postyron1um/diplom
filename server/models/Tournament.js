@@ -34,6 +34,13 @@ const tournamentSchema = new mongoose.Schema(
         ref: 'Match',
       },
     ],
+
+    knockMatches: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'KnockoutMatch',
+      },
+    ],
     pendingParticipants: [
       {
         type: mongoose.Schema.Types.ObjectId,
@@ -46,6 +53,9 @@ const tournamentSchema = new mongoose.Schema(
         ref: 'Participant', // Ссылка на модель Participant
       },
     ],
+    champion: {
+      type: String, // Поле для хранения имени чемпиона
+    },
     isStarted: {
       type: Boolean,
       default: false, // По умолчанию турнир не начат

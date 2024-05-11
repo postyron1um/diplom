@@ -1,9 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import styles from './AdminPanel.module.css';
 import { useDispatch, useSelector } from 'react-redux';
-import { getAllParticipate, acceptParticipant, rejectParticipant, acceptParticipantKnock } from '../../../redux/features/participant/participantSlice';
+import {
+  getAllParticipate,
+  acceptParticipant,
+  rejectParticipant,
+  acceptParticipantKnock,
+} from '../../../redux/features/participant/participantSlice';
 import Modal from '../../Modal/Modal';
-
 
 function TournamentRegistrations({ registrations, handleAccept, handleReject }) {
   return (
@@ -38,7 +42,7 @@ function AdminPanel() {
   const dispatch = useDispatch();
   const tournamentId = location.pathname.split('/')[2];
   const registrations = useSelector((state) => state.participant.pendingParticipants[tournamentId] || []);
-console.log(registrations);
+
   // Состояние для отслеживания открытия модального окна
   const [isModalOpen, setIsModalOpen] = useState(false);
   // Состояние для отслеживания типа модального окна ('accept' или 'reject')
@@ -73,18 +77,28 @@ console.log(registrations);
     setParticipantId(null);
   };
 
-  const handleConfirmAction = () => {
+  const handleConfirmAction = async () => {
     // В зависимости от типа модального окна, отправляем запрос на принятие или отклонение участника
-    if (modalType === 'accept') {
-      dispatch(acceptParticipant({ tournamentId, participantId }));
-			dispatch(acceptParticipantKnock({ tournamentId: tournamentId, participantId: participantId }));
-    } else if (modalType === 'reject') {
-      dispatch(rejectParticipant({ tournamentId, participantId }));
+    try {
+      if (modalType === 'accept') {
+        await dispatch(acceptParticipant({ tournamentId, participantId }));
+        await dispatch(acceptParticipantKnock({ tournamentId, participantId }));
+      } else if (modalType === 'reject') {
+        await dispatch(rejectParticipant({ tournamentId, participantId }));
+      }
+      // Закрываем модальное окно после подтверждения действия
+      setIsModalOpen(false);
+      setModalType(null);
+      setParticipantId(null);
+      // Обновляем список заявок на участие в турнире
+      dispatch(getAllParticipate({ tournamentId }));
+    } catch (error) {
+      console.error('Ошибка при подтверждении действия:', error);
+      // В случае ошибки также закрываем модальное окно
+      setIsModalOpen(false);
+      setModalType(null);
+      setParticipantId(null);
     }
-    // Закрываем модальное окно после подтверждения действия
-    setIsModalOpen(false);
-    setModalType(null);
-    setParticipantId(null);
   };
 
   return (

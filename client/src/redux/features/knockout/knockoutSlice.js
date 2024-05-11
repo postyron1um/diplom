@@ -11,8 +11,10 @@ export const fetchMatches = createAsyncThunk('tournament/fetchMatches', async (t
   return response.data;
 });
 
-export const createNewMatch = createAsyncThunk('tournament/createNewMatch', async ({ tournamentId, team1, team2 }) => {
-  const response = await axios.post(`/tournaments/${tournamentId}/knockout/matches`, { team1, team2, tournamentId });
+export const createNewMatch = createAsyncThunk('tournament/createNewMatch', async ({ tournamentId,initialRoundMatches }) => {
+  console.log('initialRoundMatches', initialRoundMatches);
+
+  const response = await axios.post(`/tournaments/${tournamentId}/knockout/matches`, { initialRoundMatches, tournamentId });
   return response.data;
 });
 

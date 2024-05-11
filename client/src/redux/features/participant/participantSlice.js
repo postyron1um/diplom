@@ -26,8 +26,8 @@ export const participateInTournamentKnock = createAsyncThunk(
   async ({ userId, tournamentId }) => {
     try {
       const response = await axios.post(`/tournaments/${tournamentId}/knockout/participants`, { userId, tournamentId });
-			// console.log(response.data);
-			
+      // console.log(response.data);
+
       return response.data;
     } catch (error) {
       console.log(error);
@@ -36,18 +36,20 @@ export const participateInTournamentKnock = createAsyncThunk(
   },
 );
 
-
 export const acceptParticipant = createAsyncThunk('participant/acceptParticipant', async ({ tournamentId, participantId }) => {
   const response = await axios.put(`/tournaments/${tournamentId}/participants/${participantId}/accept`);
   // console.log('response.data', response.data);
   return response.data;
 });
 
-export const acceptParticipantKnock = createAsyncThunk('participant/acceptParticipantKnock', async ({ tournamentId, participantId }) => {
-  const response = await axios.put(`/tournaments/${tournamentId}/knockout/participants/${participantId}/accept`);
-  // console.log('response.data', response.data);
-  return response.data;
-});
+export const acceptParticipantKnock = createAsyncThunk(
+  'participant/acceptParticipantKnock',
+  async ({ tournamentId, participantId }) => {
+    const response = await axios.put(`/tournaments/${tournamentId}/knockout/participants/${participantId}/accept`);
+    // console.log('response.data', response.data);
+    return response.data;
+  },
+);
 
 export const rejectParticipant = createAsyncThunk('participant/rejectParticipant', async ({ tournamentId, participantId }) => {
   const response = await axios.put(`/tournaments/${tournamentId}/participants/${participantId}/reject`);
@@ -63,8 +65,8 @@ export const getAllParticipate = createAsyncThunk('participant/getAllParticipate
 export const getAllAcceptedParticipants = createAsyncThunk('participant/getAllAcceptedParticipants', async ({ tournamentId }) => {
   try {
     const response = await axios.get(`/tournaments/${tournamentId}/participants/accepted`);
-		// console.log('getAllAcceptedParticipants',response.data);
-		
+    // console.log('getAllAcceptedParticipants',response.data);
+
     return response.data;
   } catch (error) {
     console.log(error);
@@ -76,8 +78,8 @@ export const getAllAcceptedParticipantsKnock = createAsyncThunk(
   'participant/getAllAcceptedParticipantsKnock',
   async ({ tournamentId }) => {
     try {
-			// console.log('tournamentIdfffff', tournamentId);
-			
+      // console.log('tournamentIdfffff', tournamentId);
+
       const response = await axios.get(`/tournaments/${tournamentId}/knockout/participants/accepted`, { tournamentId });
       // console.log('getAllAcceptedParticipantsKnock', response.data);
 
@@ -88,9 +90,6 @@ export const getAllAcceptedParticipantsKnock = createAsyncThunk(
     }
   },
 );
-
-
-
 
 const participantSlice = createSlice({
   name: 'participant',
@@ -116,6 +115,23 @@ const participantSlice = createSlice({
         state.pendingParticipants[tournamentId].push(newParticipant);
       })
       .addCase(participateInTournament.rejected, (state, action) => {
+        state.loading = false;
+        state.status = action.error.message || 'Ошибка регистрации';
+      })
+      .addCase(participateInTournamentKnock.fulfilled, (state, action) => {
+        state.loading = false;
+        state.status = action.payload.message;
+
+        const { tournamentId, newParticipant } = action.payload;
+
+        if (!state.pendingParticipants[tournamentId]) {
+          state.pendingParticipants[tournamentId] = [];
+        }
+
+        // Добавляем нового участника в список участников для данного турнира
+        state.pendingParticipants[tournamentId].push(newParticipant);
+      })
+      .addCase(participateInTournamentKnock.rejected, (state, action) => {
         state.loading = false;
         state.status = action.error.message || 'Ошибка регистрации';
       });
@@ -175,21 +191,21 @@ const participantSlice = createSlice({
         }
         state.acceptedParticipants[tournament].push(action.payload);
       });
-			builder
-        .addCase(getAllAcceptedParticipants.pending, (state) => {
-          state.loading = true;
-          state.status = null;
-        })
-        .addCase(getAllAcceptedParticipants.fulfilled, (state, action) => {
-          state.loading = false;
-          state.status = 'success';
-          state.acceptedParticipants = action.payload;
-        })
-        .addCase(getAllAcceptedParticipants.rejected, (state, action) => {
-          state.loading = false;
-          state.status = 'error';
-          console.error('Error:', action.error.message);
-        });
+    builder
+      .addCase(getAllAcceptedParticipants.pending, (state) => {
+        state.loading = true;
+        state.status = null;
+      })
+      .addCase(getAllAcceptedParticipants.fulfilled, (state, action) => {
+        state.loading = false;
+        state.status = 'success';
+        state.acceptedParticipants = action.payload;
+      })
+      .addCase(getAllAcceptedParticipants.rejected, (state, action) => {
+        state.loading = false;
+        state.status = 'error';
+        console.error('Error:', action.error.message);
+      });
   },
 });
 
