@@ -121,3 +121,44 @@
 .acceptOrReject-btn-cancel:hover {
 	  background: rgb(114, 1, 1);
 }
+
+.accepted__ul {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.accepted__li {
+  padding: 10px;
+  max-width: 300px;
+  border:2px solid #d4d6eb;
+  border-radius: 5px;
+  background-color: rgb(19, 69, 73);
+}
+
+.menu-btn_div {
+  margin-top: 20px;
+  display: flex;
+  gap:10px;
+  @media (max-width:500px) {
+  margin-top: 40px;
+    
+  }
+}
+
+.menu-button {
+  font-size: 14px;
+  padding: 7px;
+
+  border-radius:5px;
+}
+
+.menu-button-active {
+  /* background-color:rgb(129 7 41) !important; */
+  background-color:var(--color1) !important;
+  font-size: 14px;
+
+  padding: 7px;
+  border-radius:5px;
+}

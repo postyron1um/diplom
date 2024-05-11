@@ -78,6 +78,8 @@
 
   .tournamentName,
   &__select {
+    background-color: transparent;
+
     border-radius: 5px;
     border: 1px solid var(--accent-color);
     width: 100%;

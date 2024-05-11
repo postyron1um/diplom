@@ -8,11 +8,14 @@ import {
   acceptParticipantKnock,
 } from '../../../redux/features/participant/participantSlice';
 import Modal from '../../Modal/Modal';
+import AcceptedParticipants from './AcceptedParticipants';
 
 function TournamentRegistrations({ registrations, handleAccept, handleReject }) {
   return (
-    <div className={styles['tournamentRegistrations']}>
-      <h2 className={styles['tournamentRegistrations-title']}>Заявки на участие в турнире:</h2>
+    <>
+    
+     <div className={styles['tournamentRegistrations']}>
+      <h2 className={styles['tournamentRegistrations-title']}>Заявки:</h2>
       <ul className={styles['tournamentRegistrations-ul']}>
         {registrations.map((registration) => (
           <li key={registration._id}>
@@ -35,6 +38,8 @@ function TournamentRegistrations({ registrations, handleAccept, handleReject }) 
         ))}
       </ul>
     </div>
+    </>
+   
   );
 }
 
@@ -42,14 +47,15 @@ function AdminPanel() {
   const dispatch = useDispatch();
   const tournamentId = location.pathname.split('/')[2];
   const registrations = useSelector((state) => state.participant.pendingParticipants[tournamentId] || []);
-
+  const [selectedMenu, setSelectedMenu] = useState('registrations');
   // Состояние для отслеживания открытия модального окна
   const [isModalOpen, setIsModalOpen] = useState(false);
   // Состояние для отслеживания типа модального окна ('accept' или 'reject')
   const [modalType, setModalType] = useState(null);
   // Состояние для отслеживания ID участника, для которого отображается модальное окно
   const [participantId, setParticipantId] = useState(null);
-
+  const participants = useSelector((state) => state.participant.acceptedParticipants[tournamentId] || []);
+  console.log(participants);
   useEffect(() => {
     if (tournamentId) {
       dispatch(getAllParticipate({ tournamentId }));
@@ -101,9 +107,20 @@ function AdminPanel() {
     }
   };
 
+  const handleMenuClick = (menu) => {
+    setSelectedMenu(menu);
+  }
+
   return (
     <div>
-      <TournamentRegistrations registrations={registrations} handleAccept={handleAccept} handleReject={handleReject} />
+      <div className={styles['menu-btn_div']}>
+      <button className={selectedMenu === 'registrations' ? styles['menu-button-active'] : styles['menu-button']} onClick={() => handleMenuClick('registrations')}>Заявки на участие в турнире</button>
+      <button className={selectedMenu === 'accepted' ? styles['menu-button-active'] : styles['menu-button']} onClick={() => handleMenuClick('accepted')}>Участники турнира</button>
+      </div>
+      
+      
+      {selectedMenu === 'accepted' && <AcceptedParticipants/>}
+      {selectedMenu === 'registrations' && <TournamentRegistrations registrations={registrations} handleAccept={handleAccept} handleReject={handleReject} />}
       {isModalOpen && (
         <Modal onClose={handleCloseModal}>
           <p className={styles['acceptOrReject']}>

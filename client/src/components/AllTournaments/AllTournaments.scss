@@ -9,6 +9,8 @@
   margin-top: 40px;
   border-radius: 20px;
   padding-bottom: 20px;
+  margin-left: 10px;
+  margin-right: 10px;
   h1 {
     font-size: 36px;
     font-weight: 400;
@@ -63,6 +65,7 @@
   max-width: 300px;
   padding: 10px;
   margin-bottom: 20px;
+  background-color: transparent;
 }
 // .searchInput {
 //   border: 1px solid #3325f3;
@@ -112,6 +115,10 @@
   gap: 20px;
   align-items: center;
   justify-content: center;
+  @media (max-width:370px) {
+  gap: 10px;
+
+  }
 }
 .pagination-span {
   margin: 0;
@@ -119,6 +126,10 @@
 .pagination-btn {
   border: 1px solid;
   padding: 10px;
+  @media (max-width:370px) {
+  padding: 4px;
+    font-size: 14px;
+  }
 }
 .pagination-btn:hover {
   background-color: #22517e;

@@ -411,7 +411,7 @@ const KnockoutTournament = () => {
       ) : (
         <div>
           {isAdmin
-            ? !currentTournament.isStarted && isAdmin && <button onClick={generateRoundMatches}>Start Tournament</button>
+            ? !currentTournament.isStarted && isAdmin && <button className={styles['start_btn']} onClick={generateRoundMatches}>Начать турнир</button>
             : ''}
         </div>
       )}

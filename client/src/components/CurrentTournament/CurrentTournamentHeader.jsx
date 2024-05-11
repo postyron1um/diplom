@@ -1,7 +1,7 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { useRouteLoaderData } from 'react-router-dom';
-
+import formatDate from '../../Func/DateFormat';
 function CurrentTournamentHeader() {
   const tournament = useRouteLoaderData('all_tournaments');
   // console.log(tournament);
@@ -24,11 +24,11 @@ function CurrentTournamentHeader() {
       </h3>
       <h3 className="current-tournament__h3">
         <span className="current-tournament__span">Дата начала:</span>
-        <span className="current-tournament__span">{tournament.startDate}</span>
+        <span className="current-tournament__span">{formatDate(tournament.startDate)}</span>
       </h3>
       <h3 className="current-tournament__h3">
         <span className="current-tournament__span">Дата конца:</span>
-        <span className="current-tournament__span">{tournament.endDate}</span>
+        <span className="current-tournament__span">{formatDate(tournament.endDate)}</span>
       </h3>
     </>
   );

@@ -93,14 +93,7 @@ console.log(typeTournament);
         </div>
       )}
       {/* Вывод участников турнира */}
-      <div>
-        <h2>Участники турнира:</h2>
-        <ul>
-          {participants.map((participant) => (
-            <li key={participant._id}>{participant.username}</li>
-          ))}
-        </ul>
-      </div>
+     
     </>
   );
 };
