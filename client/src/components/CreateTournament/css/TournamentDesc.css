@@ -32,6 +32,7 @@
 
 .datepicker {
   border: 1px solid var(--accent-color);
+  background-color: transparent;
   border-radius: 5px;
   padding: 10px;
   -webkit-border-radius: 5px;

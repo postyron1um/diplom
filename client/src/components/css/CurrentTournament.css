@@ -3,6 +3,8 @@
   max-width: 1300px;
   margin: 0 auto;
   margin-top: 40px;
+  margin-bottom: 40px;
+  margin-right: 10px;
   padding: 10px 40px;
   padding-bottom: 40px;
   display: flex;
@@ -24,6 +26,7 @@
 @media (max-width: 880px) {
   .current-tournament {
     margin-top: 20px;
+    margin-bottom: 20px;
   }
 }
 @media (max-width: 500px) {
@@ -72,6 +75,11 @@
   max-width: 100%;
   word-wrap: break-word; /* Разрешает перенос слов */
   white-space: pre-wrap; /* Разрешает перенос строк */
+}
+@media (max-width: 370px) {
+  .current-tournament__span {
+    min-width: 100px;
+  }
 }
 
 .current-tournament__h1 {
@@ -127,6 +135,18 @@
   margin-top: 10px;
   margin-bottom: 10px;
 }
+@media (max-width: 750px) {
+  .current-tournament__menu-list {
+    display: none;
+  }
+}
+
+@media (max-width: 750px) {
+  .current-tournament__menu-list.active {
+    display: grid;
+    justify-items: center;
+  }
+}
 
 .current-tournament__nav {
   cursor: pointer;
@@ -150,6 +170,12 @@
   border-radius: 20px;
   padding: 40px;
 }
+@media (max-width: 360px) {
+  .tournament-register {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+}
 
 .participant-row,
 .teamName-row {
@@ -171,17 +197,25 @@
   border: 1px solid rgb(0, 1, 2) !important;
   padding: 10px 5px;
   border-radius: 5px;
-  background-color: #172e96;
+  background-color: var(--btn-color-3);
+  border: 2px solid #860eba !important;
   min-width: 320px;
   -webkit-border-radius: 5px;
   -moz-border-radius: 5px;
   -ms-border-radius: 5px;
   -o-border-radius: 5px;
 }
+@media (max-width: 500px) {
+  .participant-row button,
+  .teamName-row button {
+    min-width: 100px;
+  }
+}
 
 .participant-row button:hover,
 .teamName-row button:hover {
   background-color: #273366;
+  border: 2px solid #a567c0 !important;
   transition: background-color 0.4s ease;
   -webkit-transition: background-color 0.4s ease;
   -moz-transition: background-color 0.4s ease;
@@ -190,7 +224,7 @@
 }
 
 .menu_activ {
-  background-color: rgb(7, 82, 82);
+  background-color: var(--btn-color-4);
   padding: 15px 10px;
   border-radius: 5px;
   -webkit-border-radius: 5px;
@@ -224,4 +258,29 @@
   -moz-transition: color 0.2s;
   -ms-transition: color 0.2s;
   -o-transition: color 0.2s;
+}
+
+.menu-icon2 {
+  display: none;
+}
+
+.relative-icon {
+  position: relative;
+}
+
+@media screen and (max-width: 750px) {
+  .menu-icon2 {
+    display: block;
+    width: 52px;
+    position: absolute;
+    right: -32px;
+    bottom: 8px;
+    justify-content: center;
+    cursor: pointer;
+  }
+}
+@media screen and (max-width: 750px) {
+  .menu-icon2 {
+    top: 8px;
+  }
 }/*# sourceMappingURL=CurrentTournament.css.map */

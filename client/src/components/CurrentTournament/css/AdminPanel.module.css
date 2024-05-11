@@ -1,0 +1,213 @@
+.admin-title {
+  margin-bottom: 15px;
+}
+
+.tournamentRegistrations {
+  box-shadow: 0px 0px 13px 0px rgb(27, 36, 194);
+  border: 1px solid #6cb3f7;
+  border-radius: 20px;
+  padding: 20px 40px;
+  margin-top: 30px;
+}
+
+.tournamentRegistrations-title {
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+
+.tournamentRegistrations-ul {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.tournamentRegistrations-ul li {
+  border: 1px solid #24dd24;
+  padding: 15px;
+  /* display: flex; */
+}
+
+.tournamentRegistrations-btn-accept {
+  background: var(--btn-color-2);
+  margin-right: 30px;
+  padding: 10px;
+}
+@media (max-width: 400px) {
+  .tournamentRegistrations-btn-accept {
+    margin-right: 0;
+  }
+}
+
+.tournamentRegistrations-btn-accept:hover {
+  background: var(--btn-color-2-hover);
+  transition: background 0.4s ease;
+  -webkit-transition: background 0.4s ease;
+  -moz-transition: background 0.4s ease;
+  -ms-transition: background 0.4s ease;
+  -o-transition: background 0.4s ease;
+}
+
+.tournamentRegistrations-btn-reject {
+  background: var(--btn-color-1);
+  padding: 10px;
+}
+
+.tournamentRegistrations-btn-reject:hover {
+  background: var(--btn-color-1-hover);
+  transition: background 0.4s ease;
+  -webkit-transition: background 0.4s ease;
+  -moz-transition: background 0.4s ease;
+  -ms-transition: background 0.4s ease;
+  -o-transition: background 0.4s ease;
+}
+
+.tournamentRegistrations-span {
+  display: inline-block;
+  min-width: 100px;
+  background-color: #032757;
+  padding: 10px;
+  margin-right: 20px;
+  text-align: center;
+  margin-top: 0;
+}
+@media (max-width: 550px) {
+  .tournamentRegistrations-span {
+    display: block;
+    margin: 0 auto;
+  }
+}
+@media (max-width: 400px) {
+  .tournamentRegistrations-span {
+    min-width: 50px !important;
+    margin: 0;
+  }
+}
+
+.tournamentRegistrations-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 5px;
+}
+@media (max-width: 550px) {
+  .tournamentRegistrations-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    max-width: 100%;
+    gap: 20px;
+  }
+}
+
+.tournamentRegistrations-div-end {
+  align-self: flex-end;
+}
+@media (max-width: 550px) {
+  .tournamentRegistrations-div-end {
+    display: flex;
+    justify-content: space-evenly;
+  }
+}
+@media (max-width: 400px) {
+  .tournamentRegistrations-div-end {
+    flex-direction: column;
+    gap: 20px;
+  }
+}
+
+.form-matches {
+  display: flex;
+  justify-content: end;
+  margin-top: 20px;
+}
+
+.form-matches-btn {
+  background-color: rgb(15, 214, 240);
+  padding: 10px 20px;
+}
+
+.confirmAction {
+  text-align: center;
+}
+
+.acceptOrReject {
+  padding: 10px;
+  margin-bottom: 20px;
+}
+
+.acceptOrReject-container {
+  /* text-align: center; */
+  display: flex;
+  justify-content: space-around;
+}
+
+.acceptOrReject-btn {
+  /* display: flex; */
+  padding: 10px;
+  text-align: center;
+  background-color: var(--btn-color-2);
+  width: 130px;
+}
+
+.acceptOrReject-btn:hover {
+  background-color: var(--btn-color-2-hover);
+}
+
+.acceptOrReject-btn:hover,
+.acceptOrReject-btn-cancel:hover {
+  transition: background-color 0.3s ease;
+  -webkit-transition: background-color 0.3s ease;
+  -moz-transition: background-color 0.3s ease;
+  -ms-transition: background-color 0.3s ease;
+  -o-transition: background-color 0.3s ease;
+}
+
+.acceptOrReject-btn-cancel {
+  background-color: var(--btn-color-1);
+  padding: 10px;
+  text-align: center;
+  width: 130px;
+}
+
+.acceptOrReject-btn-cancel:hover {
+  background-color: var(--btn-color-1-hover);
+}
+
+.accepted__ul {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.accepted__li {
+  padding: 10px;
+  max-width: 300px;
+  border: 2px solid #d4d6eb;
+  border-radius: 5px;
+  background-color: rgb(19, 69, 73);
+}
+
+.menu-btn_div {
+  margin-top: 20px;
+  display: flex;
+  gap: 10px;
+}
+@media (max-width: 500px) {
+  .menu-btn_div {
+    margin-top: 40px;
+  }
+}
+
+.menu-button {
+  font-size: 14px;
+  padding: 7px;
+  border-radius: 5px;
+}
+
+.menu-button-active {
+  /* background-color:rgb(129 7 41) !important; */
+  background-color: var(--color1) !important;
+  font-size: 14px;
+  padding: 7px;
+  border-radius: 5px;
+}/*# sourceMappingURL=AdminPanel.module.css.map */

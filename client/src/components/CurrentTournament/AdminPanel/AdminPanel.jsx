@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import styles from './AdminPanel.module.css';
+import styles from './AdminPanel.module.scss';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   getAllParticipate,

@@ -10,8 +10,11 @@ const createMatch = async (req, res) => {
   try {
     const { tournamentId } = req.params;
     const { initialRoundMatches } = req.body;
-    // console.log('initialRoundMatches', initialRoundMatches);
+    console.log('initialRoundMatches', initialRoundMatches.length);
 
+		if (!initialRoundMatches.length) {
+      return res.status(400).json({ message: 'Нельзя начать турнир с пустыми матчами' });
+    }
     // Проходим по каждому раунду
     for (let i = 0; i < initialRoundMatches.length; i++) {
       const roundMatches = initialRoundMatches[i];

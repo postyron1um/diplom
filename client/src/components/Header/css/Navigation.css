@@ -18,7 +18,7 @@
     justify-content: space-between;
   }
   .nav.active {
-    row-gap: 50px;
+    row-gap: 10px;
   }
 }
 

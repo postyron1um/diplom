@@ -1,6 +1,6 @@
 import React from 'react'
 import { useSelector } from 'react-redux';
-import styles from './AdminPanel.module.css';
+import styles from './AdminPanel.module.scss';
 
 function AcceptedParticipants() {
   const tournamentId = location.pathname.split('/')[2];

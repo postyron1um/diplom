@@ -37,7 +37,7 @@ function CurrentTournamentMenu() {
         {isAdmin ? (
           <li>
             <NavLink className={({ isActive }) => (isActive ? 'menu_activ' : 'pending')} to="admin">
-              Административаня панель
+              Админка
             </NavLink>
           </li>
         ) : (

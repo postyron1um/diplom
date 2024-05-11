@@ -26,13 +26,16 @@
   /* display: flex; */
 }
 .tournamentRegistrations-btn-accept {
-  background: green;
+  background: var(--btn-color-2);
   margin-right: 30px;
   padding: 10px;
+  @media (max-width: 400px) {
+    margin-right: 0;
+  }
 }
 
 .tournamentRegistrations-btn-accept:hover {
-  background: rgb(2, 75, 2);
+  background: var(--btn-color-2-hover);
   transition: background 0.4s ease;
   -webkit-transition: background 0.4s ease;
   -moz-transition: background 0.4s ease;
@@ -41,11 +44,11 @@
 }
 
 .tournamentRegistrations-btn-reject {
-  background: red;
+  background: var(--btn-color-1);
   padding: 10px;
 }
 .tournamentRegistrations-btn-reject:hover {
-  background: rgb(136, 8, 8);
+  background: var(--btn-color-1-hover);
   transition: background 0.4s ease;
   -webkit-transition: background 0.4s ease;
   -moz-transition: background 0.4s ease;
@@ -60,6 +63,14 @@
   margin-right: 20px;
   text-align: center;
   margin-top: 0;
+  @media (max-width: 550px) {
+    display: block;
+    margin: 0 auto;
+  }
+  @media (max-width: 400px) {
+    min-width: 50px !important;
+    margin: 0;
+  }
 }
 
 .tournamentRegistrations-row {
@@ -67,10 +78,25 @@
   align-items: center;
   justify-content: space-between;
   margin-bottom: 5px;
+  @media (max-width: 550px) {
+    display: grid;
+    grid-template-columns: 1fr;
+    // justify-items: self-start;
+    max-width: 100%;
+    gap: 20px;
+  }
 }
 
 .tournamentRegistrations-div-end {
   align-self: flex-end;
+  @media (max-width: 550px) {
+    display: flex;
+    justify-content: space-evenly;
+  }
+  @media (max-width: 400px) {
+    flex-direction: column;
+    gap: 20px;
+  }
 }
 
 .form-matches {
@@ -102,24 +128,30 @@
   /* display: flex; */
   padding: 10px;
   text-align: center;
-  background: green;
+  background-color: var(--btn-color-2);
   width: 130px;
 }
 .acceptOrReject-btn:hover {
-  background: rgb(3, 77, 3);
-
+  background-color: var(--btn-color-2-hover);
+}
+.acceptOrReject-btn:hover,
+.acceptOrReject-btn-cancel:hover {
+  transition: background-color 0.3s ease;
+  -webkit-transition: background-color 0.3s ease;
+  -moz-transition: background-color 0.3s ease;
+  -ms-transition: background-color 0.3s ease;
+  -o-transition: background-color 0.3s ease;
 }
 
 .acceptOrReject-btn-cancel {
-  background: red;
-
+  background-color: var(--btn-color-1);
   padding: 10px;
   text-align: center;
   width: 130px;
 }
 
 .acceptOrReject-btn-cancel:hover {
-	  background: rgb(114, 1, 1);
+  background-color: var(--btn-color-1-hover);
 }
 
 .accepted__ul {
@@ -132,7 +164,7 @@
 .accepted__li {
   padding: 10px;
   max-width: 300px;
-  border:2px solid #d4d6eb;
+  border: 2px solid #d4d6eb;
   border-radius: 5px;
   background-color: rgb(19, 69, 73);
 }
@@ -140,10 +172,9 @@
 .menu-btn_div {
   margin-top: 20px;
   display: flex;
-  gap:10px;
-  @media (max-width:500px) {
-  margin-top: 40px;
-    
+  gap: 10px;
+  @media (max-width: 500px) {
+    margin-top: 40px;
   }
 }
 
@@ -151,14 +182,14 @@
   font-size: 14px;
   padding: 7px;
 
-  border-radius:5px;
+  border-radius: 5px;
 }
 
 .menu-button-active {
   /* background-color:rgb(129 7 41) !important; */
-  background-color:var(--color1) !important;
+  background-color: var(--color1) !important;
   font-size: 14px;
 
   padding: 7px;
-  border-radius:5px;
+  border-radius: 5px;
 }

@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-
+import './MenuIcon.scss';
 function MenuIcon() {
   useEffect(() => {
     const menuIcon = document.querySelector('.menu-icon');

@@ -13,9 +13,9 @@
     flex-direction: column;
     justify-content: space-between;
 		&.active {
-    row-gap: 50px;
+    row-gap: 10px;
   }
-  }
+	 }
 }
 .nav-logo {
   align-self: center;

@@ -9,8 +9,11 @@
     cursor: pointer;
   }
 }
-.nav.active {
-  @media screen and (max-width: 880px) {
-    row-gap: 50px;
-  }
-}
+// .nav.active {
+//   @media (max-width: 880px) {
+//     row-gap: 10px;
+//   }
+//   @media (max-width: 600px) {
+//     row-gap: 10px;
+//   }
+// }

@@ -6,8 +6,11 @@
   --font-Merriweather: 'Merriweather', serif;
   --color1: rgb(165, 21, 21);
   --btn-color-1: rgb(165, 21, 21);
-  --btn-color-2: rgb(104, 236, 27);
+  --btn-color-1-hover: rgb(82, 25, 25);
+  --btn-color-2: rgb(60 115 28);
+  --btn-color-2-hover: rgb(2, 75, 2);
   --btn-color-3: #1f2852;
+  --btn-color-4: rgb(7, 82, 82);
   --bg-main: #e6e6fa;
   --bg-gradient: linear-gradient(225deg, rgb(71, 106, 214) 27%, rgb(82, 182, 103) 76%);
   --accent-color: #6a6aee;

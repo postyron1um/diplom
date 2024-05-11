@@ -3,7 +3,7 @@ import styles from './KnockoutTournament.module.css';
 import { useDispatch, useSelector } from 'react-redux';
 import axios from '../../../utils/axios';
 import extractUserRoleFromToken from '../../../Func/extractUserDetailsFromToken';
-
+import agf from '../../../../public/vite.svg';
 import { useLoaderData } from 'react-router-dom';
 
 import { createNewMatch } from '../../../redux/features/knockout/knockoutSlice';
@@ -60,17 +60,6 @@ const KnockoutTournament = () => {
     fetchMatches();
   }, [tournamentId]);
 
-  // 	useEffect(() => {
-  //   const isAllMatchesCompleted = roundMatches.every((round) =>
-  //     round.every((match) => match.scoreTeam1 !== '' && match.scoreTeam2 !== '')
-  //   );
-
-  //   if (isAllMatchesCompleted) {
-  //     const lastRoundIndex = roundMatches.length - 1;
-  //     generateNextRound(lastRoundIndex, roundMatches);
-  //   }
-  // }, [roundMatches]);
-
   const shuffleArray = (array) => {
     const shuffledArray = [...array];
     for (let i = shuffledArray.length - 1; i > 0; i--) {
@@ -120,7 +109,7 @@ const KnockoutTournament = () => {
     setRoundMatches(initialRoundMatches);
     // setTournamentStarted(true); // Устанавливаем флаг, что турнир начался
     // // После начала турнира обновляем страницу
-    // window.location.reload();
+    window.location.reload();
   };
 
   const getRoundWinners = (participants, matches) => {
@@ -170,11 +159,13 @@ const KnockoutTournament = () => {
 
       // Проверяем, были ли сохранены все матчи текущего раунда
       const isAllMatchesSaved = roundMatches.every((round) =>
-        round.every((match) => match.scoreTeam1 !== '' && match.scoreTeam2 !== ''),
+        round.every((match) => match.scoreTeam1 !== 0 || match.scoreTeam2 !== 0),
       );
+      console.log(isAllMatchesSaved);
       if (isAllMatchesSaved) {
         console.log('FDFDF');
         await generateNextRound(roundIndex, roundMatches);
+        // window.location.reload();
       }
     } catch (error) {
       console.error('Ошибка при сохранении результата матча:', error);
@@ -251,7 +242,12 @@ const KnockoutTournament = () => {
       }
     } else {
       console.log('JHJH');
-      determineChampion();
+
+      if (nextRoundIndex === updatedRoundMatches.length - 1) {
+        // Проверяем, является ли текущий раунд последним
+        determineChampion();
+      }
+      // determineChampion();
     }
   };
 
@@ -276,12 +272,18 @@ const KnockoutTournament = () => {
 
   useEffect(() => {
     if (roundMatches.length > 0) {
-      determineChampion();
+      const lastRoundIndex = roundMatches.length - 1;
+      const lastRound = roundMatches[lastRoundIndex];
+      const allMatchesPlayed = lastRound.every((match) => match.scoreTeam1 !== '' && match.scoreTeam2 !== '');
+
+      if (allMatchesPlayed) {
+        determineChampion();
+      }
     }
   }, [roundMatches]);
-
   const determineChampion = async () => {
     const lastRound = roundMatches[roundMatches.length - 1];
+    console.log(lastRound);
     let championName = null;
 
     for (let i = 0; i < lastRound.length; i++) {
@@ -320,18 +322,6 @@ const KnockoutTournament = () => {
     setEditingMatch({ roundIndex, matchIndex });
   };
 
-  // useEffect(() => {
-  //   localStorage.setItem('tournamentRoundMatches', JSON.stringify(roundMatches));
-  //   console.log();
-  // }, [roundMatches]);
-
-  // const showStartTournamentButton = !roundMatches || roundMatches.length === 0;
-
-  // console.log(participants);
-  // console.log(roundMatches);
-  // roundMatches.map((round) => {
-  //   console.log(round);
-  // });
   return (
     <div>
       <h2 className={styles['h2-title']}>Турнир на вылет</h2>
@@ -346,8 +336,8 @@ const KnockoutTournament = () => {
               editingMatch.matchIndex === matchIndex ? (
                 <div className={styles['matchVs-div']}>
                   <p className={styles['matchVs']}>
-                    {match.team1 && typeof match.team1 === 'object' ? match.team1.name : match.team1} vs{' '}
-                    {match.team2 && typeof match.team2 === 'object' ? match.team2.name : match.team1}
+                    {match.team1 && typeof match.team1 === 'object' ? match.team1.username : match.team1} vs{' '}
+                    {match.team2 && typeof match.team2 === 'object' ? match.team2.username : match.team2}
                     <p>
                       Счет: {match.scoreTeam1} - {match.scoreTeam2}
                     </p>
@@ -391,7 +381,7 @@ const KnockoutTournament = () => {
                   {isAdmin ? (
                     <button
                       className={styles['edit_button']}
-                      onClick={() => handleEditMatch(roundIndex, matchIndex, typeof match.team1, typeof match.team2)}>
+                      onClick={() => handleEditMatch(roundIndex, matchIndex, match.team1, match.team2)}>
                       Редактировать
                     </button>
                   ) : (
@@ -411,7 +401,12 @@ const KnockoutTournament = () => {
       ) : (
         <div>
           {isAdmin
-            ? !currentTournament.isStarted && isAdmin && <button className={styles['start_btn']} onClick={generateRoundMatches}>Начать турнир</button>
+            ? !currentTournament.isStarted &&
+              isAdmin && (
+                <button className={styles['start_btn']} onClick={generateRoundMatches}>
+                  Начать турнир
+                </button>
+              )
             : ''}
         </div>
       )}

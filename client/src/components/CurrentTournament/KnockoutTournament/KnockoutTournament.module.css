@@ -9,6 +9,7 @@
   max-width: 100px;
   max-height: 30px;
   text-align: center;
+	background-color: transparent;
 }
 .roundMatches {
   background-color: rgb(28, 77, 58);
@@ -77,12 +78,20 @@
 }
 
 .start_btn {
-  background-color: #8c1100;
+  /* background-color: #8c1100; */
+  background-color: var(--btn-color-1);
   padding: 10px 20px;
   border-radius: 5px;
-  border:3px solid #4a4949;
+  border: 3px solid #4a4949;
 }
-
+.start_btn:hover {
+	background-color: var(--btn-color-1-hover);
+	transition: background-color 0.3s ease;
+	-webkit-transition: background-color 0.3s ease;
+	-moz-transition: background-color 0.3s ease;
+	-ms-transition: background-color 0.3s ease;
+	-o-transition: background-color 0.3s ease;
+}
 /* MEDIA  */
 
 @media (max-width: 670px) {

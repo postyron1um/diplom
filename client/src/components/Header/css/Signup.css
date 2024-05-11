@@ -46,4 +46,55 @@
     justify-content: center;
     cursor: pointer;
   }
+}
+
+.username {
+  margin: 0;
+  align-self: flex-end;
+}
+
+.username-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  cursor: pointer;
+}
+
+.logout-modal-container {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  gap: 50px;
+}
+
+.yes_logout {
+  background-color: #2b2c2e;
+  padding: 5px;
+  width: 100px;
+  border: 1px solid #277170;
+}
+
+.yes_logout:hover {
+  background-color: red;
+  transition: background-color 0.3s ease-in;
+  -webkit-transition: background-color 0.3s ease-in;
+  -moz-transition: background-color 0.3s ease-in;
+  -ms-transition: background-color 0.3s ease-in;
+  -o-transition: background-color 0.3s ease-in;
+}
+
+.modal-cancell {
+  background-color: #2b2c2e;
+  width: 100px;
+  border: 1px solid #277170;
+}
+
+.modal-cancell:hover {
+  background-color: #0c0c0e;
+}
+
+@media (max-width: 880px) {
+  .username-container {
+    display: none;
+  }
 }/*# sourceMappingURL=Signup.css.map */
