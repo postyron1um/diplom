@@ -14,7 +14,7 @@ const KnockoutTournament = () => {
   const userToken = localStorage.getItem('token');
   const role = extractUserRoleFromToken(userToken, 'roles');
   const isAdmin = role.includes('ADMIN');
- const [tournamentStarted, setTournamentStarted] = useState(false); 
+  const [tournamentStarted, setTournamentStarted] = useState(false);
 
   const [participants, setParticipants] = useState([]); // тут лежат наши участники из бд
   const [roundMatches, setRoundMatches] = useState([]); // матчи турнира из бд
@@ -59,6 +59,17 @@ const KnockoutTournament = () => {
     };
     fetchMatches();
   }, [tournamentId]);
+
+  // 	useEffect(() => {
+  //   const isAllMatchesCompleted = roundMatches.every((round) =>
+  //     round.every((match) => match.scoreTeam1 !== '' && match.scoreTeam2 !== '')
+  //   );
+
+  //   if (isAllMatchesCompleted) {
+  //     const lastRoundIndex = roundMatches.length - 1;
+  //     generateNextRound(lastRoundIndex, roundMatches);
+  //   }
+  // }, [roundMatches]);
 
   const shuffleArray = (array) => {
     const shuffledArray = [...array];
@@ -107,9 +118,9 @@ const KnockoutTournament = () => {
     console.log(initialRoundMatches);
     dispatch(createNewMatch({ initialRoundMatches, tournamentId }));
     setRoundMatches(initialRoundMatches);
-		setTournamentStarted(true); // Устанавливаем флаг, что турнир начался
-    // После начала турнира обновляем страницу
-    window.location.reload();
+    // setTournamentStarted(true); // Устанавливаем флаг, что турнир начался
+    // // После начала турнира обновляем страницу
+    // window.location.reload();
   };
 
   const getRoundWinners = (participants, matches) => {
@@ -145,7 +156,7 @@ const KnockoutTournament = () => {
   };
 
   const handleSaveResult = async (roundIndex, matchIndex) => {
-		console.log(roundIndex);
+    console.log(roundIndex);
     try {
       const matchToUpdate = roundMatches[roundIndex][matchIndex];
       console.log('matchToUpdate', matchToUpdate);
@@ -171,7 +182,7 @@ const KnockoutTournament = () => {
   };
 
   const generateNextRound = async (completedRoundIndex, roundMatches) => {
-		console.log(roundMatches);
+    console.log(roundMatches);
     const updatedRoundMatches = [...roundMatches];
     console.log(updatedRoundMatches);
     const winnersOfCompletedRound = updatedRoundMatches[completedRoundIndex].map((match) => match.winner);
@@ -179,26 +190,26 @@ const KnockoutTournament = () => {
     // if (winnersOfCompletedRound.every((winner) => winner !== null)) {
     //   console.log('6');
     // } else {
-		// console.log('4');	
-		// }
+    // console.log('4');
+    // }
 
     const nextRoundIndex = completedRoundIndex;
-    console.log('nextRoundIndex', nextRoundIndex);
-    console.log(updatedRoundMatches.length);
+    // console.log('nextRoundIndex', nextRoundIndex);
+    // console.log(updatedRoundMatches.length);
     if (nextRoundIndex < updatedRoundMatches.length) {
-      console.log('DSDS');
+      // console.log('DSDS');
       if (winnersOfCompletedRound.every((winner) => winner !== null)) {
         const winnersOfNextRound = getRoundWinnersFromWinners(winnersOfCompletedRound, roundMatches[completedRoundIndex]);
-				console.log(winnersOfNextRound);
+        // console.log(winnersOfNextRound);
         const nextRoundMatches = [];
         for (let i = 0; i < Math.ceil(winnersOfNextRound.length / 2); i++) {
           const team1 = winnersOfNextRound[i * 2];
           const team2 = winnersOfNextRound[i * 2 + 1];
-					console.log(team1.username);
+          // console.log(team1.username);
           if (team1 && team2) {
             const match = {
               id: i,
-							round: nextRoundIndex + 1,
+              round: nextRoundIndex + 1,
               team1: team1.username ? team1.username : team1,
               team2: team2.username ? team2.username : team2,
               scoreTeam1: '',
@@ -243,25 +254,25 @@ const KnockoutTournament = () => {
       determineChampion();
     }
   };
-	
-// use
-const getRoundWinnersFromWinners = (winnersOfCompletedRound, currentRoundMatches) => {
-  console.log(winnersOfCompletedRound);
-  console.log(currentRoundMatches);
-  console.log(participants);
-  const remainingParticipants = [];
-  for (let i = 0; i < winnersOfCompletedRound.length; i++) {
-    const winnerName = winnersOfCompletedRound[i];
-    const winnerParticipant = participants.find((participant) => participant.username === winnerName);
-    if (winnerParticipant) {
-      remainingParticipants.push(winnerParticipant);
-    } else {
-      console.error(`Winner ${winnerName} not found in participants.`);
+
+  // use
+  const getRoundWinnersFromWinners = (winnersOfCompletedRound, currentRoundMatches) => {
+    console.log(winnersOfCompletedRound);
+    console.log(currentRoundMatches);
+    console.log(participants);
+    const remainingParticipants = [];
+    for (let i = 0; i < winnersOfCompletedRound.length; i++) {
+      const winnerName = winnersOfCompletedRound[i];
+      const winnerParticipant = participants.find((participant) => participant.username === winnerName);
+      if (winnerParticipant) {
+        remainingParticipants.push(winnerParticipant);
+      } else {
+        console.error(`Winner ${winnerName} not found in participants.`);
+      }
     }
-  }
-  console.log(remainingParticipants);
-  return remainingParticipants;
-};
+    console.log(remainingParticipants);
+    return remainingParticipants;
+  };
 
   useEffect(() => {
     if (roundMatches.length > 0) {
@@ -269,41 +280,41 @@ const getRoundWinnersFromWinners = (winnersOfCompletedRound, currentRoundMatches
     }
   }, [roundMatches]);
 
-const determineChampion = async () => {
-  const lastRound = roundMatches[roundMatches.length - 1];
-  let championName = null;
+  const determineChampion = async () => {
+    const lastRound = roundMatches[roundMatches.length - 1];
+    let championName = null;
 
-  for (let i = 0; i < lastRound.length; i++) {
-    const match = lastRound[i];
-    if (match.scoreTeam1 !== '' && match.scoreTeam2 !== '') {
-      if (match.scoreTeam1 > match.scoreTeam2) {
-        championName = match.team1;
-      } else if (match.scoreTeam2 > match.scoreTeam1) {
-        championName = match.team2;
-      } else {
-        console.log('Match ended in a draw.');
-        // В случае ничьей, вы можете обработать ситуацию по вашему усмотрению
+    for (let i = 0; i < lastRound.length; i++) {
+      const match = lastRound[i];
+      if (match.scoreTeam1 !== '' && match.scoreTeam2 !== '') {
+        if (match.scoreTeam1 > match.scoreTeam2) {
+          championName = match.team1;
+        } else if (match.scoreTeam2 > match.scoreTeam1) {
+          championName = match.team2;
+        } else {
+          console.log('Match ended in a draw.');
+          // В случае ничьей, вы можете обработать ситуацию по вашему усмотрению
+        }
+        break; // Прекращаем цикл после нахождения победителя
       }
-      break; // Прекращаем цикл после нахождения победителя
     }
-  }
 
-  if (championName) {
-    setChampion(championName);
-    await saveChampionToDatabase(championName); // Сохраняем чемпиона в базу данных
-  } else {
-    console.log('No champion determined yet.');
-  }
-};
+    if (championName) {
+      setChampion(championName);
+      await saveChampionToDatabase(championName); // Сохраняем чемпиона в базу данных
+    } else {
+      console.log('No champion determined yet.');
+    }
+  };
 
-const saveChampionToDatabase = async (championName) => {
-  try {
-    const response = await axios.put(`/tournaments/${tournamentId}/champion`, { champion: championName });
-    console.log('Champion saved to database:', response.data);
-  } catch (error) {
-    console.error('Error saving champion to database:', error.message);
-  }
-};
+  const saveChampionToDatabase = async (championName) => {
+    try {
+      const response = await axios.put(`/tournaments/${tournamentId}/champion`, { champion: championName });
+      console.log('Champion saved to database:', response.data);
+    } catch (error) {
+      console.error('Error saving champion to database:', error.message);
+    }
+  };
 
   const handleEditMatch = (roundIndex, matchIndex) => {
     setEditingMatch({ roundIndex, matchIndex });
@@ -335,10 +346,8 @@ const saveChampionToDatabase = async (championName) => {
               editingMatch.matchIndex === matchIndex ? (
                 <div className={styles['matchVs-div']}>
                   <p className={styles['matchVs']}>
-                    {/* {match.team1 && match.team1.name ? match.team1.name : match.team1} vs{' '}
-                    {match.team2 && match.team2.name ? match.team2.name : match.team2} */}
-                    {match.team1 && typeof match.team1 === 'object' ? match.team1.name : match.name} vs{' '}
-                    {match.team2 && typeof match.team2 === 'object' ? match.team2.name : match.name}
+                    {match.team1 && typeof match.team1 === 'object' ? match.team1.name : match.team1} vs{' '}
+                    {match.team2 && typeof match.team2 === 'object' ? match.team2.name : match.team1}
                     <p>
                       Счет: {match.scoreTeam1} - {match.scoreTeam2}
                     </p>
@@ -347,12 +356,14 @@ const saveChampionToDatabase = async (championName) => {
                     <input
                       className={styles['input']}
                       type="number"
+                      min="0"
                       value={match.scoreTeam1}
                       onChange={(e) => handleScoreChange(roundIndex, matchIndex, 1, e.target.value)}
                     />
                     <input
                       className={styles['input']}
                       type="number"
+                      min="0"
                       value={match.scoreTeam2}
                       onChange={(e) => handleScoreChange(roundIndex, matchIndex, 2, e.target.value)}
                     />
@@ -378,7 +389,9 @@ const saveChampionToDatabase = async (championName) => {
                   </p>
 
                   {isAdmin ? (
-                    <button className={styles['edit_button']} onClick={() => handleEditMatch(roundIndex, matchIndex)}>
+                    <button
+                      className={styles['edit_button']}
+                      onClick={() => handleEditMatch(roundIndex, matchIndex, typeof match.team1, typeof match.team2)}>
                       Редактировать
                     </button>
                   ) : (
