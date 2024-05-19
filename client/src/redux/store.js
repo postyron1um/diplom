@@ -4,6 +4,7 @@ import tournamentSlice from './features/tournament/tournamentSlice';
 import participantSlice from './features/participant/participantSlice';
 import matchSlice from './features/matchSlice/matchSlice';
 import knockoutSlice from './features/knockout/knockoutSlice';
+import commentSlice from './features/tournament/commentSlice';
 
 export const store = configureStore({
   reducer: {
@@ -11,6 +12,7 @@ export const store = configureStore({
     tournament: tournamentSlice,
     participant: participantSlice,
     matches: matchSlice,
-		knockout: knockoutSlice,
+    knockout: knockoutSlice,
+    comments: commentSlice,
   },
 });

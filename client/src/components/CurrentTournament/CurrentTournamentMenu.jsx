@@ -19,8 +19,8 @@ function CurrentTournamentMenu() {
   }, []);
 
   const userToken = localStorage.getItem('token');
-  const role = extractUserRoleFromToken(userToken,'roles');
-  const isAdmin = role.includes('ADMIN');
+const role = extractUserRoleFromToken(userToken, 'roles');
+const isAdmin = Array.isArray(role) && role.includes('ADMIN');
 
   return (
     <div className="relative-icon">

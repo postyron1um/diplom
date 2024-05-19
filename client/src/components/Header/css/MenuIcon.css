@@ -1,0 +1,11 @@
+@media screen and (max-width: 880px) {
+  .menu-icon {
+    display: block;
+    width: 22px;
+    position: absolute;
+    right: 0;
+    top: 0;
+    justify-content: center;
+    cursor: pointer;
+  }
+}/*# sourceMappingURL=MenuIcon.css.map */

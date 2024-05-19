@@ -6,16 +6,7 @@ import { addMatch, fetchMatches, updateMatchResult } from '../../../redux/featur
 import axios from '../../../utils/axios';
 import { updateTournamentStatus } from '../../../redux/features/tournament/tournamentSlice';
 import { toast } from 'react-toastify';
-
-const extractUserIdFromToken = (token) => {
-  try {
-    const payload = JSON.parse(atob(token.split('.')[1]));
-    return payload.roles;
-  } catch (error) {
-    console.error('Ошибка при извлечении ID пользователя из токена:', error);
-    return null;
-  }
-};
+import extractUserRoleFromToken from '../../../Func/extractUserDetailsFromToken';
 
 function generateTournamentData(participantNames) {
   const numTeams = participantNames.length;
@@ -54,20 +45,52 @@ function generateTournamentData(participantNames) {
 function Games() {
   const dispatch = useDispatch();
   const [tournamentData, setTournamentData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true); // Состояние для отслеживания загрузки данных
   const tournamentId = location.pathname.split('/')[2];
-
+  const [isTournamentStarted, setIsTournamentStarted] = useState(false);
   const matches = useSelector((state) => state.matches.matches); // Получаем матчи из состояния Redux
-	const participants = useSelector((state) => state.participant.acceptedParticipants.participantsd);
-	const filteredParticipants = participants?.filter((participant) => participant.tournament === tournamentId);
-	console.log(filteredParticipants);
-  // const participantsd = useSelector((state) => state.participant.acceptedParticipants[tournamentId] || []);
-  console.log('acceptedParticipants', participants);
-  // const [isTournamentStarted, setIsTournamentStarted] = useState(false);
+  const participants = useSelector((state) => state.participant.acceptedParticipants.participantsd);
+  const filteredParticipants = participants?.filter((participant) => participant.tournament === tournamentId);
+
   const userToken = localStorage.getItem('token');
-  const role = extractUserIdFromToken(userToken);
-  const isAdmin = role.includes('ADMIN');
-  const isTournamentStarted = useSelector((state) => state.tournament.isTournamentStarted);
+  const role = extractUserRoleFromToken(userToken, 'roles');
+  const isAdmin = Array.isArray(role) && role.includes('ADMIN');
+  // console.log(isTournamentStarted);
   const { status } = useSelector((state) => state.matches);
+
+  useEffect(() => {
+    const fetchPlayerData = async () => {
+      try {
+        const response = await axios.get(`/tournaments/${tournamentId}/players`);
+        if (response.data.success) {
+          console.log(response.data.players);
+          setTableData(response.data.players);
+        }
+      } catch (error) {
+        console.error('Ошибка при загрузке данных об игроках турнира:', error);
+      }
+    };
+
+    const checkTournamentStatus = async () => {
+      try {
+        const response = await axios.get(`/tournaments/${tournamentId}/status`);
+        if (response.data.success) {
+          setIsTournamentStarted(response.data.isStarted);
+        }
+      } catch (error) {
+        console.error('Ошибка при проверке статуса турнира:', error);
+      }
+    };
+
+    const fetchData = async () => {
+      setIsLoading(true); // Устанавливаем флаг загрузки в true
+      await fetchPlayerData();
+      await checkTournamentStatus();
+      setIsLoading(false); // Устанавливаем флаг загрузки в false после завершения загрузки данных
+    };
+
+    fetchData();
+  }, []);
 
   useEffect(() => {
     if (status) {
@@ -93,7 +116,6 @@ function Games() {
 
   useEffect(() => {
     if (matches.length > 0) {
-      // Обновляем состояние tournamentData после загрузки матчей из Redux
       setTournamentData((prevTournamentData) => {
         const updatedTournamentData = [...prevTournamentData];
         matches.forEach((match) => {
@@ -116,6 +138,13 @@ function Games() {
     }
   }, [matches]);
 
+  // Новый useEffect для слежения за изменением isTournamentStarted
+  useEffect(() => {
+    if (isTournamentStarted) {
+      dispatch(fetchMatches({ tournamentId }));
+    }
+  }, [isTournamentStarted, dispatch, tournamentId]);
+
   const handleEditSave = async (tournamentIndex, matchIndex) => {
     if (!isAdmin) return;
     try {
@@ -124,21 +153,16 @@ function Games() {
       console.log(matchToUpdate);
       console.log(matches);
 
-      // Получаем ID матча из состояния Redux
       const matchId = matches.find((match) => match.team1 === matchToUpdate.team1 && match.team2 === matchToUpdate.team2)._id;
       console.log(matchId);
-      // Если матч ранее не был отредактирован, устанавливаем edited в true
       if (!matchToUpdate.edited) {
         const updatedTournamentData = [...tournamentData];
         updatedTournamentData[tournamentIndex].matches[matchIndex].edited = true;
         setTournamentData(updatedTournamentData);
-        return; // Прерываем выполнение функции, чтобы позволить пользователю редактировать данные
+        return;
       }
-      // Отправляем запрос на сервер для обновления матча
       await axios.put(`/tournaments/${tournamentId}/matches/${matchId}`, { matchId, score1, score2 });
       await axios.put(`/tournaments/${tournamentId}/matches/${matchId}/result`, { matchId, score1, score2, tournamentId });
-      // dispatch(updateMatchResult({ matchId, score1, score2, tournamentId })); // Вызываем действие updateMatchResult с параметрами
-      // Обновляем состояние tournamentData после успешного обновления матча на сервере
       const updatedTournamentData = [...tournamentData];
       updatedTournamentData[tournamentIndex].matches[matchIndex].edited = false;
       setTournamentData(updatedTournamentData);
@@ -146,6 +170,7 @@ function Games() {
       console.error('Ошибка при обновлении матча:', error);
     }
   };
+
   const handleInputChange = (tournamentIndex, matchIndex, field, value) => {
     const updatedTournamentData = [...tournamentData];
     if (field === 'team1' || field === 'team2') {
@@ -161,10 +186,8 @@ function Games() {
   const handleAddMatch = async () => {
     if (!isAdmin) return;
     try {
-      // Генерируем данные для матчей
       const newTournamentData = generateTournamentData(filteredParticipants.map((participant) => participant.username));
 
-      // Добавляем каждый сгенерированный матч на сервер
       const newMatches = [];
       newTournamentData.forEach((tournament) => {
         tournament.matches.forEach((match) => {
@@ -180,103 +203,104 @@ function Games() {
         });
       });
 
-      // Дожидаемся завершения всех запросов на добавление матчей
       await Promise.all(newMatches);
 
-      // Обновляем состояние tournamentData после добавления новых матчей
       setTournamentData(newTournamentData);
       await axios.put(`/tournaments/${tournamentId}/status`);
       await dispatch(updateTournamentStatus({ tournamentId }));
+      setIsTournamentStarted(true); // Устанавливаем статус турнира в true после старта
     } catch (error) {
       console.error('Ошибка при добавлении матча:', error);
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className={styles['loading-container']}>
+        <div className={styles['loading-wave']}>
+          <div className={styles['loading-bar']}></div>
+          <div className={styles['loading-bar']}></div>
+          <div className={styles['loading-bar']}></div>
+          <div className={styles['loading-bar']}></div>
+        </div>
+      </div>
+    ); // Индикатор загрузки
+  }
+
   return (
     <div>
-      {isAdmin && !isTournamentStarted && <button onClick={handleAddMatch}>Начать турнир</button>}
-      {tournamentData.map((tournament, tournamentIndex) => (
-        <div key={tournamentIndex}>
-          <p className={styles['round']}>Тур {tournament.round}</p>
-          <div className="table-responsive">
-            <table className={styles['table']}>
-              <tbody>
-                {tournament.matches.map((match, matchIndex) => (
-                  <tr key={matchIndex}>
-                    <td className={styles['col-4']}>
-                      {match.edited ? (
-                        <input
-                          className={styles['edit-input']}
-                          type="text"
-                          value={match.team1}
-                          onChange={(e) => handleInputChange(tournamentIndex, matchIndex, 'team1', e.target.value)}
-                        />
-                      ) : (
-                        match.team1
-                      )}
-                    </td>
-                    <td className={styles['col-2']}>
-                      <span className={styles['edit']}>
-                        {match.edited ? (
-                          <input
-                            className={styles['edit-input']}
-                            type="text"
-                            value={match.score1}
-                            onChange={(e) => handleInputChange(tournamentIndex, matchIndex, 'score1', e.target.value)}
-                          />
-                        ) : (
-                          match.score1
-                        )}
-                        :
-                        {match.edited ? (
-                          <input
-                            className={styles['edit-input']}
-                            type="text"
-                            value={match.score2}
-                            onChange={(e) => handleInputChange(tournamentIndex, matchIndex, 'score2', e.target.value)}
-                          />
-                        ) : (
-                          match.score2
-                        )}
-                      </span>
-                    </td>
-                    <td className={styles['col-4']}>
-                      {match.edited ? (
-                        <input
-                          className={styles['edit-input']}
-                          type="text"
-                          value={match.team2}
-                          onChange={(e) => handleInputChange(tournamentIndex, matchIndex, 'team2', e.target.value)}
-                        />
-                      ) : (
-                        match.team2
-                      )}
-                    </td>
-                    <td className={styles['col-2']}>
-                      {match.edited ? (
-                        <input
-                          className={styles['edit-input-date']}
-                          type="date"
-                          value={match.date}
-                          onChange={(e) => handleInputChange(tournamentIndex, matchIndex, 'date', e.target.value)}
-                        />
-                      ) : (
-                        match.date
-                      )}
-                    </td>
-                    {isAdmin && (
-                      <td>
-                        <button onClick={() => handleEditSave(tournamentIndex, matchIndex)}>
-                          {match.edited ? 'Сохранить' : 'Редактировать'}
-                        </button>
+      {isTournamentStarted ? (
+        tournamentData.map((tournament, tournamentIndex) => (
+          <div key={tournamentIndex}>
+            <p className={styles['round']}>Тур {tournament.round}</p>
+            <div className="table-responsive">
+              <table className={styles['table']}>
+                <tbody>
+                  {tournament.matches.map((match, matchIndex) => (
+                    <tr key={matchIndex}>
+                      <td className={styles['col-4']}>{match.team1}</td>
+                      <td className={styles['col-2']}>
+                        <span className={styles['edit']}>
+                          {match.edited ? (
+                            <input
+                              className={styles['edit-input']}
+                              type="text"
+                              value={match.score1}
+                              onChange={(e) => handleInputChange(tournamentIndex, matchIndex, 'score1', e.target.value)}
+                            />
+                          ) : (
+                            match.score1
+                          )}
+                          :
+                          {match.edited ? (
+                            <input
+                              className={styles['edit-input']}
+                              type="text"
+                              value={match.score2}
+                              onChange={(e) => handleInputChange(tournamentIndex, matchIndex, 'score2', e.target.value)}
+                            />
+                          ) : (
+                            match.score2
+                          )}
+                        </span>
                       </td>
-                    )}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                      <td className={styles['col-4']}>{match.team2}</td>
+                      <td className={styles['col-2']}>
+                        {match.edited ? (
+                          <input
+                            className={styles['edit-input-date']}
+                            type="date"
+                            value={match.date}
+                            onChange={(e) => handleInputChange(tournamentIndex, matchIndex, 'date', e.target.value)}
+                          />
+                        ) : (
+                          match.date
+                        )}
+                      </td>
+                      {isAdmin && (
+                        <td>
+                          <button onClick={() => handleEditSave(tournamentIndex, matchIndex)}>
+                            {match.edited ? 'Сохранить' : 'Редактировать'}
+                          </button>
+                        </td>
+                      )}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
-        </div>
-      ))}
+        ))
+      ) : isAdmin ? (
+        <div className="no-started">Вы еще не стартовали турнир</div>
+      ) : (
+        <div className="no-started">Турнир еще не начался, вы можете прийти попозже</div>
+      )}
+      {isAdmin && !isTournamentStarted && (
+        <button className="start-tournament" onClick={handleAddMatch}>
+          Начать турнир
+        </button>
+      )}
     </div>
   );
 }

@@ -8,7 +8,7 @@ const Modal = ({ children, onClose }) => {
         <div className="modal-content">{children}</div>
         <div className="modal-actions">
           <button onClick={onClose}>
-           Закрыть
+           <img className='close_modal' src="/close.svg" alt="" />
           </button>
         </div>
       </div>

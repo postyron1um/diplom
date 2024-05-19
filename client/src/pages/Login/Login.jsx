@@ -4,9 +4,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { checkIsAuth, loginUser } from '../../redux/features/auth/authSlice';
 import { Link, useNavigate } from 'react-router-dom';
+import useFormReducer from '../Register/Register.state';
 function Login() {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const { state, setFieldValue, setFieldError } = useFormReducer();
+  const { email, password, errors } = state;
   const { status } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -18,51 +19,72 @@ function Login() {
     }
     if (isAuth) navigate('/main');
   }, [status, isAuth, navigate]);
-  const handleSubmit = () => {
-    console.log(username, password);
-    try {
-      dispatch(loginUser({ username, password }));
-    } catch (error) {
-      console.log(error);
+
+  const validateInputs = () => {
+    let isValid = true;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email.trim() || !emailRegex.test(email)) {
+      setFieldError('email', 'Введите корректный email');
+      isValid = false;
+    } else {
+      setFieldError('email', '');
+    }
+    if (password.length < 6) {
+      setFieldError('password', 'Пароль должен содержать минимум 6 символов');
+      isValid = false;
+    } else {
+      setFieldError('password', '');
+    }
+    return isValid;
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+		console.log(validateInputs);
+    if (validateInputs()) {
+      try {
+        dispatch(loginUser({ email, password }));
+      } catch (error) {
+        console.log(error);
+      }
     }
   };
   return (
     <div className="container">
       <div className={styles['login']}>
-        <form onSubmit={(e) => e.preventDefault()} className={styles['login-form']}>
-          <span className={styles['login-title']}>Авторизация</span>
-          <div className={styles['wrap-input']}>
+        <form onSubmit={handleSubmit} className={styles['form']}>
+          <p className={styles['title']}>Авторизация </p>
+
+          <label>
             <input
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              placeholder="Username"
-              className={styles['login-input']}
-              type="text"
-              name=""
-              id=""
+              value={email}
+              onChange={(e) => setFieldValue('email', e.target.value)}
+              className={styles['input']}
+              type="email"
+              placeholder=""
+              required=""
             />
-          </div>
-          <div className={styles['wrap-input']}>
+            <span>Email</span>
+            {errors.email && <span className={styles['error-message']}>{errors.email}</span>}
+          </label>
+          <label>
             <input
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Password"
-              className={styles['login-input']}
+              onChange={(e) => setFieldValue('password', e.target.value)}
+              className={styles['input']}
               type="password"
-              name=""
-              id=""
+              placeholder=""
+              required=""
             />
-          </div>
-          <div className={styles['not-account-need-register']}>
-            <button onClick={handleSubmit} className={styles['login-btn']}>
-              Войти
-            </button>
-            <div className={styles['no-account-align']}>
-              <Link to="/registration">
-                <span className={styles['no-account']}>Нет аккаунта?</span>
-              </Link>
-            </div>
-          </div>
+            <span>Пароль</span>
+            {errors.password && <span className={styles['error-message']}>{errors.password}</span>}
+          </label>
+          <button type="submit" className={styles['submit']}>
+            Зарегистрироваться
+          </button>
+          <p className={styles['signin']}>
+            У вас нет аккаунта? <Link to="/registration">Зарегистрироваться</Link>
+          </p>
         </form>
       </div>
     </div>

@@ -3,7 +3,7 @@ import { checkAuth } from '../utils/checkAuth.js';
 import { check } from 'express-validator';
 import authMiddleware from '../utils/authMiddleware.js';
 import roleMiddleware from '../utils/roleMiddleware.js';
-import { createTournament, getAll, getAllParticipants, registerParticipant } from '../controllers/tournaments.js';
+import { addComment, createTournament, deleteTournament, dislikeComment, getAll, getAllParticipants, getComments, getTournamentStatus, likeComment, registerParticipant, updateTournament } from '../controllers/tournaments.js';
 import Tournament from '../models/Tournament.js';
 import { updateTournamentStatus } from '../controllers/tournaments.js';
 import Player from '../models/Player.js';
@@ -32,9 +32,10 @@ router.get('/:tournamentId',async(req,res) => {
 router.post('/:tournamentId/register',checkAuth, registerParticipant);
 
 router.get('/:tournamentId/participants', getAllParticipants);
-
+router.put('/:tournamentId/update', updateTournament);
 
 router.put('/:tournamentId/status', updateTournamentStatus); 
+router.get('/:tournamentId/status', getTournamentStatus);
 
 router.get('/:tournamentId/players', async (req, res) => {
   try {
@@ -63,7 +64,11 @@ router.get('/:tournamentId/players', async (req, res) => {
     res.status(500).json({ success: false, message: 'Ошибка при получении данных об игроках турнира.' });
   }
 });
+router.post('/:tournamentId/comments', addComment); // Add comment
+router.get('/:tournamentId/comments', getComments); // Get comments
+router.post('/:tournamentId/comments/:commentId/like', likeComment);
+router.post('/:tournamentId/comments/:commentId/dislike', dislikeComment);
 
-
+router.delete('/:tournamentId', roleMiddleware(['ADMIN']), deleteTournament);
 
 export default router;

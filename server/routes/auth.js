@@ -11,8 +11,8 @@ const router = new Router();
 router.post(
   '/register',
   [
-    check('username', 'Имя пользователя не может быть пустым').trim().notEmpty(),
-    check('password', 'Пароль должен быть больше 8 символов').trim().isLength({ min: 4, max: 20 }),
+    // check('username', 'Имя пользователя не может быть пустым').trim().notEmpty(),
+    // check('password', 'Пароль должен быть больше 8 символов').trim().isLength({ min: 4, max: 20 }),
   ],
   register,
 );

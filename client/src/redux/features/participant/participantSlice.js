@@ -198,7 +198,7 @@ const participantSlice = createSlice({
       })
       .addCase(getAllAcceptedParticipants.fulfilled, (state, action) => {
         state.loading = false;
-        state.status = 'success';
+        state.status = null;
         state.acceptedParticipants = action.payload;
       })
       .addCase(getAllAcceptedParticipants.rejected, (state, action) => {

@@ -1,12 +1,11 @@
-import React, {useEffect, useState} from 'react';
-import CurrentTournamentHeader from './CurrentTournamentHeader';
+import { useEffect } from 'react';
 import CurrentTournamentMenu from './CurrentTournamentMenu';
-import CurrentTournamentTable from './CurrentTournamentTable';
+
 import './CurrentTournament.scss';
-import {Outlet, useLoaderData, useParams, useSearchParams} from 'react-router-dom';
-import Games from './Games/Games';
+import { Outlet, useParams, } from 'react-router-dom';
+
 function CurrentTournament() {
-  const {tournamentID} = useParams()
+  const { tournamentID } = useParams();
   // console.log(tournamentID);
   useEffect(() => {
     const fetchTournaments = async () => {
@@ -16,7 +15,6 @@ function CurrentTournament() {
           throw new Error('Ошибка при получении данных о турнирах');
         }
         // const data = await response.json();
-
       } catch (error) {
         console.error('Ошибка:', error.message);
       }
@@ -27,9 +25,8 @@ function CurrentTournament() {
   return (
     <div className="container">
       <div className="current-tournament">
-        
         <CurrentTournamentMenu />
-        <Outlet/>
+        <Outlet />
         {/* <Games/> */}
       </div>
     </div>

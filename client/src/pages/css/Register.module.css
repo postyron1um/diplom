@@ -18,7 +18,6 @@
   -o-border-radius: 20px;
   display: grid;
   grid-template-columns: 1fr;
-  justify-items: center;
 }
 
 .log-in-form {
@@ -62,7 +61,7 @@
   -o-border-radius: 6px;
   background-color: #2b2c2e;
   width: 100%;
-  padding: 10px 20px;
+  padding: 13px 20px;
 }
 
 .registration-input {
@@ -160,4 +159,155 @@
 
 .have-account-align {
   align-self: center;
+}
+
+.error-message {
+  display: block;
+  color: red;
+  max-width: 400px;
+  font-size: 12px;
+  text-align: center;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 350px;
+  padding: 20px;
+  border-radius: 20px;
+  position: relative;
+  background-color: #1a1a1a;
+  color: #fff;
+  border: 1px solid #333;
+}
+
+.title {
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: -1px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding-left: 30px;
+  color: #00bfff;
+}
+
+.title::before {
+  width: 18px;
+  height: 18px;
+}
+
+.title::after {
+  width: 18px;
+  height: 18px;
+  animation: pulse 1s linear infinite;
+}
+
+.title::before,
+.title::after {
+  position: absolute;
+  content: "";
+  height: 16px;
+  width: 16px;
+  border-radius: 50%;
+  left: 0px;
+  background-color: #00bfff;
+}
+
+.message,
+.signin {
+  font-size: 14.5px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.signin {
+  text-align: center;
+}
+
+.signin a:hover {
+  -webkit-text-decoration: underline royalblue;
+          text-decoration: underline royalblue;
+}
+
+.signin a {
+  color: #00bfff;
+}
+
+.flex {
+  display: flex;
+  width: 100%;
+  gap: 6px;
+}
+
+.form label {
+  position: relative;
+}
+
+.form label .input {
+  background-color: #333;
+  color: #fff;
+  width: 100%;
+  padding: 20px 5px 5px 10px;
+  outline: 0;
+  border: 1px solid rgba(105, 105, 105, 0.397);
+  border-radius: 10px;
+}
+
+.form label .input + span {
+  color: rgba(255, 255, 255, 0.5);
+  position: absolute;
+  left: 10px;
+  top: 0px;
+  font-size: 0.9em;
+  cursor: text;
+  transition: 0.3s ease;
+}
+
+.form label .input:-moz-placeholder-shown + span {
+  top: -5px;
+  font-size: 0.9em;
+}
+
+.form label .input:placeholder-shown + span {
+  top: -5px;
+  font-size: 0.9em;
+}
+
+.form label .input:focus + span,
+.form label .input + span {
+  color: #00bfff;
+  top: -10px;
+  font-size: 0.7em;
+  font-weight: 600;
+}
+
+.input {
+  font-size: medium;
+}
+
+.submit {
+  border: none;
+  outline: none;
+  padding: 10px;
+  border-radius: 10px;
+  color: #fff;
+  font-size: 16px;
+  transform: 0.3s ease;
+  background-color: #00bfff;
+}
+
+.submit:hover {
+  background-color: rgba(0, 191, 255, 0.5882352941);
+}
+
+@keyframes pulse {
+  from {
+    transform: scale(0.9);
+    opacity: 1;
+  }
+  to {
+    transform: scale(1.8);
+    opacity: 0;
+  }
 }/*# sourceMappingURL=Register.module.css.map */

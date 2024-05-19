@@ -108,7 +108,7 @@ input[type='submit'] {
   cursor: pointer;
 }
 
-input:focus,
+/* input:focus,
 input:active,
 textarea:focus,
 select:focus,
@@ -116,7 +116,7 @@ button:focus,
 button:active {
   outline: none;
   background-color: #1d1d22;
-}
+} */
 input:focus,
 textarea:focus,
 select:focus {
@@ -182,6 +182,6 @@ textarea {
   justify-content: space-between;
   margin: 0 auto;
 }
-
-@media screen {
+input,textarea{
+	background-color: transparent ;
 }

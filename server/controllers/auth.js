@@ -10,13 +10,14 @@ export const register = async (req, res) => {
     if (!errors.isEmpty()) {
       return res.json({ message: 'Ошибка при регистрации', errors });
     }
-    const { username, password } = req.body;
+    const { firstName, lastName, email, tel, password } = req.body;
 
-    const isUsed = await User.findOne({ username });
-
+    const isUsed = await User.findOne({ email });
+		console.log('isUsed', isUsed);
+		
     if (isUsed) {
       return res.json({
-        message: 'Данный username уже занят',
+        message: 'Данный email уже занят',
       });
     }
 
@@ -25,19 +26,29 @@ export const register = async (req, res) => {
     const userRole = await Role.findOne({ value: 'USER' });
 
     const newUser = new User({
-      username,
+      firstName,
+      lastName,
+      email,
+      tel,
       password: hash,
       roles: [userRole.value],
     });
+    console.log('newUser', newUser);
+
     const token = jwt.sign(
       {
         id: newUser._id,
-        role: Role,
+        roles: Role,
       },
       process.env.JWT_SECRET,
       { expiresIn: '30d' },
     );
-    await newUser.save();
+		try {
+			 await newUser.save();
+		} catch (error) {
+			console.log('error', error);
+			
+		}
 
     res.json({
       newUser,
@@ -51,8 +62,8 @@ export const register = async (req, res) => {
 // Login user
 export const login = async (req, res) => {
   try {
-    const { username, password } = req.body;
-    const user = await User.findOne({ username });
+    const { email, password } = req.body;
+    const user = await User.findOne({ email });
     if (!user) {
       return res.json({ message: 'Такого пользователя нет.' });
     }
@@ -64,7 +75,6 @@ export const login = async (req, res) => {
     const token = jwt.sign(
       {
         id: user._id,
-				username:user.username,
         roles: user.roles,
       },
       process.env.JWT_SECRET,
@@ -84,12 +94,11 @@ export const login = async (req, res) => {
 // Список пользователей
 export const getUsers = async (req, res) => {
   try {
-		const users = await User.find()
+    const users = await User.find();
     res.json(users);
   } catch (error) {
-		console.log(error);
-		
-	}
+    console.log(error);
+  }
 };
 
 export const getMe = async (req, res) => {

@@ -13,7 +13,7 @@ import { initialState, reducer, sportTypeOptions } from './CreateTournament.stat
 import { useNavigate } from 'react-router-dom';
 import { createTournament } from '../../redux/features/tournament/tournamentSlice';
 import { toast } from 'react-toastify';
-import extractUserRoleFromToken  from '../../Func/extractUserDetailsFromToken';
+import extractUserRoleFromToken from '../../Func/extractUserDetailsFromToken';
 
 function CreateTournament() {
   const [state, dispatch] = useReducer(reducer, initialState);
@@ -23,8 +23,9 @@ function CreateTournament() {
   const Dispatch = useDispatch();
   const { status } = useSelector((state) => state.tournament);
   const userToken = localStorage.getItem('token');
-  const role = extractUserRoleFromToken(userToken,'roles');
-  const isAdmin = role.includes('ADMIN');
+  const role = extractUserRoleFromToken(userToken, 'roles');
+
+  const isAdmin = Array.isArray(role) && role.includes('ADMIN');
 
   useEffect(() => {
     if (status) {

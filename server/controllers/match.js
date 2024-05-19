@@ -8,6 +8,8 @@ import TournamentParticipant from '../models/TournamentParticipant.js';
 export const createMatch = async (req, res) => {
   try {
     const { tournamentId, round, team1, team2, score1, score2, date } = req.body;
+    console.log('team1', team1);
+    console.log('team2', team2);
 
     // Проверяем, начат ли турнир
     const tournament = await Tournament.findById(tournamentId);
@@ -58,7 +60,7 @@ export const createMatch = async (req, res) => {
       const team1Player = new Player({
         participant: participant1._id,
         tournamentId,
-        username: participant2.username,
+        username: participant1.username,
       });
       const team2Player = new Player({
         participant: participant2._id,
@@ -153,8 +155,9 @@ export const updatedMatchResultTimur = async (req, res) => {
       return res.status(404).json({ message: 'Участники не найдены' });
     }
 
-    const player1 = await Player.findOne({ participant: team1User._id });
-    const player2 = await Player.findOne({ participant: team2User._id });
+    const player1 = await Player.findOne({ username: match.team1, tournamentId: tournamentId });
+    const player2 = await Player.findOne({ username: match.team2, tournamentId: tournamentId });
+    console.log('team1User._id', team1User._id);
     console.log('player1', player1);
     console.log('player2', player2);
     if (score1 > score2 && previousScore1 <= previousScore2) {

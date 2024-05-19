@@ -28,7 +28,7 @@ const Registration = () => {
   const userId = extractUserIdFromToken(userToken);
   const location = useLocation();
   const tournamentId = location.pathname.split('/')[2];
-	console.log(tournamentId);
+	// console.log(userId);
   const participants = useSelector((state) => state.participant.acceptedParticipants[tournamentId] || []);
   const { status } = useSelector((state) => state.participant);
 
@@ -71,7 +71,7 @@ console.log(typeTournament);
             {typeTournament === 'Круговой' ? (
               <form onSubmit={handleRoundTournamentRegistration}>
                 <div className="participant-row">
-                  <button type="submit">Зарегистрироваться как участник в круговом турнире</button>
+                  <button type="submit">Зарегистрироваться как участник на круговом турнире</button>
                 </div>
               </form>
             ) : (

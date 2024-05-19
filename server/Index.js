@@ -9,6 +9,7 @@ import tournamentRoute from './routes/tournaments.js';
 import matchRoute from './routes/match.js'; // Импорт роута для матчей
 import tournamentParticipantsRoute from './routes/tournamentParticipants.route.js';
 import knockoutRoute from './routes/knockout.route.js';
+import users from './routes/user.js';
 
 const app = express();
 dotenv.config();
@@ -29,6 +30,8 @@ app.use('/api/tournaments/:tournamentId/matches', matchRoute);
 app.use('/api/tournaments/:tournamentId/participants', tournamentParticipantsRoute);
 
 app.use('/api/tournaments/', knockoutRoute);
+app.use('/api/users/', users);
+
 
 async function start() {
   try {

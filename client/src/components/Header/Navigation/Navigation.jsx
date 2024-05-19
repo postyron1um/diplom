@@ -6,9 +6,10 @@ import extractUserRoleFromToken from '../../../Func/extractUserDetailsFromToken'
 
 function Navigation() {
   const userToken = localStorage.getItem('token');
-  const role = extractUserRoleFromToken(userToken,'roles');
-  const isAdmin = role.includes('ADMIN');
-
+const role = extractUserRoleFromToken(userToken, 'roles');
+const isAdmin = Array.isArray(role) && role.includes('ADMIN');
+  // const isAdmin = true;
+	// console.log(isAdmin);
   return (
     <div>
       <div className="fl-direction">
