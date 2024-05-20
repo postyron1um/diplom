@@ -172,12 +172,14 @@ const registerParticipantKnock = async (req, res) => {
       user: userId,
       username: username,
       tournament: tournamentId,
+      tel:user.tel
     });
 
     const newParticipantKnock = new KnockoutParticipant({
       user: userId,
       username: username,
       tournament: tournamentId,
+      tel:user.tel
     });
 		console.log('newParticipantKnock', newParticipantKnock);
 		

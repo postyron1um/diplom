@@ -16,29 +16,32 @@ import EditTournament from './EditTournament';
 
 function TournamentRegistrations({ registrations, handleAccept, handleReject }) {
   return (
-    <div className={styles['tournamentRegistrations']}>
-      <h2 className={styles['tournamentRegistrations-title']}>Заявки:</h2>
-      <ul className={styles['tournamentRegistrations-ul']}>
-        {registrations.map((registration) => (
-          <li key={registration._id}>
-            <div className={styles['tournamentRegistrations-row']}>
-              <div>
-                <span className={styles['tournamentRegistrations-span']}>
-                  {registration.username} {registration.teamName}
-                </span>
+    <div className={styles["admin_panel_container"]}>
+      <div className={styles['tournamentRegistrations']}>
+        <h2 className={styles['tournamentRegistrations-title']}>Заявки:</h2>
+        <ul className={styles['tournamentRegistrations-ul']}>
+          {registrations.map((registration) => (
+            <li key={registration._id}>
+              <div className={styles['tournamentRegistrations-row']}>
+                <div>
+                  <span className={styles['tournamentRegistrations-span']}>
+                    {registration.username} {registration.teamName}
+                  </span>
+                </div>
+                <div className={styles['tournamentRegistrations-div-end']}>
+                  <button className={styles['tournamentRegistrations-btn-accept']} onClick={() => handleAccept(registration._id)}>
+                    Принять
+                  </button>
+                  <button className={styles['tournamentRegistrations-btn-reject']} onClick={() => handleReject(registration._id)}>
+                    Отклонить
+                  </button>
+                </div>
               </div>
-              <div className={styles['tournamentRegistrations-div-end']}>
-                <button className={styles['tournamentRegistrations-btn-accept']} onClick={() => handleAccept(registration._id)}>
-                  Принять
-                </button>
-                <button className={styles['tournamentRegistrations-btn-reject']} onClick={() => handleReject(registration._id)}>
-                  Отклонить
-                </button>
-              </div>
-            </div>
-          </li>
-        ))}
-      </ul>
+            </li>
+          ))}
+        </ul>
+    </div>
+    <AcceptedParticipants/>
     </div>
   );
 }
@@ -150,11 +153,6 @@ function AdminPanel() {
           Заявки на участие в турнире
         </button>
         <button
-          className={selectedMenu === 'accepted' ? styles['menu-button-active'] : styles['menu-button']}
-          onClick={() => handleMenuClick('accepted')}>
-          Участники турнира
-        </button>
-        <button
           className={selectedMenu === 'edit' ? styles['menu-button-active'] : styles['menu-button']}
           onClick={() => handleMenuClick('edit')}>
           Редактировать турнир
@@ -166,7 +164,6 @@ function AdminPanel() {
         </button>
       </div>
 
-      {selectedMenu === 'accepted' && <AcceptedParticipants />}
       {selectedMenu === 'edit' && <EditTournament tournamentId={tournamentId} />}
       {selectedMenu === 'registrations' && (
         <TournamentRegistrations registrations={registrations} handleAccept={handleAccept} handleReject={handleReject} />

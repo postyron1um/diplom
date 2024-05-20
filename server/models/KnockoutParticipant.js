@@ -15,6 +15,10 @@ const knockoutParticipantSchema = new mongoose.Schema({
     ref: 'Tournament',
     required: true,
   },
+  tel: {
+    type: String,
+    required: true,
+  },
 });
 
 const KnockoutParticipant = mongoose.model('KnockoutParticipant', knockoutParticipantSchema);

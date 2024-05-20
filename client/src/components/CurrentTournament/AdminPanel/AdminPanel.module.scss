@@ -8,6 +8,9 @@
   border-radius: 20px;
   padding: 20px 40px;
   margin-top: 30px;
+  @media (max-width: 720px) {
+   padding: 0;
+  }
 }
 
 .tournamentRegistrations-title {
@@ -29,6 +32,9 @@
   background: var(--btn-color-2);
   margin-right: 30px;
   padding: 10px;
+  @media (max-width:720px) {
+    width: 100%;
+  }
   @media (max-width: 400px) {
     margin-right: 0;
   }
@@ -89,6 +95,13 @@
 
 .tournamentRegistrations-div-end {
   align-self: flex-end;
+  display: flex;
+  @media (max-width: 720px) {
+    flex-direction: column;
+    display: flex;
+    gap: 20px;
+    justify-content: space-evenly;
+  }
   @media (max-width: 550px) {
     display: flex;
     justify-content: space-evenly;
@@ -113,7 +126,11 @@
 .confirmAction {
   text-align: center;
 }
-
+.admin_panel_container {
+  display: grid;
+  grid-template-columns: 3fr 1fr;
+  gap: 10px;
+}
 .acceptOrReject {
   padding: 10px;
   margin-bottom: 20px;
@@ -163,16 +180,20 @@
 
 .accepted__li {
   padding: 10px;
-  max-width: 300px;
-  border: 2px solid #d4d6eb;
+  max-width: 200px;
+  // border: 2px solid #d4d6eb;
+  text-align: center;
   border-radius: 5px;
-  background-color: rgb(19, 69, 73);
+  background-color:var(--btn-color-3);
 }
-
+.AcceptedParticipants {
+  padding-top: 50px;
+}
 .menu-btn_div {
   margin-top: 20px;
-  display: flex;
-  justify-content: center;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+
   gap: 10px;
   @media (max-width: 500px) {
     margin-top: 40px;
@@ -291,4 +312,25 @@
  display: block;
  width: 100% !important;
  max-width: 100%;
+}
+
+
+/* AdminPanel.module.scss */
+
+.toggle-phone-button {
+  background: none;
+  padding-left: 5px;
+  border: none;
+  cursor: pointer;
+  color: #007bff;
+  font-size: 1.2em;
+}
+
+.copy-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #007bff;
+  font-size: 1.2em;
+  margin-left: 10px;
 }

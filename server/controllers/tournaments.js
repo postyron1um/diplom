@@ -115,6 +115,7 @@ export const registerParticipant = async (req, res) => {
       user: userId,
       username: username,
       tournament: tournamentId,
+      tel:user.tel,
     });
 
     // Сохраняем участника в базе данных и обновляем список участников турнира

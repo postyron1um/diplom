@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useRouteLoaderData } from 'react-router-dom';
-import formatDate from '../../Func/DateFormat';
+import formatDate, { formatDateTime } from '../../Func/DateFormat';
 import { addComment, fetchComments, likeComment, dislikeComment } from '../../redux/features/tournament/commentSlice';
 import extractUserRoleFromToken from '../../Func/extractUserDetailsFromToken';
 
@@ -62,23 +62,28 @@ function CurrentTournamentHeader() {
       </h3>
 
       <div className="comments-section">
-        <h3>Комментарии:</h3>
-        <ul>
-          {comments?.map((comment) => (
-            <li key={comment._id}>
-              <p>
-                <strong>{comment.username}:</strong> {comment.text}
-              </p>
-              <p>{formatDate(comment.createdAt)}</p>
-              <div>
-                <button onClick={() => handleLike(comment._id)}>👍 {comment.likes}</button>
-                <button onClick={() => handleDislike(comment._id)}>👎 {comment.dislikes}</button>
-              </div>
-            </li>
-          ))}
-        </ul>
-        <textarea value={commentText} onChange={(e) => setCommentText(e.target.value)} placeholder="Добавить комментарий" />
-        <button onClick={handleAddComment}>Отправить</button>
+        <div className="comments-display">
+          <h3 className='comments-h3'>Комментарии:</h3>
+          <ul className='comments-list'>
+            {comments?.map((comment) => (
+              <li className='comments-item' key={comment._id}>
+                <p>
+                  <strong>{comment.username}:</strong> {comment.text}
+                </p>
+                <p>{formatDateTime(comment.createdAt)}</p>
+                {/* <div>
+                  <button onClick={() => handleLike(comment._id)}>👍 {comment.likes}</button>
+                  <button onClick={() => handleDislike(comment._id)}>👎 {comment.dislikes}</button>
+                </div> */}
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div className="comments-add">
+          <textarea className='comments-textarea' value={commentText} onChange={(e) => setCommentText(e.target.value)} placeholder="Добавить комментарий" />
+          <button className='comments-add-btn' onClick={handleAddComment}>Отправить</button>
+        </div>
+        
       </div>
     </>
   );
