@@ -107,8 +107,11 @@ function AdminPanel() {
   const handleConfirmAction = async () => {
     try {
       if (modalType === 'accept') {
-        await dispatch(acceptParticipant({ tournamentId, participantId }));
-        await dispatch(acceptParticipantKnock({ tournamentId, participantId }));
+        if (tournamentData.typeTournament === 'На вылет') {
+          await dispatch(acceptParticipantKnock({ tournamentId, participantId }));
+        } else {
+          await dispatch(acceptParticipant({ tournamentId, participantId }));
+        }
       } else if (modalType === 'reject') {
         await dispatch(rejectParticipant({ tournamentId, participantId }));
       }
@@ -128,14 +131,6 @@ function AdminPanel() {
     setSelectedMenu(menu);
   };
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setTournamentData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
-
   const handleDeleteTournament = async () => {
     try {
       await dispatch(deleteTournament({ tournamentId }));
@@ -143,16 +138,6 @@ function AdminPanel() {
     } catch (error) {
       console.error('Ошибка при удалении турнира:', error);
       alert('Ошибка при удалении турнира');
-    }
-  };
-
-  const handleEditTournament = async () => {
-    try {
-      await dispatch(updateTournament({ tournamentId, ...tournamentData }));
-      alert('Турнир успешно обновлен');
-    } catch (error) {
-      console.error('Ошибка при редактировании турнира:', error);
-      alert('Ошибка при редактировании турнира');
     }
   };
 
@@ -182,11 +167,7 @@ function AdminPanel() {
       </div>
 
       {selectedMenu === 'accepted' && <AcceptedParticipants />}
-      {selectedMenu === 'edit' && (
-        <EditTournament
-          tournamentId={tournamentId}
-        />
-      )}
+      {selectedMenu === 'edit' && <EditTournament tournamentId={tournamentId} />}
       {selectedMenu === 'registrations' && (
         <TournamentRegistrations registrations={registrations} handleAccept={handleAccept} handleReject={handleReject} />
       )}

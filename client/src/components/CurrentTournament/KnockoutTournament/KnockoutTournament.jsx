@@ -109,7 +109,6 @@ const KnockoutTournament = () => {
     setRoundMatches(initialRoundMatches);
     // setTournamentStarted(true); // Устанавливаем флаг, что турнир начался
     // // После начала турнира обновляем страницу
-    window.location.reload();
   };
 
   const getRoundWinners = (participants, matches) => {

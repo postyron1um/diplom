@@ -10,7 +10,7 @@ const createMatch = async (req, res) => {
   try {
     const { tournamentId } = req.params;
     const { initialRoundMatches } = req.body;
-    console.log('initialRoundMatches', initialRoundMatches.length);
+    // console.log('initialRoundMatches', initialRoundMatches.length);
 
 		if (!initialRoundMatches.length) {
       return res.status(400).json({ message: 'Нельзя начать турнир с пустыми матчами' });
@@ -21,7 +21,7 @@ const createMatch = async (req, res) => {
       // Проходим по каждому матчу в текущем раунде
       for (let j = 0; j < roundMatches.length; j++) {
         const match = roundMatches[j];
-        console.log('match', match);
+        console.log('match', match.team1);
 
         // Находим объекты участников по именам команд
         const participant1 = await KnockoutParticipant.findOne({ username: match.team1.username });
@@ -146,11 +146,11 @@ const updateMatch = async (req, res) => {
 const registerParticipantKnock = async (req, res) => {
   try {
     const userId = req.body.userId;
-    console.log(' req.body', req.body);
+    // console.log(' req.body', req.body);
 
     const tournamentId = req.body.tournamentId;
-    console.log('userId', userId);
-    console.log('tournamentId', tournamentId);
+    // console.log('userId', userId);
+    // console.log('tournamentId', tournamentId);
 
     // Получаем информацию о пользователе (включая его имя) из базы данных
     const user = await User.findById(userId);
@@ -159,7 +159,7 @@ const registerParticipantKnock = async (req, res) => {
     if (!user) {
       return res.json({ success: false, message: 'Пользователь не найден.' });
     }
-    const username = user.username;
+    const username = user.lastName + ' ' + user.firstName; ;
 
     // Проверяем, зарегистрирован ли пользователь уже на этот турнир
     const existingParticipant = await TournamentParticipant.findOne({ user: userId, tournament: tournamentId });
@@ -174,14 +174,16 @@ const registerParticipantKnock = async (req, res) => {
       tournament: tournamentId,
     });
 
-    // const newParticipantKnock = new KnockoutParticipant({
-    //   user: userId,
-    //   username: username,
-    //   tournament: tournamentId,
-    // });
+    const newParticipantKnock = new KnockoutParticipant({
+      user: userId,
+      username: username,
+      tournament: tournamentId,
+    });
+		console.log('newParticipantKnock', newParticipantKnock);
+		
 
     // Сохраняем участника в базе данных и обновляем список участников турнира
-    // await newParticipantKnock.save();
+    await newParticipantKnock.save();
     await newParticipant.save();
     await Tournament.findByIdAndUpdate(
       tournamentId,
