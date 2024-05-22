@@ -3,7 +3,7 @@ import { checkAuth } from '../utils/checkAuth.js';
 import { check } from 'express-validator';
 import authMiddleware from '../utils/authMiddleware.js';
 import roleMiddleware from '../utils/roleMiddleware.js';
-import { addComment, createTournament, deleteTournament, dislikeComment, getAll, getAllParticipants, getComments, getTournamentStatus, likeComment, registerParticipant, updateTournament } from '../controllers/tournaments.js';
+import { addComment, createTournament, deleteComment, deleteTournament, dislikeComment, getAll, getAllParticipants, getComments, getTournamentStatus, likeComment, registerParticipant, updateTournament } from '../controllers/tournaments.js';
 import Tournament from '../models/Tournament.js';
 import { updateTournamentStatus } from '../controllers/tournaments.js';
 import Player from '../models/Player.js';
@@ -66,6 +66,7 @@ router.get('/:tournamentId/players', async (req, res) => {
 });
 router.post('/:tournamentId/comments', addComment); // Add comment
 router.get('/:tournamentId/comments', getComments); // Get comments
+router.delete('/:tournamentId/comments/:commentId', deleteComment);
 router.post('/:tournamentId/comments/:commentId/like', likeComment);
 router.post('/:tournamentId/comments/:commentId/dislike', dislikeComment);
 

@@ -7,6 +7,11 @@
   padding: 20px 40px;
   margin-top: 30px;
 }
+@media (max-width: 720px) {
+  .tournamentRegistrations {
+    padding: 0;
+  }
+}
 
 .tournamentRegistrations-title {
   font-size: 20px;
@@ -29,6 +34,11 @@
   background: var(--btn-color-2);
   margin-right: 30px;
   padding: 10px;
+}
+@media (max-width: 720px) {
+  .tournamentRegistrations-btn-accept {
+    width: 100%;
+  }
 }
 @media (max-width: 400px) {
   .tournamentRegistrations-btn-accept {
@@ -98,6 +108,16 @@
 
 .tournamentRegistrations-div-end {
   align-self: flex-end;
+  display: flex;
+  gap: 10px;
+}
+@media (max-width: 720px) {
+  .tournamentRegistrations-div-end {
+    flex-direction: column;
+    display: flex;
+    gap: 20px;
+    justify-content: space-evenly;
+  }
 }
 @media (max-width: 550px) {
   .tournamentRegistrations-div-end {
@@ -127,6 +147,12 @@
   text-align: center;
 }
 
+.admin_panel_container {
+  display: grid;
+  grid-template-columns: 3fr 1fr;
+  gap: 10px;
+}
+
 .acceptOrReject {
   padding: 10px;
   margin-bottom: 20px;
@@ -136,6 +162,188 @@
   /* text-align: center; */
   display: flex;
   justify-content: space-around;
+}
+@media (max-width: 440px) {
+  .acceptOrReject-container {
+    flex-direction: column;
+    gap: 20px;
+  }
+}
+
+.ui-btn-cancell {
+  cursor: pointer;
+  padding: 10px;
+  border-radius: 5px;
+  color: rgb(219, 218, 218);
+  border-style: solid;
+  background-color: transparent;
+  border-color: rgb(219, 218, 218);
+  width: -moz-fit-content;
+  width: fit-content;
+  height: 40px;
+  transition: 0.2s ease;
+  text-transform: uppercase;
+  border-width: 2px;
+  font-weight: 500;
+  font-size: 16px;
+  letter-spacing: 2px;
+}
+@media (max-width: 440px) {
+  .ui-btn-cancell {
+    width: 100%;
+  }
+}
+.ui-btn-cancell:hover {
+  color: rgb(247, 247, 247);
+  background-color: rgb(202, 25, 25);
+  border-color: rgb(202, 25, 25);
+  text-shadow: 0 0 50px white, 0 0 20px white, 0 0 15px white;
+  box-shadow: 0 0 50px rgb(202, 25, 25), 0 0 30px rgb(202, 25, 25), 0 0 60px rgb(202, 25, 25), 0 0 120px rgb(202, 25, 25);
+}
+@media (max-width: 440px) {
+  .ui-btn-cancell:hover {
+    width: 100%;
+  }
+}
+@media (max-width: 440px) {
+  .ui-btn-cancell:active {
+    width: 100%;
+  }
+}
+
+.ui-btn-success {
+  cursor: pointer;
+  padding: 10px;
+  border-radius: 5px;
+  color: rgb(219, 218, 218);
+  border-style: solid;
+  background-color: transparent;
+  border-color: rgb(219, 218, 218);
+  width: -moz-fit-content;
+  width: fit-content;
+  height: 40px;
+  transition: 0.2s ease;
+  text-transform: uppercase;
+  border-width: 2px;
+  font-weight: 500;
+  font-size: 16px;
+  letter-spacing: 2px;
+}
+@media (max-width: 440px) {
+  .ui-btn-success {
+    width: 100%;
+  }
+}
+.ui-btn-success:hover {
+  color: rgb(247, 247, 247);
+  background-color: rgb(42, 145, 73);
+  border-color: rgb(42, 145, 73);
+  text-shadow: 0 0 50px white, 0 0 20px white, 0 0 15px white;
+  box-shadow: 0 0 50px rgb(42, 145, 73), 0 0 30px rgb(42, 145, 73), 0 0 60px rgb(42, 145, 73), 0 0 120px rgb(42, 145, 73);
+}
+@media (max-width: 440px) {
+  .ui-btn-success:hover {
+    width: 100%;
+  }
+}
+.ui-btn-success:active {
+  width: -moz-fit-content;
+  width: fit-content;
+}
+@media (max-width: 440px) {
+  .ui-btn-success:active {
+    width: 100%;
+  }
+}
+
+.accept-participant {
+  width: 100%;
+}
+
+.deleteInputValue {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.tournament-title-delete {
+  color: #16c91f;
+  display: inline;
+}
+
+.formField {
+  margin: 10px;
+  position: relative;
+  width: 100%;
+}
+
+.formField input {
+  padding: 10px 15px;
+  outline: none;
+  border: none;
+  border-radius: 5px;
+  background-color: #590e1c;
+  color: #fdf6f6;
+  font-size: 16px;
+  font-weight: 550;
+  transition: 0.3s ease-in-out;
+  box-shadow: 0 0 0 5px transparent;
+}
+
+.formField input:hover,
+.formField input:focus {
+  box-shadow: 0 0 0 2px #333;
+}
+
+.formField span {
+  position: absolute;
+  left: 50;
+  top: -12px;
+  padding: 8px 15px;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 500;
+  transition: 0.3s ease-in-out;
+  pointer-events: none;
+}
+
+.formField input:not(:-moz-placeholder-shown):focus + span, .formField input:not(:-moz-placeholder-shown):valid + span {
+  transform: translateY(-22px) translateX(-5px) scale(0.95);
+  -moz-transition: 0.3s ease-in-out;
+  transition: 0.3s ease-in-out;
+  -webkit-transform: translateY(-22px) translateX(-5px) scale(0.95);
+  -moz-transform: translateY(-22px) translateX(-5px) scale(0.95);
+  -ms-transform: translateY(-22px) translateX(-5px) scale(0.95);
+  -o-transform: translateY(-22px) translateX(-5px) scale(0.95);
+}
+
+.formField input:not(:placeholder-shown):focus + span,
+.formField input:not(:placeholder-shown):valid + span {
+  transform: translateY(-22px) translateX(-5px) scale(0.95);
+  transition: 0.3s ease-in-out;
+  -webkit-transform: translateY(-22px) translateX(-5px) scale(0.95);
+  -moz-transform: translateY(-22px) translateX(-5px) scale(0.95);
+  -ms-transform: translateY(-22px) translateX(-5px) scale(0.95);
+  -o-transform: translateY(-22px) translateX(-5px) scale(0.95);
+}
+
+.formField input:-moz-placeholder-shown + span {
+  transform: translateY(0) translateX(0) scale(1);
+  -moz-transition: 0.3s ease-in-out;
+  transition: 0.3s ease-in-out;
+  -webkit-transform: translateY(0) translateX(0) scale(1);
+  -moz-transform: translateY(0) translateX(0) scale(1);
+  -ms-transform: translateY(0) translateX(0) scale(1);
+  -o-transform: translateY(0) translateX(0) scale(1);
+}
+
+.formField input:placeholder-shown + span {
+  transform: translateY(0) translateX(0) scale(1);
+  transition: 0.3s ease-in-out;
+  -webkit-transform: translateY(0) translateX(0) scale(1);
+  -moz-transform: translateY(0) translateX(0) scale(1);
+  -ms-transform: translateY(0) translateX(0) scale(1);
+  -o-transform: translateY(0) translateX(0) scale(1);
 }
 
 .acceptOrReject-btn {
@@ -179,16 +387,20 @@
 
 .accepted__li {
   padding: 10px;
-  max-width: 300px;
-  border: 2px solid #d4d6eb;
+  max-width: 200px;
+  text-align: center;
   border-radius: 5px;
-  background-color: rgb(19, 69, 73);
+  background-color: var(--btn-color-3);
+}
+
+.AcceptedParticipants {
+  padding-top: 50px;
 }
 
 .menu-btn_div {
   margin-top: 20px;
-  display: flex;
-  justify-content: center;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 10px;
 }
 @media (max-width: 500px) {
@@ -294,7 +506,8 @@
   justify-content: space-around;
 }
 
-.btn-flex button, .edit-btn {
+.btn-flex button,
+.edit-btn {
   color: #fff;
   font-family: var(--main2-font);
   padding: 10px 20px;
@@ -311,4 +524,31 @@
   display: block;
   width: 100% !important;
   max-width: 100%;
+}
+
+/* AdminPanel.module.scss */
+.toggle-phone-button {
+  background: none;
+  padding-left: 5px;
+  border: none;
+  cursor: pointer;
+  color: #007bff;
+  font-size: 1.2em;
+}
+
+.copy-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #007bff;
+  font-size: 1.2em;
+  margin-left: 10px;
+}
+
+.delete-tournament-input {
+  display: block;
+  margin: 0 auto;
+  padding: 20px;
+  margin-bottom: 10px;
+  border: 1px solid var(--accent-color);
 }/*# sourceMappingURL=AdminPanel.module.css.map */

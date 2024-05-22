@@ -249,6 +249,16 @@ export const getComments = async (req, res) => {
   }
 };
 
+export const deleteComment = async (req, res) => {
+  try {
+    const { commentId } = req.params;
+    await Comment.findByIdAndDelete(commentId);
+    res.json({ success: true, message: 'Комментарий успешно удален.' });
+  } catch (error) {
+    console.error('Ошибка при удалении комментария:', error);
+    res.status(500).json({ success: false, message: 'Ошибка при удалении комментария.' });
+  }
+};
 
 export const likeComment = async (req, res) => {
   try {

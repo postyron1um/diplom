@@ -13,14 +13,19 @@ export const addComment = createAsyncThunk('comments/addComment', async ({ tourn
   return response.data.comment;
 });
 
-export const likeComment = createAsyncThunk('comments/likeComment', async ({commentId, tournamentId}) => {
+export const likeComment = createAsyncThunk('comments/likeComment', async ({ commentId, tournamentId }) => {
   const response = await axios.post(`/tournaments/${tournamentId}/comments/${commentId}/like`);
   return response.data.comment;
 });
 
-export const dislikeComment = createAsyncThunk('comments/dislikeComment', async ({commentId, tournamentId}) => {
+export const dislikeComment = createAsyncThunk('comments/dislikeComment', async ({ commentId, tournamentId }) => {
   const response = await axios.post(`/tournaments/${tournamentId}/comments/${commentId}/dislike`);
   return response.data.comment;
+});
+
+export const deleteComment = createAsyncThunk('comments/deleteComment', async ({ tournamentId, commentId }) => {
+  await axios.delete(`/tournaments/${tournamentId}/comments/${commentId}`);
+  return commentId;
 });
 
 const commentSlice = createSlice({
@@ -58,6 +63,9 @@ const commentSlice = createSlice({
         if (index !== -1) {
           state.comments[index] = action.payload;
         }
+      })
+      .addCase(deleteComment.fulfilled, (state, action) => {
+        state.comments = state.comments.filter((comment) => comment._id !== action.payload);
       });
   },
 });

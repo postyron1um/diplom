@@ -1,3 +1,5 @@
+@import '../../../mixin.scss';
+
 .admin-title {
   margin-bottom: 15px;
 }
@@ -9,7 +11,7 @@
   padding: 20px 40px;
   margin-top: 30px;
   @media (max-width: 720px) {
-   padding: 0;
+    padding: 0;
   }
 }
 
@@ -32,7 +34,7 @@
   background: var(--btn-color-2);
   margin-right: 30px;
   padding: 10px;
-  @media (max-width:720px) {
+  @media (max-width: 720px) {
     width: 100%;
   }
   @media (max-width: 400px) {
@@ -96,6 +98,7 @@
 .tournamentRegistrations-div-end {
   align-self: flex-end;
   display: flex;
+  gap: 10px;
   @media (max-width: 720px) {
     flex-direction: column;
     display: flex;
@@ -139,6 +142,90 @@
   /* text-align: center; */
   display: flex;
   justify-content: space-around;
+  @media (max-width: 440px) {
+    flex-direction: column;
+    gap: 20px;
+  }
+}
+
+.ui-btn-cancell {
+  @include ui-btn-cancell;
+}
+
+.ui-btn-success {
+  @include ui-btn-success;
+}
+
+.accept-participant {
+  width: 100%;
+  // color:red;
+  // padding: 10px;
+}
+
+.deleteInputValue {
+	display: flex;
+	justify-content: center;
+	margin-bottom: 20px;
+}
+.tournament-title-delete {
+	color:#16c91f;
+	display: inline;
+}
+.formField {
+  margin: 10px;
+  position: relative;
+  width: 100%;
+}
+
+.formField input {
+  padding: 10px 15px;
+  // margin: 0 auto;
+  outline: none;
+  border: none;
+  border-radius: 5px;
+  background-color: #590e1c;
+  color: #fdf6f6;
+  font-size: 16px;
+  font-weight: 550;
+  transition: 0.3s ease-in-out;
+  box-shadow: 0 0 0 5px transparent;
+}
+
+.formField input:hover,
+.formField input:focus {
+  box-shadow: 0 0 0 2px #333;
+}
+
+.formField span {
+  position: absolute;
+  left: 50;
+  top: -12px;
+  padding: 8px 15px;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 500;
+  // text-shadow: -1px -1px 0 #f1f1f1, 1px -1px 0 #f1f1f1, -1px 1px 0 #f1f1f1, 1px 1px 0 #f1f1f1;
+  transition: 0.3s ease-in-out;
+  pointer-events: none;
+}
+
+.formField input:not(:placeholder-shown):focus + span,
+.formField input:not(:placeholder-shown):valid + span {
+  transform: translateY(-22px) translateX(-5px) scale(0.95);
+  transition: 0.3s ease-in-out;
+  -webkit-transform: translateY(-22px) translateX(-5px) scale(0.95);
+  -moz-transform: translateY(-22px) translateX(-5px) scale(0.95);
+  -ms-transform: translateY(-22px) translateX(-5px) scale(0.95);
+  -o-transform: translateY(-22px) translateX(-5px) scale(0.95);
+}
+
+.formField input:placeholder-shown + span {
+  transform: translateY(0) translateX(0) scale(1);
+  transition: 0.3s ease-in-out;
+  -webkit-transform: translateY(0) translateX(0) scale(1);
+  -moz-transform: translateY(0) translateX(0) scale(1);
+  -ms-transform: translateY(0) translateX(0) scale(1);
+  -o-transform: translateY(0) translateX(0) scale(1);
 }
 
 .acceptOrReject-btn {
@@ -184,7 +271,7 @@
   // border: 2px solid #d4d6eb;
   text-align: center;
   border-radius: 5px;
-  background-color:var(--btn-color-3);
+  background-color: var(--btn-color-3);
 }
 .AcceptedParticipants {
   padding-top: 50px;
@@ -296,24 +383,24 @@
   justify-content: space-around;
 }
 
-.btn-flex button,.edit-btn {
-	color: #fff;
-	font-family: var(--main2-font);
-	padding: 10px 20px;
-	max-width: 250px;
-	background-color: rgb(106, 106, 238);
-	border-radius: 5px;
-	-webkit-border-radius: 5px;
-	-moz-border-radius: 5px;
-	-ms-border-radius: 5px;
-	-o-border-radius: 5px;
+.btn-flex button,
+.edit-btn {
+  color: #fff;
+  font-family: var(--main2-font);
+  padding: 10px 20px;
+  max-width: 250px;
+  background-color: rgb(106, 106, 238);
+  border-radius: 5px;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  -ms-border-radius: 5px;
+  -o-border-radius: 5px;
 }
-.edit-btn{
- display: block;
- width: 100% !important;
- max-width: 100%;
+.edit-btn {
+  display: block;
+  width: 100% !important;
+  max-width: 100%;
 }
-
 
 /* AdminPanel.module.scss */
 
@@ -333,4 +420,12 @@
   color: #007bff;
   font-size: 1.2em;
   margin-left: 10px;
+}
+
+.delete-tournament-input {
+  display: block;
+  margin: 0 auto;
+  padding: 20px;
+  margin-bottom: 10px;
+  border: 1px solid var(--accent-color);
 }

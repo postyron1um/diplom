@@ -5,7 +5,8 @@ import axios from '../../../utils/axios';
 import extractUserRoleFromToken from '../../../Func/extractUserDetailsFromToken';
 import agf from '../../../../public/vite.svg';
 import { useLoaderData } from 'react-router-dom';
-
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { createNewMatch } from '../../../redux/features/knockout/knockoutSlice';
 
 const KnockoutTournament = () => {
@@ -13,7 +14,8 @@ const KnockoutTournament = () => {
   const tournamentId = currentTournament._id;
   const userToken = localStorage.getItem('token');
   const role = extractUserRoleFromToken(userToken, 'roles');
-  const isAdmin = role.includes('ADMIN');
+
+  const isAdmin = Array.isArray(role) && role.includes('ADMIN');
   const [tournamentStarted, setTournamentStarted] = useState(false);
 
   const [participants, setParticipants] = useState([]); // тут лежат наши участники из бд
@@ -29,7 +31,6 @@ const KnockoutTournament = () => {
           throw new Error('Ошибка при получении данных о турнирах');
         }
         const data = await response.json();
-        // console.log(data.participantsd);
         const storedParticipants = data.participantsd;
         if (storedParticipants) {
           setParticipants(storedParticipants);
@@ -45,13 +46,8 @@ const KnockoutTournament = () => {
   useEffect(() => {
     const fetchMatches = async () => {
       try {
-        // Отправляем GET-запрос на сервер для получения матчей
         const response = await fetch(`http://localhost:3007/api/tournaments/${tournamentId}/knockout/matches`);
-        // if (!response.data.success) {
-        //   throw new Error('Ошибка при получении матчей');
-        // }
         const data = await response.json();
-        console.log(data.roundMatches);
         setRoundMatches(data.roundMatches);
       } catch (error) {
         console.error('Ошибка при получении матчей:', error.message);
@@ -66,14 +62,13 @@ const KnockoutTournament = () => {
       const j = Math.floor(Math.random() * (i + 1));
       [shuffledArray[i], shuffledArray[j]] = [shuffledArray[j], shuffledArray[i]];
     }
-    // console.log(shuffledArray);
     return shuffledArray;
   };
 
   const generateRoundMatches = () => {
     const numParticipants = participants.length;
     if (numParticipants % 2 !== 0) {
-      console.error('Number of participants must be even for knockout tournament.');
+      toast.error('Количество участников должно быть четным для турнира на вылет.');
       return;
     }
 
@@ -89,7 +84,7 @@ const KnockoutTournament = () => {
         if (team1 && team2) {
           const match = {
             id: j,
-            round: i + 1, // Устанавливаем номер раунда
+            round: i + 1,
             team1: team1,
             team2: team2,
             scoreTeam1: '',
@@ -102,13 +97,11 @@ const KnockoutTournament = () => {
         }
       }
       initialRoundMatches.push(roundMatches);
-      shuffledParticipants = getRoundWinners(shuffledParticipants, roundMatches); // Обновляем участников для следующего раунда
+      shuffledParticipants = getRoundWinners(shuffledParticipants, roundMatches);
     }
-    console.log(initialRoundMatches);
     dispatch(createNewMatch({ initialRoundMatches, tournamentId }));
     setRoundMatches(initialRoundMatches);
-    // setTournamentStarted(true); // Устанавливаем флаг, что турнир начался
-    // // После начала турнира обновляем страницу
+    toast.success('Турнир успешно');
   };
 
   const getRoundWinners = (participants, matches) => {
@@ -142,12 +135,10 @@ const KnockoutTournament = () => {
       return updatedRoundMatches;
     });
   };
-
+	console.log(roundMatches);
   const handleSaveResult = async (roundIndex, matchIndex) => {
-    console.log(roundIndex);
     try {
       const matchToUpdate = roundMatches[roundIndex][matchIndex];
-      console.log('matchToUpdate', matchToUpdate);
       const updatedMatch = {
         scoreTeam1: matchToUpdate.scoreTeam1,
         scoreTeam2: matchToUpdate.scoreTeam2,
@@ -157,132 +148,92 @@ const KnockoutTournament = () => {
       setEditingMatch(null);
 
       // Проверяем, были ли сохранены все матчи текущего раунда
-      const isAllMatchesSaved = roundMatches.every((round) =>
-        round.every((match) => match.scoreTeam1 !== 0 || match.scoreTeam2 !== 0),
-      );
-      console.log(isAllMatchesSaved);
+      const isAllMatchesSaved = roundMatches[roundIndex].every((match) => match.scoreTeam1 !== '' && match.scoreTeam2 !== '');
       if (isAllMatchesSaved) {
-        console.log('FDFDF');
-        await generateNextRound(roundIndex, roundMatches);
-        // window.location.reload();
+        setRoundMatches((prevRoundMatches) => {
+          const updatedRoundMatches = [...prevRoundMatches];
+          updatedRoundMatches[roundIndex] = updatedRoundMatches[roundIndex].map((match, index) =>
+            index === matchIndex ? { ...match, ...updatedMatch } : match,
+          );
+          return updatedRoundMatches;
+        });
       }
     } catch (error) {
       console.error('Ошибка при сохранении результата матча:', error);
     }
   };
 
-  const generateNextRound = async (completedRoundIndex, roundMatches) => {
-    console.log(roundMatches);
-    const updatedRoundMatches = [...roundMatches];
-    console.log(updatedRoundMatches);
-    const winnersOfCompletedRound = updatedRoundMatches[completedRoundIndex].map((match) => match.winner);
-    // console.log('winnersOfCompletedRound', winnersOfCompletedRound);
-    // if (winnersOfCompletedRound.every((winner) => winner !== null)) {
-    //   console.log('6');
-    // } else {
-    // console.log('4');
-    // }
-
-    const nextRoundIndex = completedRoundIndex;
-    // console.log('nextRoundIndex', nextRoundIndex);
-    // console.log(updatedRoundMatches.length);
-    if (nextRoundIndex < updatedRoundMatches.length) {
-      // console.log('DSDS');
-      if (winnersOfCompletedRound.every((winner) => winner !== null)) {
-        const winnersOfNextRound = getRoundWinnersFromWinners(winnersOfCompletedRound, roundMatches[completedRoundIndex]);
-        // console.log(winnersOfNextRound);
-        const nextRoundMatches = [];
-        for (let i = 0; i < Math.ceil(winnersOfNextRound.length / 2); i++) {
-          const team1 = winnersOfNextRound[i * 2];
-          const team2 = winnersOfNextRound[i * 2 + 1];
-          // console.log(team1.username);
-          if (team1 && team2) {
-            const match = {
-              id: i,
-              round: nextRoundIndex + 1,
-              team1: team1.username ? team1.username : team1,
-              team2: team2.username ? team2.username : team2,
-              scoreTeam1: '',
-              scoreTeam2: '',
-              winner: null,
-            };
-            nextRoundMatches.push(match);
-          } else if (team1 && !team2) {
-            nextRoundMatches.push({
-              id: i,
-              round: nextRoundIndex + 1,
-              team1: team1.username ? team1.username : team1,
-              team2: null,
-              scoreTeam1: '',
-              scoreTeam2: '',
-              winner: null,
-            });
-          } else {
-            console.error('Invalid participants in round match.');
-          }
-        }
-        updatedRoundMatches[nextRoundIndex] = nextRoundMatches;
-        console.log(nextRoundMatches);
-        setRoundMatches(updatedRoundMatches);
-
-        // Отправляем данные новых матчей следующего раунда на сервер
-        try {
-          // dispatch(createNewMatch({ initialRoundMatches: nextRoundMatches, tournamentId }));
-          const response = await axios.post(`/tournaments/${tournamentId}/knockout/matches/next`, {
-            initialRoundMatches: nextRoundMatches,
-            tournamentId,
-          });
-          console.log('Новые матчи следующего раунда сохранены в базе данных:', response.data);
-        } catch (error) {
-          console.error('Ошибка при сохранении новых матчей следующего раунда:', error.message);
-        }
+  const generateNextRound = async (completedRoundIndex) => {
+    const winnersOfCompletedRound = roundMatches[completedRoundIndex].map((match) => match.winner);
+    const nextRoundMatches = [];
+    for (let i = 0; i < winnersOfCompletedRound.length; i += 2) {
+      const team1 = winnersOfCompletedRound[i];
+      const team2 = winnersOfCompletedRound[i + 1];
+      if (team1 && team2) {
+        const match = {
+          id: i / 2,
+          round: completedRoundIndex + 2,
+          team1: team1,
+          team2: team2,
+          scoreTeam1: '',
+          scoreTeam2: '',
+          winner: null,
+        };
+        nextRoundMatches.push(match);
+      } else if (team1 && !team2) {
+        nextRoundMatches.push({
+          id: i / 2,
+          round: completedRoundIndex + 2,
+          team1: team1,
+          team2: null,
+          scoreTeam1: '',
+          scoreTeam2: '',
+          winner: null,
+        });
       } else {
-        console.log('Not all matches of the current round have been played yet.');
-      }
-    } else {
-      console.log('JHJH');
-
-      if (nextRoundIndex === updatedRoundMatches.length - 1) {
-        // Проверяем, является ли текущий раунд последним
-        determineChampion();
-      }
-      // determineChampion();
-    }
-  };
-
-  // use
-  const getRoundWinnersFromWinners = (winnersOfCompletedRound, currentRoundMatches) => {
-    console.log(winnersOfCompletedRound);
-    console.log(currentRoundMatches);
-    console.log(participants);
-    const remainingParticipants = [];
-    for (let i = 0; i < winnersOfCompletedRound.length; i++) {
-      const winnerName = winnersOfCompletedRound[i];
-      const winnerParticipant = participants.find((participant) => participant.username === winnerName);
-      if (winnerParticipant) {
-        remainingParticipants.push(winnerParticipant);
-      } else {
-        console.error(`Winner ${winnerName} not found in participants.`);
+        console.error('Invalid participants in round match.');
       }
     }
-    console.log(remainingParticipants);
-    return remainingParticipants;
+    setRoundMatches((prevRoundMatches) => {
+      const updatedRoundMatches = [...prevRoundMatches, nextRoundMatches];
+      return updatedRoundMatches;
+    });
+
+    try {
+      await axios.post(`/tournaments/${tournamentId}/knockout/matches/next`, {
+        initialRoundMatches: nextRoundMatches,
+        tournamentId,
+      });
+    } catch (error) {
+      console.error('Ошибка при сохранении новых матчей следующего раунда:', error.message);
+    }
+    window.location.reload();
   };
 
   useEffect(() => {
-    if (roundMatches.length > 0) {
-      const lastRoundIndex = roundMatches.length - 1;
-      const lastRound = roundMatches[lastRoundIndex];
-      const allMatchesPlayed = lastRound.every((match) => match.scoreTeam1 !== '' && match.scoreTeam2 !== '');
+    const fetchTournamentData = async () => {
+      try {
+        const response = await axios.get(`http://localhost:3007/api/tournaments/${tournamentId}`);
+        if (!response.data.tournament) {
+          throw new Error('Ошибка при получении данных о турнире');
+        }
 
-      if (allMatchesPlayed) {
-        determineChampion();
+        const tournamentData = response.data.tournament;
+        const storedChampion = tournamentData[0].champion;
+        // console.log(storedChampion);
+        if (tournamentData) {
+          setChampion(storedChampion);
+        }
+      } catch (error) {
+        console.error('Ошибка:', error.message);
       }
-    }
-  }, [roundMatches]);
+    };
+
+    fetchTournamentData();
+  }, [tournamentId]);
+	
   const determineChampion = async () => {
     const lastRound = roundMatches[roundMatches.length - 1];
-    console.log(lastRound);
     let championName = null;
 
     for (let i = 0; i < lastRound.length; i++) {
@@ -290,37 +241,24 @@ const KnockoutTournament = () => {
       if (match.scoreTeam1 !== '' && match.scoreTeam2 !== '') {
         if (match.scoreTeam1 > match.scoreTeam2) {
           championName = match.team1;
-        } else if (match.scoreTeam2 > match.scoreTeam1) {
-          championName = match.team2;
         } else {
-          console.log('Match ended in a draw.');
-          // В случае ничьей, вы можете обработать ситуацию по вашему усмотрению
+          championName = match.team2;
         }
-        break; // Прекращаем цикл после нахождения победителя
       }
     }
 
     if (championName) {
       setChampion(championName);
-      await saveChampionToDatabase(championName); // Сохраняем чемпиона в базу данных
-    } else {
-      console.log('No champion determined yet.');
+      try {
+        await axios.put(`/tournaments/${tournamentId}/champion`, { champion: championName });
+      } catch (error) {
+        console.error('Ошибка при обновлении чемпиона:', error.message);
+      }
     }
   };
-
-  const saveChampionToDatabase = async (championName) => {
-    try {
-      const response = await axios.put(`/tournaments/${tournamentId}/champion`, { champion: championName });
-      console.log('Champion saved to database:', response.data);
-    } catch (error) {
-      console.error('Error saving champion to database:', error.message);
-    }
-  };
-
   const handleEditMatch = (roundIndex, matchIndex) => {
     setEditingMatch({ roundIndex, matchIndex });
   };
-
   return (
     <div>
       <h2 className={styles['h2-title']}>Турнир на вылет</h2>
@@ -392,6 +330,14 @@ const KnockoutTournament = () => {
           ))}
         </div>
       ))}
+      {!champion &&
+        isAdmin &&
+        roundMatches.length > 0 &&
+        roundMatches.every((round) => round.every((match) => match.scoreTeam1 !== 0 || match.scoreTeam2 !== 0)) && (
+          <button className={styles.btn} onClick={() => generateNextRound(roundMatches.length - 1)}>
+            Создать следующий раунд
+          </button>
+        )}
       {champion !== null ? (
         <div className={styles['champion']}>
           <h3 className={styles['champion-title']}>Champion</h3>
@@ -407,6 +353,15 @@ const KnockoutTournament = () => {
                 </button>
               )
             : ''}
+          {isAdmin &&
+            roundMatches.length > 0 &&
+            roundMatches.every((round) => round.every((match) => match.scoreTeam1 !== '' && match.scoreTeam2 !== '')) && // Проверяем, что все матчи всех раундов завершены
+            roundMatches[roundMatches.length - 1].length === 1 && // Проверяем, что в последнем раунде остался только один матч
+            roundMatches[roundMatches.length - 1].every((match) => match.scoreTeam1 !== 0 || match.scoreTeam2 !== 0) && ( // Проверяем, что все матчи последнего раунда не имеют 0 очков
+              <button className={styles['champion_btn']} onClick={determineChampion}>
+                Определить чемпиона
+              </button>
+            )}
         </div>
       )}
     </div>

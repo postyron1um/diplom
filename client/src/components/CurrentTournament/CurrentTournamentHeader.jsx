@@ -4,17 +4,27 @@ import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useRouteLoaderData } from 'react-router-dom';
 import formatDate, { formatDateTime } from '../../Func/DateFormat';
-import { addComment, fetchComments, likeComment, dislikeComment } from '../../redux/features/tournament/commentSlice';
+import {
+  addComment,
+  fetchComments,
+  likeComment,
+  dislikeComment,
+  deleteComment,
+} from '../../redux/features/tournament/commentSlice';
 import extractUserRoleFromToken from '../../Func/extractUserDetailsFromToken';
+import Modal from '../Modal/Modal';
 
 function CurrentTournamentHeader() {
   const tournament = useRouteLoaderData('all_tournaments');
   const dispatch = useDispatch();
   const { comments } = useSelector((state) => state.comments);
   const [commentText, setCommentText] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [commentToDelete, setCommentToDelete] = useState(null);
   const userToken = localStorage.getItem('token');
   const userId = extractUserRoleFromToken(userToken, 'id');
-
+  const role = extractUserRoleFromToken(userToken, 'roles');
+  const isAdmin = Array.isArray(role) && role.includes('ADMIN');
   useEffect(() => {
     if (tournament._id) {
       dispatch(fetchComments(tournament._id));
@@ -34,7 +44,25 @@ function CurrentTournamentHeader() {
   };
 
   const handleDislike = async (commentId) => {
-    await dispatch(dislikeComment({commentId,tournamentId: tournament._id}));
+    await dispatch(dislikeComment({ commentId, tournamentId: tournament._id }));
+  };
+
+  const openModal = (commentId) => {
+    setCommentToDelete(commentId);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setCommentToDelete(null);
+  };
+
+  const confirmDeleteComment = async () => {
+    if (commentToDelete) {
+      await dispatch(deleteComment(commentToDelete));
+      dispatch(fetchComments(tournament._id)); // Перезагрузка комментариев после удаления
+      closeModal();
+    }
   };
 
   return (
@@ -63,28 +91,66 @@ function CurrentTournamentHeader() {
 
       <div className="comments-section">
         <div className="comments-display">
-          <h3 className='comments-h3'>Комментарии:</h3>
-          <ul className='comments-list'>
+          <h3 className="comments-h3">Комментарии:</h3>
+          <div className="comments-add">
+            <div className="messageBox">
+              <input
+                value={commentText}
+                onChange={(e) => setCommentText(e.target.value)}
+                placeholder="Добавить комментарий..."
+                type="text"
+                id="messageInput"
+              />
+              <button onClick={handleAddComment} id="sendButton">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 664 663">
+                  <path
+                    fill="none"
+                    d="M646.293 331.888L17.7538 17.6187L155.245 331.888M646.293 331.888L17.753 646.157L155.245 331.888M646.293 331.888L318.735 330.228L155.245 331.888"></path>
+                  <path
+                    strokeLinejoin="round"
+                    strokeLinecap="round"
+                    strokeWidth="33.67"
+                    stroke="#6c6c6c"
+                    d="M646.293 331.888L17.7538 17.6187L155.245 331.888M646.293 331.888L17.753 646.157L155.245 331.888M646.293 331.888L318.735 330.228L155.245 331.888"></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+          <ul className="comments-list">
             {comments?.map((comment) => (
-              <li className='comments-item' key={comment._id}>
+              <li className="comments-item" key={comment._id}>
                 <p>
                   <strong>{comment.username}:</strong> {comment.text}
                 </p>
-                <p>{formatDateTime(comment.createdAt)}</p>
-                {/* <div>
-                  <button onClick={() => handleLike(comment._id)}>👍 {comment.likes}</button>
-                  <button onClick={() => handleDislike(comment._id)}>👎 {comment.dislikes}</button>
-                </div> */}
+                <div className="comments-item-delete">
+                  <p>{formatDateTime(comment.createdAt)}</p>
+                  {isAdmin && (
+                    <div className="ui-btn-div">
+                      <button className="ui-btn" onClick={() => openModal(comment._id)}>
+                        Удалить
+                      </button>
+                    </div>
+                  )}
+                </div>
               </li>
             ))}
           </ul>
         </div>
-        <div className="comments-add">
-          <textarea className='comments-textarea' value={commentText} onChange={(e) => setCommentText(e.target.value)} placeholder="Добавить комментарий" />
-          <button className='comments-add-btn' onClick={handleAddComment}>Отправить</button>
-        </div>
-        
       </div>
+
+      {isModalOpen && (
+        <Modal onClose={closeModal}>
+          <p>Вы уверены, что хотите удалить этот комментарий?</p>
+          <div className="btn-div-delete">
+            <button className="delete-btn" onClick={confirmDeleteComment}>
+              Удалить
+            </button>
+            <button className="cancell-btn" onClick={closeModal}>
+              Отмена
+            </button>
+          </div>
+        </Modal>
+      )}
     </>
   );
 }

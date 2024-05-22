@@ -13,10 +13,11 @@ import AcceptedParticipants from './AcceptedParticipants';
 import axios from '../../../utils/axios';
 import { deleteTournament } from '../../../redux/features/tournament/tournamentSlice';
 import EditTournament from './EditTournament';
+import cn from 'classnames';
 
 function TournamentRegistrations({ registrations, handleAccept, handleReject }) {
   return (
-    <div className={styles["admin_panel_container"]}>
+    <div className={styles['admin_panel_container']}>
       <div className={styles['tournamentRegistrations']}>
         <h2 className={styles['tournamentRegistrations-title']}>Заявки:</h2>
         <ul className={styles['tournamentRegistrations-ul']}>
@@ -29,10 +30,14 @@ function TournamentRegistrations({ registrations, handleAccept, handleReject }) 
                   </span>
                 </div>
                 <div className={styles['tournamentRegistrations-div-end']}>
-                  <button className={styles['tournamentRegistrations-btn-accept']} onClick={() => handleAccept(registration._id)}>
+                  <button
+                    className={cn(styles['ui-btn-success'], styles['accept-participant'])}
+                    onClick={() => handleAccept(registration._id)}>
                     Принять
                   </button>
-                  <button className={styles['tournamentRegistrations-btn-reject']} onClick={() => handleReject(registration._id)}>
+                  <button
+                    className={cn(styles['ui-btn-cancell'], 'accept-participant')}
+                    onClick={() => handleReject(registration._id)}>
                     Отклонить
                   </button>
                 </div>
@@ -40,8 +45,8 @@ function TournamentRegistrations({ registrations, handleAccept, handleReject }) 
             </li>
           ))}
         </ul>
-    </div>
-    <AcceptedParticipants/>
+      </div>
+      <AcceptedParticipants />
     </div>
   );
 }
@@ -176,10 +181,10 @@ function AdminPanel() {
           </p>
           <div className={styles['modal-actions']}>
             <div className={styles['acceptOrReject-container']}>
-              <button className={styles['acceptOrReject-btn']} onClick={handleConfirmAction}>
+              <button className={styles['ui-btn-success']} onClick={handleConfirmAction}>
                 Подтвердить
               </button>
-              <button className={styles['acceptOrReject-btn-cancel']} onClick={handleCloseModal}>
+              <button className={styles['ui-btn-cancell']} onClick={handleCloseModal}>
                 Отмена
               </button>
             </div>
@@ -189,19 +194,32 @@ function AdminPanel() {
       {isDeleteModalOpen && (
         <Modal onClose={() => setIsDeleteModalOpen(false)}>
           <p className={styles['acceptOrReject']}>
-            Вы уверены, что хотите удалить этот турнир? Введите название турнира ({tournamentData.title}) для подтверждения:
+            Вы уверены, что хотите удалить этот турнир? Введите название турнира (
+            <span className={styles['tournament-title-delete']}>{tournamentData.title}</span>) для подтверждения:
           </p>
-          <input
+          <form className={styles['formField']}>
+            <div className={styles['deleteInputValue']}>
+              <input
+                value={deleteInputValue}
+                onChange={(e) => setDeleteInputValue(e.target.value)}
+                placeholder=" " // Пустой placeholder для активации :placeholder-shown
+                type="text"
+                required
+              />
+              <span>Название турнира</span>
+            </div>
+          </form>
+          {/* <input
             type="text"
             value={deleteInputValue}
             onChange={(e) => setDeleteInputValue(e.target.value)}
             placeholder="Название турнира"
             className={styles['delete-tournament-input']}
-          />
+          /> */}
           <div className={styles['modal-actions']}>
             <div className={styles['acceptOrReject-container']}>
               <button
-                className={styles['acceptOrReject-btn']}
+                className={styles['ui-btn-success']}
                 onClick={() => {
                   if (deleteInputValue === tournamentData.title) {
                     handleDeleteTournament();
@@ -211,7 +229,7 @@ function AdminPanel() {
                 }}>
                 Подтвердить
               </button>
-              <button className={styles['acceptOrReject-btn-cancel']} onClick={() => setIsDeleteModalOpen(false)}>
+              <button className={styles['ui-btn-cancell']} onClick={() => setIsDeleteModalOpen(false)}>
                 Отмена
               </button>
             </div>

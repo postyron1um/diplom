@@ -10,6 +10,7 @@ import {
 } from '../../redux/features/participant/participantSlice';
 import { checkIsAuth } from '../../redux/features/auth/authSlice';
 import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const extractUserIdFromToken = (token) => {
   try {
@@ -38,7 +39,7 @@ console.log(typeTournament);
 
   useEffect(() => {
     if (status) {
-      toast(status);
+      toast.success(status);
     }
   }, [status]);
 

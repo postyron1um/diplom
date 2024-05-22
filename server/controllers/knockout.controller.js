@@ -10,7 +10,7 @@ const createMatch = async (req, res) => {
   try {
     const { tournamentId } = req.params;
     const { initialRoundMatches } = req.body;
-    // console.log('initialRoundMatches', initialRoundMatches.length);
+    console.log('initialRoundMatches', initialRoundMatches);
 
 		if (!initialRoundMatches.length) {
       return res.status(400).json({ message: 'Нельзя начать турнир с пустыми матчами' });
@@ -26,8 +26,8 @@ const createMatch = async (req, res) => {
         // Находим объекты участников по именам команд
         const participant1 = await KnockoutParticipant.findOne({ username: match.team1.username });
         const participant2 = await KnockoutParticipant.findOne({ username: match.team2.username });
-        // console.log('participant1,', participant1);
-        // console.log('participant2,', participant2);
+        console.log('participant1,', participant1);
+        console.log('participant2,', participant2);
 
         // Проверяем, что оба участника найдены
         if (!participant1 || !participant2) {
@@ -119,7 +119,8 @@ const updateMatch = async (req, res) => {
     const { matchId } = req.params;
     const { updatedMatch } = req.body;
     console.log('updatedMatch', updatedMatch);
-
+		console.log('matchId', matchId);
+		
     // Найдите матч по его ID
     const match = await KnockoutMatch.findById(matchId);
     console.log('match', match);
@@ -226,10 +227,13 @@ const acceptParticipantKnock = async (req, res) => {
     const id = participantId;
 
     const participant = await TournamentParticipant.findByIdAndUpdate(id, { status: 'accepted' }, { new: true });
+		console.log('participant', participant);
+		
     const newKnockoutParticipant = await KnockoutParticipant.create({
       user: participant.user, // Передаем id пользователя
       username: participant.username, // Передаем имя пользователя
       tournament: participant.tournament, // Передаем id турнира
+      tel: participant.tel,
     });
     await newKnockoutParticipant.save();
     res.json(participant);

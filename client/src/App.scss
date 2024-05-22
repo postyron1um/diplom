@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+@import '../../client/src/mixin.scss';
 :root {
   --font-Roboto: 'Roboto', sans-serif;
   --font-OpenSans: 'Open Sans', sans-serif;
@@ -185,3 +186,4 @@ textarea {
 input,textarea{
 	background-color: transparent ;
 }
+
